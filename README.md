@@ -374,18 +374,37 @@ clutch/
 │   ├── package.json
 │   └── .env.example
 │
-└── cli/                            # Typer CLI tool (published as clutch-cli on PyPI)
+└── cli/                              # Command Line Tool (published as clutch-cli)
     ├── clutch_cli/
-    │   ├── main.py                 # CLI entry point, registers all commands, --version flag
-    │   ├── config.py               # Token storage in ~/.clutch/config.json
-    │   ├── api.py                  # Authenticated HTTP client
-    │   ├── auth.py                 # login (auto OAuth), logout, whoami commands
-    │   ├── streak.py               # clutch streak command
-    │   ├── stats.py                # clutch stats command
-    │   ├── insight.py              # clutch insight command
-    │   ├── repos.py                # clutch repos command
-    │   ├── patterns.py             # clutch patterns command
-    │   └── status.py               # clutch status command
+    │   ├── __init__.py
+    │   ├── main.py                   # CLI entry point using Typer
+    │   ├── api.py
+    │   ├── config.py                 # Config and token storage
+    │   ├── theme.py
+    │   │
+    │   ├── activity/                 # Activity related commands
+    │   │   ├── __init__.py
+    │   │   ├── patterns.py
+    │   │   ├── stats.py
+    │   │   └── streak.py
+    │   │
+    │   ├── authentication/           # Authentication commands
+    │   │   ├── __init__.py
+    │   │   ├── login.py
+    │   │   ├── logout.py
+    │   │   └── whoami.py
+    │   │
+    │   ├── insights/                 # AI Insights
+    │   │   ├── __init__.py
+    │   │   └── weekly.py
+    │   │
+    │   ├── repositories/             # Repository commands
+    │   │   ├── __init__.py
+    │   │   └── list.py
+    │   │
+    │   └── system/                   # System commands
+    │       ├── __init__.py
+    │       └── status.py
     ├── README.md                   # PyPI package description
     └── pyproject.toml              # Modern build config
 ```
