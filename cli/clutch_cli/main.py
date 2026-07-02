@@ -1,7 +1,7 @@
 import typer
 
 from clutch_cli.authentication import login, logout, whoami
-from clutch_cli.activity import streak, stats, patterns
+from clutch_cli.activity import streak, stats, patterns, heatmap
 from clutch_cli.repositories import list as repositories_list
 from clutch_cli.insights import weekly
 from clutch_cli.system import status
@@ -44,6 +44,7 @@ app.command(name="whoami")(whoami.whoami)
 app.command(name="streak")(streak.streak)
 app.command(name="stats")(stats.stats)
 app.command(name="patterns")(patterns.patterns)
+app.command(name="heatmap")(heatmap.heatmap)
 
 # Repositories
 app.command(name="repos")(repositories_list.repos)
