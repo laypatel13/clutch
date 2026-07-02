@@ -1,7 +1,14 @@
-import type { HeatmapData } from '../../types/dashboard.types'
+import { useState } from 'react'
+import type { HeatmapData, HeatmapDay } from '../../types/dashboard.types'
 
 interface HeatmapProps {
   data: HeatmapData | null
+}
+
+interface HoveredCell {
+  day: HeatmapDay
+  x: number
+  y: number
 }
 
 const DAY_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', '']
@@ -16,7 +23,13 @@ function intensity(count: number, max: number): string {
   return '#b8b8c0'
 }
 
+function formatCount(count: number): string {
+  return `${count} contribution${count === 1 ? '' : 's'}`
+}
+
 export default function Heatmap({ data }: HeatmapProps) {
+  const [hovered, setHovered] = useState<HoveredCell | null>(null)
+
   if (!data || data.days.length === 0) {
     return (
       <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
@@ -53,9 +66,23 @@ export default function Heatmap({ data }: HeatmapProps) {
   const cellSize = 11
   const cellGap = 3
 
+  const handleEnter = (day: HeatmapDay | null) => (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!day) return
+    const cellRect = e.currentTarget.getBoundingClientRect()
+    const wrapperRect = e.currentTarget.closest('[data-heatmap-wrapper]')?.getBoundingClientRect()
+    if (!wrapperRect) return
+    setHovered({
+      day,
+      x: cellRect.left - wrapperRect.left + cellRect.width / 2,
+      y: cellRect.top - wrapperRect.top,
+    })
+  }
+
+  const handleLeave = () => setHovered(null)
+
   return (
     <div style={{ overflowX: 'auto', paddingBottom: 'var(--space-2)' }}>
-      <div style={{ display: 'inline-block' }}>
+      <div data-heatmap-wrapper style={{ display: 'inline-block', position: 'relative' }}>
         {/* Month labels */}
         <div style={{ display: 'flex', marginLeft: 24, marginBottom: 'var(--space-1)' }}>
           {weeks.map((_, wi) => {
@@ -84,12 +111,14 @@ export default function Heatmap({ data }: HeatmapProps) {
               {week.map((day, di) => (
                 <div
                   key={di}
-                  title={day ? `${day.count} contributions on ${day.date}` : ''}
+                  onMouseEnter={handleEnter(day)}
+                  onMouseLeave={handleLeave}
                   style={{
                     width: cellSize,
                     height: cellSize,
                     background: day ? intensity(day.count, data.max_count) : 'transparent',
                     border: day ? '1px solid var(--border)' : 'none',
+                    cursor: day ? 'pointer' : 'default',
                   }}
                 />
               ))}
@@ -105,6 +134,31 @@ export default function Heatmap({ data }: HeatmapProps) {
           ))}
           <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 10, color: 'var(--text-muted)', marginLeft: 'var(--space-1)' }}>More</span>
         </div>
+
+        {/* Tooltip */}
+        {hovered && (
+          <div
+            style={{
+              position: 'absolute',
+              left: hovered.x,
+              top: hovered.y - 8,
+              transform: 'translate(-50%, -100%)',
+              background: 'var(--bg-card)',
+              border: '2px solid var(--accent-purple)',
+              boxShadow: '3px 3px 0px var(--accent-purple)',
+              padding: 'var(--space-2) var(--space-3)',
+              fontFamily: 'var(--font-chrome)',
+              fontSize: 11,
+              color: 'var(--text-primary)',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              zIndex: 20,
+            }}
+          >
+            <div style={{ fontWeight: 700 }}>{hovered.day.date}</div>
+            <div style={{ color: 'var(--text-muted)' }}>{formatCount(hovered.day.count)}</div>
+          </div>
+        )}
       </div>
     </div>
   )
