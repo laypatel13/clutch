@@ -62,7 +62,15 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
+[data-theme='dark']{
+  --bg:#000000;
+  --text-primary:#ffffff;
+  --bg-card:#25253a;
+  --border:#4a4a6a;
+  --border-light:#4a4a6a;
+  --text-secondary:#e0e0e0;
+  
+}
 body {
   background: var(--bg);
   color: var(--text-primary);
@@ -71,6 +79,8 @@ body {
   font-size: var(--text-md);
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  
 }
 
 ::-webkit-scrollbar { width: 4px; }
@@ -129,6 +139,7 @@ body {
   letter-spacing: 0.02em;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   text-transform: uppercase;
+
 }
 .btn-nb:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
 .btn-nb:active { transform: translate(3px, 3px); box-shadow: none; }
