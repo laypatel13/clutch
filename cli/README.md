@@ -46,6 +46,8 @@ clutch insight
 | `clutch streak` | Current and longest commit streak |
 | `clutch stats` | Activity stats — commits, PRs, issues, active days |
 | `clutch stats --days 7` | Stats for a custom time range |
+| `clutch heatmap ` | Contribution  heatmap for last 12 weeks |
+| `clutch heatmap --weeks N` | Contribution heatmap for custom time range |
 | `clutch repos` | Your most recently active repositories |
 | `clutch insight` | AI-generated weekly insight (powered by Groq Llama) |
 | `clutch patterns` | Coding patterns — best day, consistency score, day distribution |
