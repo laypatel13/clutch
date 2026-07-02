@@ -296,6 +296,7 @@ clutch login
 | `clutch whoami` | Show logged-in user |
 | `clutch streak` | Current and longest commit streak |
 | `clutch stats [--days N]` | Activity stats for last N days |
+| `clutch heatmap [--weeks N]` | Contribution heatmap for last N weeks |
 | `clutch repos` | Most recently active repositories |
 | `clutch insight` | AI-generated weekly insight |
 | `clutch patterns` | Coding patterns and habits |
