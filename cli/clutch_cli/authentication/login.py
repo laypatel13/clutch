@@ -1,3 +1,5 @@
+import hmac
+import secrets
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -11,16 +13,25 @@ _captured_token: dict = {}
 
 
 class _CallbackHandler(BaseHTTPRequestHandler):
+    expected_nonce = ""
+
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path == "/callback":
             params = parse_qs(parsed.query)
             token = params.get("token", [None])[0]
-            if token:
-                _captured_token["value"] = token
-                self._respond(200, _success_page())
-            else:
-                self._respond(400, _error_page("No token received."))
+            received_nonce = params.get("local_nonce", [None])[0]
+            # Reject any request whose local_nonce doesn't match the one we
+            # generated for this login attempt — without this check, any
+            # other local process racing to hit this port first could feed
+            # us an attacker-controlled token before the real callback.
+            if not token or not received_nonce or not hmac.compare_digest(
+                received_nonce, self.expected_nonce
+            ):
+                self._respond(400, _error_page("Invalid or missing callback nonce."))
+                return
+            _captured_token["value"] = token
+            self._respond(200, _success_page())
         else:
             self._respond(404, b"Not found")
 
@@ -69,9 +80,11 @@ def login():
     console.print(f"[{DIM}]Starting local callback listener...[/{DIM}]")
 
     _captured_token.clear()
+    local_nonce = secrets.token_urlsafe(24)
+    _CallbackHandler.expected_nonce = local_nonce
     server = HTTPServer(("localhost", CLI_CALLBACK_PORT), _CallbackHandler)
 
-    login_url = f"{API_BASE_URL}/auth/github?cli=true"
+    login_url = f"{API_BASE_URL}/auth/github?cli=true&local_nonce={local_nonce}"
     console.print(f"[{DIM}]Opening GitHub in your browser...[/{DIM}]\n")
     webbrowser.open(login_url)
 
