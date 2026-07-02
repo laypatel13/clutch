@@ -11,11 +11,12 @@ Please read this fully before picking up an issue. It explains exactly how issue
 Every issue is labeled with a difficulty. **The assignment process is different per label — read carefully.**
 
 ### 🟢 `good-first-issue`
-**No assignment. First valid PR wins.**
+**First to comment gets assigned. One person only.**
 
-- Do not comment asking to be assigned — these are open season.
-- Just fork, fix it, and open a PR.
-- If two people submit a PR for the same issue, the first one opened (and passing review) gets merged. The other contributor will be redirected to a different issue — this is not personal, it's just how unassigned issues work at scale.
+- Comment on the issue saying you want to work on it.
+- The **first valid comment** gets assigned by a maintainer.
+- Do not start working until you are assigned.
+- Only one person assigned per issue.
 - These exist so new contributors can get a fast, frictionless first PR merged.
 
 ### 🟡 `intermediate` and 🔴 `advanced`
