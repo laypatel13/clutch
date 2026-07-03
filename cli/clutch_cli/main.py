@@ -19,7 +19,7 @@ def _version_callback(value: bool):
     if value:
         typer.echo(
             f"clutch {__version__}\n"
-            "GitHub: https://github.com/laypatel13/clutch\n"
+            "GitHub: https://github.com/laypatel13/clutch/releases\n"
             "PyPI: https://pypi.org/project/clutch-cli"
         )      
         raise typer.Exit()
