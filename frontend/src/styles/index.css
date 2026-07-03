@@ -25,6 +25,12 @@
   --font-chrome: 'Fraunces', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
+  /* HEATMAP COLORS (Light Mode) */
+  --heatmap-level-1: #ebedf0;
+  --heatmap-level-2: #c6e48b;
+  --heatmap-level-3: #8ed24a;
+  --heatmap-level-4: #39ad48;
+
   /* SPACING SCALE — 4px base unit, every layout value pulls from here */
   --space-1: 4px;
   --space-2: 8px;
@@ -69,6 +75,12 @@
   --border:#4a4a6a;
   --border-light:#4a4a6a;
   --text-secondary:#e0e0e0;
+
+    /* HEATMAP COLORS (Dark Mode) - High Contrast */
+  --heatmap-level-1: #0e4429; /* Dark green, visible on black */
+  --heatmap-level-2: #26a641;
+  --heatmap-level-3: #34d058;
+  --heatmap-level-4: #3fb950;
   
 }
 body {
