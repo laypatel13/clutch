@@ -7,7 +7,24 @@ import NavigationBar from '../components/layout/NavigationBar'
 import StatCard from '../components/common/StatCard'
 import LoadingScreen from '../components/common/LoadingScreen'
 import Heatmap from '../components/common/Heatmap'
-import type { ActivitySummary, StreakSummary, WeeklyInsight, HeatmapData } from '../types/dashboard.types'
+import type { ActivitySummary, StreakSummary, WeeklyInsight, HeatmapData, LanguageBreakdown } from '../types/dashboard.types'
+
+const formatBytes = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+}
+
+const languageColors = [
+  'var(--accent-purple)',
+  'var(--accent-pink)',
+  'var(--accent-cyan)',
+  'var(--accent-green)',
+  'var(--accent-yellow)',
+]
+
 
 export default function DashboardPage() {
   const { user, logout } = useAuthentication()
@@ -15,6 +32,7 @@ export default function DashboardPage() {
   const [streak, setStreak] = useState<StreakSummary | null>(null)
   const [insight, setInsight] = useState<WeeklyInsight | null>(null)
   const [heatmap, setHeatmap] = useState<HeatmapData | null>(null)
+  const [languages, setLanguages] = useState<LanguageBreakdown | null>(null)
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
 
@@ -31,6 +49,7 @@ export default function DashboardPage() {
       setStreak(streakRes.data)
       httpClient.get('/insights/weekly').then(r => setInsight(r.data)).catch(() => {})
       httpClient.get('/github/heatmap').then(r => setHeatmap(r.data)).catch(() => {})
+      httpClient.get('/github/languages').then(r => setLanguages(r.data)).catch(() => {})
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }
@@ -107,6 +126,86 @@ export default function DashboardPage() {
           ) : (
             <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
               No activity data — click Sync to load.
+            </p>
+          )}
+        </div>
+
+        {/* LANGUAGE BREAKDOWN */}
+        <div className="nb-panel-cyan" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
+            <span className="section-label" style={{ marginBottom: 0 }}>Language Breakdown</span>
+            <span className="tag tag-outline">Top 5 Languages</span>
+          </div>
+
+          {languages && Object.keys(languages).length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-6)' }}>
+              {/* Left Column: Progress Bars */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                {Object.entries(languages)
+                  .sort((a, b) => b[1].bytes - a[1].bytes)
+                  .slice(0, 5)
+                  .map(([name, detail], idx) => {
+                    const color = languageColors[idx % languageColors.length]
+                    return (
+                      <div key={name} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>
+                            {formatBytes(detail.bytes)} ({detail.percentage}%)
+                          </span>
+                        </div>
+                        <div style={{
+                          width: '100%',
+                          height: '16px',
+                          backgroundColor: 'var(--bg)',
+                          border: '2px solid var(--border)',
+                          overflow: 'hidden',
+                          position: 'relative'
+                        }}>
+                          <div style={{
+                            width: `${detail.percentage}%`,
+                            height: '100%',
+                            backgroundColor: color,
+                            borderRight: detail.percentage < 100 ? '2px solid var(--border)' : 'none',
+                            transition: 'width 0.6s ease-in-out'
+                          }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+
+              {/* Right Column: Mini Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 'var(--space-3)', alignContent: 'start' }}>
+                {Object.entries(languages)
+                  .sort((a, b) => b[1].bytes - a[1].bytes)
+                  .slice(0, 5)
+                  .map(([name, detail], idx) => {
+                    const color = languageColors[idx % languageColors.length]
+                    return (
+                      <div key={name} className="nb-card" style={{
+                        padding: 'var(--space-3)',
+                        borderColor: color,
+                        boxShadow: `3px 3px 0px ${color}`,
+                        background: 'var(--bg-card)',
+                      }}>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
+                          {name}
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xl)', fontWeight: 700, color }}>
+                          {detail.percentage}%
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-secondary)' }}>
+                          {formatBytes(detail.bytes)}
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+          ) : (
+            <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
+              No language breakdown data — click Sync to load.
             </p>
           )}
         </div>
