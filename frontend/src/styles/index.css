@@ -63,13 +63,15 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 [data-theme='dark']{
-  --bg:#000000;
-  --text-primary:#ffffff;
-  --bg-card:#25253a;
-  --border:#4a4a6a;
-  --border-light:#4a4a6a;
-  --text-secondary:#e0e0e0;
-  
+  --bg:#16161d;
+  --text-primary:#ececf1;
+  --bg-card:#232334;
+  --text-secondary:#b8b8c7;
+  --text-muted:#8f8fa3;
+  --bg-dark:#202033;
+  --shadow:5px 5px 0px #111118;
+  --shadow-sm:3px 3px 0px #111118;
+  --shadow-hover:2px 2px 0px #111118;
 }
 body {
   background: var(--bg);
