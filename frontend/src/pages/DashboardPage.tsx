@@ -58,7 +58,7 @@ export default function DashboardPage() {
             {syncing ? 'Syncing...' : 'Sync'}
           </button>
           <a href={`/u/${user?.username}`}>
-            <img src={user?.avatar_url || ''} alt={user?.username} style={{ width: '32px', height: '32px', border: '2px solid var(--border)', cursor: 'pointer', display: 'block' }} />
+            <img src={user?.avatar_url || ''} alt={user?.username} style={{ width: '32px', height: '32px', border: '2px solid var(--border)',borderRadius: '50%',boxShadow: '2px 2px 0 var(--border)',objectFit: 'cover', cursor: 'pointer', display: 'block' }} />
           </a>
           <button onClick={logout} className="btn-nb btn-pink" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
             <LogOut size={12} />
