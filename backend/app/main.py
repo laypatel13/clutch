@@ -29,17 +29,17 @@ app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(insights.router, prefix="/insights", tags=["Insights"])
 
 
-@app.get("/")
+@app.get("/", tags=["System"])
 def root():
     return {"message": "Clutch API is live 🚀", "version": "0.1.0"}
 
 
-@app.get("/health")
+@app.get("/health", tags=["System"])
 def health():
     return {"status": "ok"}
 
 
-@app.get("/ready")
+@app.get("/ready", tags=["System"])
 def ready(db: Session = Depends(get_db)):
     # Lightweight readiness check: ensure DB is connectable through the session layer
     try:
