@@ -35,6 +35,7 @@ export default function DashboardPage() {
   const [languages, setLanguages] = useState<LanguageBreakdown | null>(null)
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
+  const [insightLoading, setInsightLoading] = useState(false)
 
   useEffect(() => { fetchDashboardData() }, [])
 
@@ -47,7 +48,11 @@ export default function DashboardPage() {
       ])
       setActivity(activityRes.data)
       setStreak(streakRes.data)
-      httpClient.get('/insights/weekly').then(r => setInsight(r.data)).catch(() => {})
+      setInsightLoading(true)
+      httpClient.get('/insights/weekly')
+        .then(r => setInsight(r.data))
+        .catch(() => {})
+        .finally(() => setInsightLoading(false))
       httpClient.get('/github/heatmap').then(r => setHeatmap(r.data)).catch(() => {})
       httpClient.get('/github/languages').then(r => setLanguages(r.data)).catch(() => {})
     } catch (e) { console.error(e) }
@@ -72,7 +77,7 @@ export default function DashboardPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <NavigationBar rightContent={
         <>
-          <button onClick={handleSync} disabled={syncing} className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
+          <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
             {syncing ? 'Syncing...' : 'Sync'}
           </button>
@@ -225,13 +230,18 @@ export default function DashboardPage() {
         <div className="nb-panel-pink" style={{ padding: 'var(--space-6)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
             <span className="section-label" style={{ marginBottom: 0 }}>Weekly AI Insight</span>
+            {insightLoading && (
+              <RefreshCw size={12} color="var(--accent-pink)" style={{ animation: 'spin 1s linear infinite' }} />
+            )}
             <span className="tag tag-pink" style={{ marginLeft: 'auto' }}>Groq</span>
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
             <Brain size={18} color="var(--accent-pink)" style={{ flexShrink: 0, marginTop: '3px' }} />
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: 'var(--font-body)', fontWeight: 300, fontSize: 'var(--text-base)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-relaxed)' }}>
-                {insight?.ai_summary || insight?.message || 'Sync your activity first to generate AI insights.'}
+                {insightLoading
+                  ? 'Generating insight with Groq...'
+                  : (insight?.ai_summary || insight?.message || 'Sync your activity first to generate AI insights.')}
               </p>
               {insight?.stats && (
                 <div style={{ marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-light)', display: 'flex', gap: 'var(--space-6)', flexWrap: 'wrap' }}>
