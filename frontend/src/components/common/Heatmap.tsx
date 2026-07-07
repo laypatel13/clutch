@@ -15,14 +15,14 @@ const DAY_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', '']
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 function intensity(count: number, max: number): string {
-  if (count === 0) return '#ebedf0'
+  if (count === 0) return '#c8f2d4'
 
   const ratio = count / Math.max(max, 1)
 
-  if (ratio > 0.75) return '#216e39'
-  if (ratio > 0.5) return '#30a14e'
-  if (ratio > 0.25) return '#40c463'
-  return '#9be9a8'
+  if (ratio > 0.75) return '#0d4a24'
+  if (ratio > 0.5) return '#1f8a4c'
+  if (ratio > 0.25) return '#4dc47e'
+  return '#8fdfad'
 }
 
 function formatCount(count: number): string {
