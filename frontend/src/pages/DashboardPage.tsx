@@ -15,10 +15,11 @@ export default function DashboardPage() {
   const [streak, setStreak] = useState<StreakSummary | null>(null)
   const [insight, setInsight] = useState<WeeklyInsight | null>(null)
   const [heatmap, setHeatmap] = useState<HeatmapData | null>(null)
+  const [lastSynced, setLastSynced] = useState<Date | null>(null)
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
 
-  useEffect(() => { fetchDashboardData() }, [])
+  useEffect(() => { fetchDashboardData().then(() => setLastSynced(new Date())) }, [])
 
   const fetchDashboardData = async () => {
     setLoading(true)
@@ -29,17 +30,29 @@ export default function DashboardPage() {
       ])
       setActivity(activityRes.data)
       setStreak(streakRes.data)
-      httpClient.get('/insights/weekly').then(r => setInsight(r.data)).catch(() => {})
-      httpClient.get('/github/heatmap').then(r => setHeatmap(r.data)).catch(() => {})
+      httpClient.get('/insights/weekly').then(r => setInsight(r.data)).catch(() => { })
+      httpClient.get('/github/heatmap').then(r => setHeatmap(r.data)).catch(() => { })
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }
 
   const handleSync = async () => {
     setSyncing(true)
-    await httpClient.post('/github/sync').catch(() => {})
+    await httpClient.post('/github/sync').catch(() => { })
     await fetchDashboardData()
+    setLastSynced(new Date())
     setSyncing(false)
+  }
+
+  const getSyncedAgoText = () => {
+    if (!lastSynced) return null
+    const diffMs = Date.now() - lastSynced.getTime()
+    const diffMin = Math.floor(diffMs / 60000)
+    if (diffMin < 1) return 'Last synced just now'
+    if (diffMin === 1) return 'Last synced 1m ago'
+    if (diffMin < 60) return `Last synced ${diffMin}m ago`
+    const diffHr = Math.floor(diffMin / 60)
+    return `Last synced ${diffHr}h ago`
   }
 
   if (loading) return <LoadingScreen message="Loading activity..." />
@@ -53,9 +66,9 @@ export default function DashboardPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <NavigationBar rightContent={
         <>
-          <button onClick={handleSync} disabled={syncing} className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
+          <button onClick={handleSync} disabled={syncing} className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
-            {syncing ? 'Syncing...' : 'Sync'}
+            {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
           </button>
           <a href={`/u/${user?.username}`}>
             <img src={user?.avatar_url || ''} alt={user?.username} style={{ width: '32px', height: '32px', border: '2px solid var(--border)', cursor: 'pointer', display: 'block' }} />
