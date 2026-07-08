@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
-from app.database import Base, engine
+from app.database import Base, engine, get_db
 from app.routers import auth, github, users, insights
 from app.configuration import settings
 
@@ -27,11 +29,21 @@ app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(insights.router, prefix="/insights", tags=["Insights"])
 
 
-@app.get("/")
+@app.get("/", tags=["System"])
 def root():
     return {"message": "Clutch API is live 🚀", "version": "0.1.0"}
 
 
-@app.get("/health")
+@app.get("/health", tags=["System"])
 def health():
     return {"status": "ok"}
+
+
+@app.get("/ready", tags=["System"])
+def ready(db: Session = Depends(get_db)):
+    # Lightweight readiness check: ensure DB is connectable through the session layer
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception:
+        return {"status": "error", "db": "unavailable"}
+    return {"status": "ok", "db": "ok"}

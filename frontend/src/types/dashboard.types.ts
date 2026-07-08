@@ -44,3 +44,11 @@ export interface WeeklyInsight {
   generated_by: string
   message?: string
 }
+
+export interface LanguageDetail {
+  bytes: number
+  percentage: number
+}
+
+export type LanguageBreakdown = Record<string, LanguageDetail>
+
