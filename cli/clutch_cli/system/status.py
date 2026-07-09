@@ -26,8 +26,13 @@ def status(json_output: bool = typer.Option(False, "--json", "-j", help="Output 
             footer()
         raise SystemExit()
 
+    # Three distinct states:
+    #   1) 200             -> Token Valid, API Reachable
+    #   2) non-200 (e.g.401) -> Token Expired (code), API Reachable  (request completed)
+    #   3) network error   -> Token Saved, API Unreachable            (request threw)
     token_valid = False
     api_reachable = False
+    status_code = None
 
     try:
         response = httpx.get(
@@ -36,12 +41,20 @@ def status(json_output: bool = typer.Option(False, "--json", "-j", help="Output 
             timeout=8,
         )
         api_reachable = True
+        status_code = response.status_code
         token_valid = response.status_code == 200
     except httpx.RequestError:
         pass
 
     if json_output:
-        typer.echo(json.dumps({"logged_in": True, "username": username, "token_valid": token_valid, "api_reachable": api_reachable, "api_url": API_BASE_URL}))
+        typer.echo(json.dumps({
+            "logged_in": True,
+            "username": username,
+            "token_valid": token_valid,
+            "api_reachable": api_reachable,
+            "status_code": status_code,
+            "api_url": API_BASE_URL,
+        }))
         return
 
     header("STATUS")
@@ -54,7 +67,8 @@ def status(json_output: bool = typer.Option(False, "--json", "-j", help="Output 
             table.add_row("Token", f"[{SUCCESS}]Valid[/{SUCCESS}]")
             table.add_row("API", f"[{SUCCESS}]Reachable[/{SUCCESS}]  [{DIM}]{API_BASE_URL}[/{DIM}]")
         else:
-            table.add_row("Token", f"[{WARNING}]Expired[/{WARNING}]")
+            table.add_row("Token", f"[{WARNING}]Expired ({status_code})[/{WARNING}]")
+            table.add_row("API", f"[{SUCCESS}]Reachable[/{SUCCESS}]  [{DIM}]{API_BASE_URL}[/{DIM}]")
             table.add_row("Hint", f"[{DIM}]Run: clutch login[/{DIM}]")
     else:
         table.add_row("Token", f"[{SUCCESS}]Saved[/{SUCCESS}]")
