@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import httpx
@@ -6,9 +6,10 @@ import jwt
 import secrets
 from datetime import datetime, timedelta
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.configuration import settings
 from app.models.user import User
+from app.services.github_service import GitHubService
 
 router = APIRouter()
 
@@ -20,6 +21,20 @@ def create_access_token(data: dict) -> str:
     expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+async def background_sync_github(user_id: int, access_token: str):
+    """Background task to sync GitHub activity on first login."""
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if user and not user.last_synced_at:
+            service = GitHubService(access_token)
+            await service.sync_to_db(user, db)
+    except Exception as e:
+        print(f"Background sync failed: {e}")
+    finally:
+        db.close()
 
 
 CLI_CALLBACK_PORT = 9876
@@ -58,7 +73,7 @@ def github_login(cli: bool = False, local_nonce: str | None = None):
 
 
 @router.get("/github/callback")
-async def github_callback(code: str, request: Request, state: str = "web", db: Session = Depends(get_db)):
+async def github_callback(code: str, request: Request, background_tasks: BackgroundTasks, state: str = "web", db: Session = Depends(get_db)):
     """Handle GitHub OAuth callback and return JWT.
 
     If state == 'cli', redirects to the local CLI callback listener.
@@ -129,6 +144,9 @@ async def github_callback(code: str, request: Request, state: str = "web", db: S
 
     db.commit()
     db.refresh(user)
+    
+    if not user.last_synced_at:
+        background_tasks.add_task(background_sync_github, user.id, access_token)
 
     jwt_token = create_access_token({"sub": str(user.id), "username": user.username})
 
