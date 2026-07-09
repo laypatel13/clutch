@@ -45,11 +45,12 @@ def languages():
             console.print("[yellow]Could not parse language metrics format.[/yellow]")
             return
 
-        # Initialize the Rich Table
-        table = Table(title="Most Used Programming Languages", expand=True)
+        # Initialize the Rich Table with repo styling rules
+        from rich.box import SIMPLE
+        table = Table(box=SIMPLE, expand=True)
         table.add_column("Language", style="bold cyan", no_wrap=True)
-        table.add_column("Bytes Used", justify="right", style="green")
-        table.add_column("Percentage", justify="right", style="magenta")
+        table.add_column("Bytes Used", justify="right")
+        table.add_column("Percentage", justify="right")
 
         # Populate rows safely
         for item in items_list:
