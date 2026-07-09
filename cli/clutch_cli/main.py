@@ -5,6 +5,7 @@ from clutch_cli.activity import streak, stats, patterns, heatmap
 from clutch_cli.repositories import list as repositories_list
 from clutch_cli.insights import weekly
 from clutch_cli.system import status
+from clutch_cli.repositories.languages import languages as languages_command
 
 __version__ = "0.3.0"
 
@@ -59,6 +60,10 @@ app.command(name="insight")(weekly.insight)
 # System
 app.command(name="status")(status.status)
 
+@app.command(name="lang")
+def lang():
+    """Show programming language breakdown."""
+    languages_command()
 
 if __name__ == "__main__":
     app()
