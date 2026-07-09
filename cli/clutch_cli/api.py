@@ -14,3 +14,13 @@ def get_client() -> httpx.Client:
         headers={"Authorization": f"Bearer {token}"},
         timeout=15,
     )
+
+def get_language_breakdown():
+    """Fetches the user's programming language breakdown from the backend."""
+    client = get_client()
+    response = client.get("/github/languages")
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception(f"Failed to fetch language data: {response.text}")
