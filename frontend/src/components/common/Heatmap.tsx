@@ -29,6 +29,10 @@ function formatCount(count: number): string {
   return `${count} contribution${count === 1 ? '' : 's'}`
 }
 
+function formatCount(count: number): string {
+  return `${count} contribution${count === 1 ? '' : 's'}`
+}
+
 export default function Heatmap({ data }: HeatmapProps) {
   const [hovered, setHovered] = useState<HoveredCell | null>(null)
 
