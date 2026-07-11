@@ -16,11 +16,17 @@ const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 
 function intensity(count: number, max: number): string {
   if (count === 0) return 'var(--bg-panel)'
+
   const ratio = count / Math.max(max, 1)
-  if (ratio > 0.75) return '#1a1a2e'
-  if (ratio > 0.5) return '#4a4a5e'
-  if (ratio > 0.25) return '#7a7a8a'
-  return '#b8b8c0'
+
+  if (ratio > 0.75) return '#0d4a24'
+  if (ratio > 0.5) return '#1f8a4c'
+  if (ratio > 0.25) return '#4dc47e'
+  return '#8fdfad'
+}
+
+function formatCount(count: number): string {
+  return `${count} contribution${count === 1 ? '' : 's'}`
 }
 
 function formatCount(count: number): string {

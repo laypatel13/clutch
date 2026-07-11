@@ -1,10 +1,11 @@
 import typer
 
 from clutch_cli.authentication import login, logout, whoami
-from clutch_cli.activity import streak, stats, patterns
+from clutch_cli.activity import streak, stats, patterns, heatmap
 from clutch_cli.repositories import list as repositories_list
 from clutch_cli.insights import weekly
 from clutch_cli.system import status
+from clutch_cli.repositories.languages import languages as languages_command
 
 __version__ = "0.3.0"
 
@@ -17,7 +18,11 @@ app = typer.Typer(
 
 def _version_callback(value: bool):
     if value:
-        typer.echo(f"clutch v{__version__}")
+        typer.echo(
+            f"clutch {__version__}\n"
+            "GitHub: https://github.com/laypatel13/clutch/releases\n"
+            "PyPI: https://pypi.org/project/clutch-cli"
+        )      
         raise typer.Exit()
 
 
@@ -44,6 +49,7 @@ app.command(name="whoami")(whoami.whoami)
 app.command(name="streak")(streak.streak)
 app.command(name="stats")(stats.stats)
 app.command(name="patterns")(patterns.patterns)
+app.command(name="heatmap")(heatmap.heatmap)
 
 # Repositories
 app.command(name="repos")(repositories_list.repos)
@@ -54,6 +60,10 @@ app.command(name="insight")(weekly.insight)
 # System
 app.command(name="status")(status.status)
 
+@app.command(name="lang")
+def lang():
+    """Show programming language breakdown."""
+    languages_command()
 
 if __name__ == "__main__":
     app()

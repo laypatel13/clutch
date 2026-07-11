@@ -33,7 +33,7 @@ export default function UserProfilePage() {
         <div className="section-label">Profile</div>
         <div className="nb-panel-purple" style={{ padding: 'var(--space-7)' }}>
           <div style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'flex-start' }}>
-            <img src={profile.avatar_url || ''} alt={profile.username} style={{ width: '72px', height: '72px', border: '2px solid var(--border)', flexShrink: 0 }} />
+            <img src={profile.avatar_url || ''} alt={profile.username} style={{ width: '72px', height: '72px', border: '2px solid var(--border)',boxShadow:'2px 2px 0 var(--border)',borderRadius:'50%',objectFit:'cover', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)' }}>
                 {profile.name || profile.username}
