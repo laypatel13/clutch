@@ -16,6 +16,7 @@
   --accent-cyan: #0891b2;
   --accent-green: #059669;
   --accent-yellow: #d97706;
+  --accent-lime: #c3e600;
   --text-primary: #1a1a2e;
   --text-secondary: #4a4a6a;
   --text-muted: #8888aa;
@@ -127,6 +128,9 @@ body {
 .nb-panel-cyan { background: var(--bg-card); border: 2px solid var(--accent-cyan); box-shadow: 5px 5px 0px var(--accent-cyan); transition: transform 0.1s ease, box-shadow 0.1s ease; }
 .nb-panel-cyan:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--accent-cyan); }
 
+.nb-panel-lime { background: var(--bg-card); border: 2px solid var(--accent-lime); box-shadow: 5px 5px 0px var(--accent-lime); transition: transform 0.1s ease, box-shadow 0.1s ease; }
+.nb-panel-lime:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--accent-lime); }
+
 /* BUTTONS */
 .btn-nb {
   font-family: var(--font-chrome);
@@ -153,7 +157,40 @@ body {
 .btn-purple:hover { box-shadow: 1px 1px 0px #4c1d95; }
 .btn-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); box-shadow: 3px 3px 0px #9d0a38; }
 .btn-pink:hover { box-shadow: 1px 1px 0px #9d0a38; }
+.btn-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); box-shadow: 3px 3px 0px #7a8f00; }
+.btn-lime:hover { box-shadow: 1px 1px 0px #7a8f00; }
 .btn-ghost { background: transparent; color: var(--text-primary); border-color: var(--border-light); box-shadow: 3px 3px 0px var(--border-light); }
+
+/* CIRCULAR ICON BUTTON — nav utility buttons (github, theme toggle) */
+.icon-btn-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  flex-shrink: 0;
+}
+.icon-btn-circle:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
+.icon-btn-circle:active { transform: translate(3px, 3px); box-shadow: none; }
+
+/* SYNC BUTTON — matches icon-btn-circle theme (border + shadow), pill shape for text+icon */
+.btn-sync {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+}
 
 /* TAGS */
 .tag { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 3px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--border); }
@@ -162,6 +199,7 @@ body {
 .tag-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); }
 .tag-green { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
 .tag-yellow { background: var(--accent-yellow); color: #fff; border-color: var(--accent-yellow); }
+.tag-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); }
 .tag-outline { background: transparent; color: var(--text-secondary); border-color: var(--border-light); }
 .tag-dark { background: var(--bg-dark); color: var(--text-on-dark); }
 
@@ -178,7 +216,6 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   row-gap: var(--space-2);
-  box-shadow: 0 2px 0px var(--border);
 }
 
 /* SECTION LABEL */
@@ -207,6 +244,19 @@ body {
 .blink { animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* LOGO BLUR-IN — plays once on page load */
+.logo-blur-in {
+  display: inline-block;
+  filter: blur(6px);
+  opacity: 0;
+  animation: logoBlurIn 0.8s ease forwards;
+  animation-delay: 0.1s;
+}
+@keyframes logoBlurIn {
+  from { filter: blur(6px); opacity: 0; }
+  to { filter: blur(0); opacity: 1; }
+}
 
 /* NOTEBOOK LINES on panels */
 .lined { background-image: repeating-linear-gradient(transparent, transparent 27px, var(--border-light) 27px, var(--border-light) 28px); background-size: 100% 28px; }
