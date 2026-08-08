@@ -108,7 +108,7 @@ export default function DashboardPage() {
         {/* HEADER */}
         <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
           <div className="section-label">Dashboard</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>
+          <h1 style={{ fontFamily: 'var(--font-chrome)', fontWeight: 800, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>
             {user?.name || user?.username}
           </h1>
           <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>

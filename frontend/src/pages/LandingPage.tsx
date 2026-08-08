@@ -1,4 +1,4 @@
-import { GitBranch, Terminal, Zap, Activity, ArrowRight } from 'lucide-react'
+import { GitBranch, ArrowRight } from 'lucide-react'
 import { useAuthentication } from '../hooks/useAuthentication'
 import { Navigate } from 'react-router-dom'
 import NavigationBar from '../components/layout/NavigationBar'
@@ -29,27 +29,26 @@ export default function LandingPage() {
         </>
       } />
 
-      <main className="hero-grid page-container" style={{ flex: 1, maxWidth: '1080px', margin: '0 auto', width: '100%', padding: 'var(--space-18) var(--space-8) var(--space-14)' }}>
+      <main className="page-container" style={{ flex: 1, maxWidth: '640px', margin: '0 auto', width: '100%', padding: 'var(--space-18) var(--space-8) var(--space-14)' }}>
 
-        {/* LEFT */}
-        <div>
-          <div style={{ marginBottom: 'var(--space-5)', display: 'flex', gap: 'var(--space-2)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: 'var(--space-5)', display: 'flex', gap: 'var(--space-2)', justifyContent: 'center' }}>
             <span className="tag tag-purple">Open Source</span>
             <span className="tag tag-outline">Free Forever</span>
           </div>
 
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', color: 'var(--text-primary)', marginBottom: 'var(--space-2)' }}>
-            Track Your Developer
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--text-primary)', marginBottom: 'var(--space-2)' }}>
+            Track Your Developer 
           </h1>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', color: 'var(--accent-pink)', marginBottom: 'var(--space-6)' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--accent-pink)', marginBottom: 'var(--space-6)' }}>
             Momentum.
           </h1>
 
-          <p style={{ fontFamily: 'var(--font-body)', fontWeight: 300, fontSize: 'var(--text-md)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--space-8)', maxWidth: '500px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontWeight: 300, fontSize: 'var(--text-md)', color: 'var(--text-secondary)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--space-8)', maxWidth: '500px', marginLeft: 'auto', marginRight: 'auto' }}>
             Lower the friction between developer and their personal growth.
           </p>
 
-          <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', marginBottom: 'var(--space-8)' }}>
+          <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', marginBottom: 'var(--space-8)', justifyContent: 'center' }}>
             <a
               href={`${API_BASE_URL}/auth/github`}
               className="btn-nb btn-dark"
@@ -60,7 +59,7 @@ export default function LandingPage() {
           </div>
 
           {/* MINI STAT ROW */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '1px', background: 'var(--border)', border: '2px solid var(--border)', boxShadow: 'var(--shadow)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '1px', background: 'var(--border)', border: '2px solid var(--border)', boxShadow: 'var(--shadow)', textAlign: 'left' }}>
             {[
               { label: 'access clutch in your terminal', value: 'Command Line Interface' },
             ].map(s => (
@@ -73,49 +72,6 @@ export default function LandingPage() {
 
           <div style={{ marginTop: 'var(--space-5)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', padding: 'var(--space-3) var(--space-4)', background: 'var(--bg-panel)', border: '1px solid var(--border-light)' }}>
             $ pip install clutch-cli
-          </div>
-        </div>
-
-        {/* RIGHT — terminal */}
-        <div>
-          <div className="terminal">
-            <div className="terminal-bar">
-              <div className="terminal-dot" style={{ background: '#e8185a' }} />
-              <div className="terminal-dot" style={{ background: '#d97706' }} />
-              <div className="terminal-dot" style={{ background: '#059669' }} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: '#4a4a6a', marginLeft: 'var(--space-2)' }}>clutch — terminal</span>
-            </div>
-            {[
-              { type: 'cmd', text: '$ clutch streak' },
-              { type: 'out', text: '◆ Current Streak: 12 days' },
-              { type: 'out', text: '◆ Longest Streak: 24 days' },
-              { type: 'cmd', text: '$ clutch insight' },
-              { type: 'out', text: '◆ Strong week — 47 commits' },
-              { type: 'comment', text: '  Most active: Tuesday' },
-              { type: 'comment', text: '  Top repo: clutch' },
-              { type: 'cmd', text: '$ clutch stats --days 30' },
-              { type: 'out', text: '◆ 183 commits · 12 PRs' },
-              { type: 'out', text: '◆ 28 active days / 30' },
-            ].map((line, i) => (
-              <div key={i} className="terminal-line">
-                <span className={line.type}>{line.text}</span>
-              </div>
-            ))}
-            <div className="terminal-line"><span className="cmd">$ <span className="blink">_</span></span></div>
-          </div>
-
-          {/* FEATURES below terminal */}
-          <div className="feature-grid" style={{ marginTop: 'var(--space-4)' }}>
-            {[
-              { icon: <Activity size={16} />, label: 'Streaks', color: 'var(--accent-purple)' },
-              { icon: <Zap size={16} />, label: 'Patterns', color: 'var(--accent-pink)' },
-              { icon: <Terminal size={16} />, label: 'AI Insight', color: 'var(--accent-cyan)' },
-            ].map(f => (
-              <div key={f.label} className="nb-card" style={{ padding: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)', borderColor: f.color, boxShadow: `3px 3px 0px ${f.color}` }}>
-                <span>{f.icon}</span>
-                <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--text-primary)' }}>{f.label}</span>
-              </div>
-            ))}
           </div>
         </div>
       </main>
