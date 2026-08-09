@@ -87,7 +87,7 @@ export default function DashboardPage() {
     ?.map(d => ({ date: d.date.slice(5), commits: d.commits })) || []
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
         <>
           <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-sync" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>

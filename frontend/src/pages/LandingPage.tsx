@@ -9,7 +9,7 @@ export default function LandingPage() {
   if (user) return <Navigate to="/dashboard" replace />
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <NavigationBar rightContent={
         <a href={`${API_BASE_URL}/auth/github`} className="btn-nb btn-purple">
           <GitBranch size={13} /> Connect GitHub

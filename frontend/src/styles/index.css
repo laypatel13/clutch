@@ -77,7 +77,13 @@
   --shadow-hover:2px 2px 0px #0a0a10;
 }
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: url('/paper-texture.webp');
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: top center;
+  background-blend-mode: multiply;
+  background-attachment: scroll;
   color: var(--text-primary);
   font-family: var(--font-body);
   font-weight: 300;
@@ -85,7 +91,12 @@ body {
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
-  
+
+}
+
+html[data-theme='dark'] body {
+  background-image: url('/paper-texture-dark.webp');
+  background-blend-mode: screen;
 }
 
 ::-webkit-scrollbar { width: 4px; }
