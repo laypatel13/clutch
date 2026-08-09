@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import httpClient from '../api/httpClient'
-import { MapPin, Users, BookOpen } from 'lucide-react'
+import { MapPin, Users, BookOpen, ArrowLeft } from 'lucide-react'
 import NavigationBar from '../components/layout/NavigationBar'
 import LoadingScreen from '../components/common/LoadingScreen'
 import type { PublicUserProfile } from '../types/user.types'
@@ -27,7 +27,7 @@ export default function UserProfilePage() {
   return (
     <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
-        <a href="/dashboard" className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-4)' }}>← Dashboard</a>
+        <a href="/dashboard" className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-4)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><ArrowLeft size={14} /> Dashboard</a>
       } />
       <div className="page-container" style={{ maxWidth: '620px', margin: '0 auto', padding: 'var(--space-14) var(--space-8)' }}>
         <div className="section-label">Profile</div>

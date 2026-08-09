@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuthentication } from '../hooks/useAuthentication'
 import httpClient from '../api/httpClient'
-import { GitCommit, GitPullRequest, Flame, Brain, RefreshCw, LogOut, BarChart3, Calendar } from 'lucide-react'
+import { GitCommit, GitPullRequest, Flame, Brain, RefreshCw, LogOut, BarChart3, Calendar, ArrowRight } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import NavigationBar from '../components/layout/NavigationBar'
 import StatCard from '../components/common/StatCard'
@@ -113,7 +113,7 @@ export default function DashboardPage() {
           </h1>
           <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
             @{user?.username} · Last 30 days ·{' '}
-            <a href={`/u/${user?.username}`} style={{ color: 'var(--accent-purple)', textDecoration: 'none' }}>Public profile →</a>
+            <a href={`/u/${user?.username}`} style={{ color: 'var(--accent-purple)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>Public profile <ArrowRight size={13} /></a>
           </div>
         </div>
 
