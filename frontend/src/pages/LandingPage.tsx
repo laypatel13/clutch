@@ -24,10 +24,10 @@ export default function LandingPage() {
             <span className="tag tag-outline">Free Forever</span>
           </div>
 
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--text-primary)', marginBottom: 'var(--space-2)' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--text-primary)', marginBottom: 'var(--space-2)' }}>
             Track Your Developer 
           </h1>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--accent-pink)', marginBottom: 'var(--space-6)' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-tight)', letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--accent-pink)', marginBottom: 'var(--space-6)' }}>
             Momentum.
           </h1>
 
@@ -54,7 +54,7 @@ export default function LandingPage() {
             style={{ display: 'block', textDecoration: 'none', textAlign: 'left', padding: 'var(--space-3) var(--space-4)' }}
           >
             <div style={{ fontFamily: 'var(--font-chrome)', fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>Command Line Interface</div>
-            <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Access Clutch in your terminal Checkout on Python Pakage Index</div>
+            <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Access Clutch in your terminal · View on PyPI →</div>
           </a>
 
           <div style={{ marginTop: 'var(--space-5)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', padding: 'var(--space-3) var(--space-4)', background: 'var(--bg-panel)', border: '1px solid var(--border-light)' }}>

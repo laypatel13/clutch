@@ -17,7 +17,7 @@ export default function UserProfilePage() {
 
   if (notFound) return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 'var(--space-3)' }}>
-      <h1 style={{ fontFamily: 'var(--font-chrome)', fontWeight: 800, fontSize: 'var(--text-2xl)', color: 'var(--text-primary)' }}>User not found</h1>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.01em' }}>User not found</h1>
       <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>@{username} doesn't exist or has a private profile.</p>
     </div>
   )
@@ -35,7 +35,7 @@ export default function UserProfilePage() {
           <div style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'flex-start' }}>
             <img src={profile.avatar_url || ''} alt={profile.username} style={{ width: '72px', height: '72px', border: '2px solid var(--border)',boxShadow:'2px 2px 0 var(--border)',borderRadius:'50%',objectFit:'cover', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <h1 style={{ fontFamily: 'var(--font-chrome)', fontWeight: 800, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)' }}>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.01em' }}>
                 {profile.name || profile.username}
               </h1>
               <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--accent-purple)', marginBottom: 'var(--space-3)' }}>@{profile.username}</p>

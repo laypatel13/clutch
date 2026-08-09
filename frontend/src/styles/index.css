@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -21,7 +21,7 @@
   --text-secondary: #4a4a6a;
   --text-muted: #8888aa;
   --text-on-dark: #f5f0e8;
-  --font-display: 'Anton', sans-serif;
+  --font-display: 'League Spartan', sans-serif;
   --font-body: 'Poppins', sans-serif;
   --font-chrome: 'Poppins', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
