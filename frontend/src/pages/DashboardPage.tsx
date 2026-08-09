@@ -72,11 +72,11 @@ export default function DashboardPage() {
     if (!lastSynced) return null
     const diffMs = Date.now() - lastSynced.getTime()
     const diffMin = Math.floor(diffMs / 60000)
-    if (diffMin < 1) return 'Last synced just now'
-    if (diffMin === 1) return 'Last synced 1m ago'
-    if (diffMin < 60) return `Last synced ${diffMin}m ago`
+    if (diffMin < 1) return 'Just synced'
+    if (diffMin === 1) return '1min ago'
+    if (diffMin < 60) return `${diffMin}min ago`
     const diffHr = Math.floor(diffMin / 60)
-    return `Last synced ${diffHr}h ago`
+    return `${diffHr}hour ago`
   }
 
   if (loading) return <LoadingScreen message="Loading activity..." />
@@ -87,10 +87,10 @@ export default function DashboardPage() {
     ?.map(d => ({ date: d.date.slice(5), commits: d.commits })) || []
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
         <>
-          <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
+          <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-sync" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
             {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
           </button>
@@ -108,7 +108,7 @@ export default function DashboardPage() {
         {/* HEADER */}
         <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
           <div className="section-label">Dashboard</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)', letterSpacing: '0.01em' }}>
             {user?.name || user?.username}
           </h1>
           <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
