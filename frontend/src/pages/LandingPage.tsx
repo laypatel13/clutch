@@ -46,16 +46,16 @@ export default function LandingPage() {
           </div>
 
           {/* MINI STAT ROW */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '1px', background: 'var(--border)', border: '2px solid var(--border)', boxShadow: 'var(--shadow)', textAlign: 'left' }}>
-            {[
-              { label: 'access clutch in your terminal', value: 'Command Line Interface' },
-            ].map(s => (
-              <div key={s.label} style={{ background: 'var(--bg-card)', padding: 'var(--space-3) var(--space-4)' }}>
-                <div style={{ fontFamily: 'var(--font-chrome)', fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>{s.value}</div>
-                <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+          <a
+            href="https://pypi.org/project/clutch-cli/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nb-card"
+            style={{ display: 'block', textDecoration: 'none', textAlign: 'left', padding: 'var(--space-3) var(--space-4)' }}
+          >
+            <div style={{ fontFamily: 'var(--font-chrome)', fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>Command Line Interface</div>
+            <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Access Clutch in your terminal Checkout on Python Pakage Index</div>
+          </a>
 
           <div style={{ marginTop: 'var(--space-5)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', padding: 'var(--space-3) var(--space-4)', background: 'var(--bg-panel)', border: '1px solid var(--border-light)' }}>
             $ pip install clutch-cli

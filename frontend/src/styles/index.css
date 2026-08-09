@@ -67,6 +67,7 @@
   --bg:#16161d;
   --text-primary:#ececf1;
   --bg-card:#232334;
+  --bg-panel:#1c1c28;
   --border:#33334a;
   --border-light:#3d3d54;
   --text-secondary:#b8b8c7;
@@ -114,6 +115,10 @@ html[data-theme='dark'] body {
 .nb-card:hover {
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-hover);
+}
+.nb-card:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 /* DARK CARD — inverted for contrast */
