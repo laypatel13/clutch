@@ -269,6 +269,21 @@ html[data-theme='dark'] body {
   to { filter: blur(0); opacity: 1; }
 }
 
+/* BLUR FADE IN — same effect as .logo-blur-in but preserves the element's
+   own display type (flex/block), so it's safe on layout containers like
+   the navbar and footer, not just inline text */
+.blur-fade-in {
+  filter: blur(6px);
+  opacity: 0;
+  animation: logoBlurIn 0.8s ease forwards;
+}
+.blur-fade-in-delay {
+  filter: blur(6px);
+  opacity: 0;
+  animation: logoBlurIn 0.8s ease forwards;
+  animation-delay: 0.15s;
+}
+
 /* NOTEBOOK LINES on panels */
 .lined { background-image: repeating-linear-gradient(transparent, transparent 27px, var(--border-light) 27px, var(--border-light) 28px); background-size: 100% 28px; }
 
