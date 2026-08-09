@@ -28,7 +28,7 @@ export default function NavigationBar({ rightContent }: NavigationBarProps) {
     <nav className="nb-nav blur-fade-in">
       <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none' }}>
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-xl)', color: 'var(--text-primary)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>Clutch</span>
-        <span className={user ? 'tag tag-green' : 'tag tag-green'}>{user ? 'CONNECTED' : 'CONNECT'}</span>
+        <span className={user ? 'tag tag-green' : 'tag tag-outline'}>{user ? 'CONNECTED' : 'CONNECT'}</span>
       </a>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
         {rightContent}

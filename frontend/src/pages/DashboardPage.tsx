@@ -103,7 +103,7 @@ export default function DashboardPage() {
         </>
       } />
 
-      <div className="page-container" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
+      <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
 
         {/* HEADER */}
         <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
@@ -135,9 +135,9 @@ export default function DashboardPage() {
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={130}>
               <BarChart data={chartData} barSize={10}>
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '2px solid var(--accent-purple)', borderRadius: 0, fontFamily: 'JetBrains Mono', fontSize: '12px', color: 'var(--text-primary)', boxShadow: '4px 4px 0px var(--accent-purple)' }} cursor={{ fill: 'rgba(124,58,237,0.06)' }} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '2px solid var(--accent-purple)', borderRadius: 0, fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-primary)', boxShadow: '4px 4px 0px var(--accent-purple)' }} cursor={{ fill: 'rgba(124,58,237,0.06)' }} />
                 <Bar dataKey="commits" fill="var(--accent-purple)" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -166,9 +166,9 @@ export default function DashboardPage() {
                     const color = languageColors[idx % languageColors.length]
                     return (
                       <div key={name} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)' }}>
-                          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{name}</span>
-                          <span style={{ color: 'var(--text-secondary)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)' }}>
+                          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{name}</span>
+                          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                             {formatBytes(detail.bytes)} ({detail.percentage}%)
                           </span>
                         </div>
@@ -207,13 +207,13 @@ export default function DashboardPage() {
                         boxShadow: `3px 3px 0px ${color}`,
                         background: 'var(--bg-card)',
                       }}>
-                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
+                        <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
                           {name}
                         </div>
                         <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xl)', fontWeight: 700, color }}>
                           {detail.percentage}%
                         </div>
-                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-secondary)' }}>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
                           {formatBytes(detail.bytes)}
                         </div>
                       </div>

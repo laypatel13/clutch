@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -21,7 +21,7 @@
   --text-secondary: #4a4a6a;
   --text-muted: #8888aa;
   --text-on-dark: #f5f0e8;
-  --font-display: 'League Spartan', sans-serif;
+  --font-display: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
   --font-chrome: 'Poppins', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -62,7 +62,6 @@
   --leading-relaxed: 1.8;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
 [data-theme='dark']{
   --bg:#16161d;
   --text-primary:#ececf1;
@@ -163,7 +162,6 @@ html[data-theme='dark'] body {
   letter-spacing: 0.02em;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   text-transform: uppercase;
-
 }
 .btn-nb:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
 .btn-nb:active { transform: translate(3px, 3px); box-shadow: none; }
@@ -315,3 +313,10 @@ html[data-theme='dark'] body {
     padding: var(--space-2) var(--space-3);
   }
 }
+
+/* DASHBOARD-ONLY TYPOGRAPHY OVERRIDE
+   Scoped to .dashboard-content so it never leaks to Landing/Profile,
+   which keep the default all-caps .tag/.section-label/.stat-label/.btn-nb */
+.dashboard-content .tag { text-transform: none; letter-spacing: 0.01em; }
+.dashboard-content .stat-label { text-transform: none; letter-spacing: 0.02em; }
+.dashboard-content .btn-nb { text-transform: none; letter-spacing: 0.01em; }
