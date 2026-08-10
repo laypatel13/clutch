@@ -29,7 +29,7 @@ function formatCount(count: number): string {
   return `${count} contribution${count === 1 ? '' : 's'}`
 }
 
-export default function Heatmap({ data }: HeatmapProps) {
+function HeatmapGrid({ data }: HeatmapProps) {
   const [hovered, setHovered] = useState<HoveredCell | null>(null)
 
   if (!data || data.days.length === 0) {
@@ -162,6 +162,20 @@ export default function Heatmap({ data }: HeatmapProps) {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+export default function Heatmap({ data }: HeatmapProps) {
+  return (
+    <div className="nb-card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)', ['--card-accent' as any]: 'var(--accent-yellow)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
+        <span className="section-label" style={{ marginBottom: 0 }}>Contribution Heatmap</span>
+        <span className="tag tag-outline">
+          {data ? `${data.total_contributions} in the last year` : 'Last 12 months'}
+        </span>
+      </div>
+      <HeatmapGrid data={data} />
     </div>
   )
 }
