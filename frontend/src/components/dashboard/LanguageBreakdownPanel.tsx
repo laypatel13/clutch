@@ -40,8 +40,8 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
               const color = languageColors[idx % languageColors.length]
               return (
                 <div key={name} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{name}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--text-sm)' }}>
+                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 300, color: 'var(--text-muted)' }}>{name}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                       {formatBytes(detail.bytes)} ({detail.percentage}%)
                     </span>
@@ -50,7 +50,7 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
                     width: '100%',
                     height: '16px',
                     backgroundColor: 'var(--bg)',
-                    border: '2px solid var(--border)',
+                    border: `2px solid ${color}`,
                     overflow: 'hidden',
                     position: 'relative'
                   }}>
@@ -58,7 +58,7 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
                       width: `${detail.percentage}%`,
                       height: '100%',
                       backgroundColor: color,
-                      borderRight: detail.percentage < 100 ? '2px solid var(--border)' : 'none',
+                      borderRight: detail.percentage < 100 ? `2px solid ${color}` : 'none',
                       transition: 'width 0.6s ease-in-out'
                     }} />
                   </div>
@@ -77,7 +77,7 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
                   ['--card-accent' as any]: color,
                   background: 'var(--bg-card)',
                 }}>
-                  <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)', fontWeight: 300, color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
                     {name}
                   </div>
                   <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xl)', fontWeight: 700, color }}>
