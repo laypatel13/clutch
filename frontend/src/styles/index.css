@@ -104,16 +104,18 @@ html[data-theme='dark'] body {
 ::-webkit-scrollbar-thumb { background: var(--border); }
 ::selection { background: rgba(124,58,237,0.2); }
 
-/* NOTEBOOK CARD — core brutalist paper card */
+/* NOTEBOOK CARD — core brutalist paper card.
+   Optionally set --card-accent inline to color the border/shadow;
+   hover/active keep that same accent instead of falling back to a flat dark shadow. */
 .nb-card {
   background: var(--bg-card);
-  border: 2px solid var(--border);
-  box-shadow: var(--shadow);
+  border: 2px solid var(--card-accent, var(--border));
+  box-shadow: 5px 5px 0px var(--card-accent, var(--border));
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 .nb-card:hover {
   transform: translate(2px, 2px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 2px 2px 0px var(--card-accent, var(--border));
 }
 .nb-card:active {
   transform: translate(3px, 3px);
@@ -319,9 +321,10 @@ html[data-theme='dark'] body {
   }
 }
 
-/* DASHBOARD-ONLY TYPOGRAPHY OVERRIDE
-   Scoped to .dashboard-content so it never leaks to Landing/Profile,
-   which keep the default all-caps .tag/.section-label/.stat-label/.btn-nb */
+/* DASHBOARD & PROFILE PAGES — quieter typography, no all-caps for section labels/tags/stats.
+   Scoped to .dashboard-content / .profile-content so Landing/Navbar/buttons are untouched. */
+.dashboard-content .section-label { text-transform: none; letter-spacing: 0.02em; }
+.profile-content .section-label { text-transform: none; letter-spacing: 0.02em; }
 .dashboard-content .tag { text-transform: none; letter-spacing: 0.01em; }
 .dashboard-content .stat-label { text-transform: none; letter-spacing: 0.02em; }
 .dashboard-content .btn-nb { text-transform: none; letter-spacing: 0.01em; }

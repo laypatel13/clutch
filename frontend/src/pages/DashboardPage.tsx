@@ -203,8 +203,7 @@ export default function DashboardPage() {
                     return (
                       <div key={name} className="nb-card" style={{
                         padding: 'var(--space-3)',
-                        borderColor: color,
-                        boxShadow: `3px 3px 0px ${color}`,
+                        ['--card-accent' as any]: color,
                         background: 'var(--bg-card)',
                       }}>
                         <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
@@ -229,7 +228,7 @@ export default function DashboardPage() {
         </div>
 
         {/* HEATMAP */}
-        <div className="nb-card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)', borderColor: 'var(--accent-yellow)', boxShadow: '5px 5px 0px var(--accent-yellow)' }}>
+        <div className="nb-card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)', ['--card-accent' as any]: 'var(--accent-yellow)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
             <span className="section-label" style={{ marginBottom: 0 }}>Contribution Heatmap</span>
             <span className="tag tag-outline">

@@ -17,7 +17,7 @@ export default function UserProfilePage() {
 
   if (notFound) return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 'var(--space-3)' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.01em' }}>User not found</h1>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', color: 'var(--text-primary)', letterSpacing: '0.01em' }}>User not found</h1>
       <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>@{username} doesn't exist or has a private profile.</p>
     </div>
   )
@@ -29,13 +29,13 @@ export default function UserProfilePage() {
       <NavigationBar rightContent={
         <a href="/dashboard" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><ArrowLeft size={14} /> Dashboard</a>
       } />
-      <div className="page-container" style={{ maxWidth: '620px', margin: '0 auto', padding: 'var(--space-14) var(--space-8)' }}>
+      <div className="page-container profile-content" style={{ maxWidth: '620px', margin: '0 auto', padding: 'var(--space-14) var(--space-8)' }}>
         <div className="section-label">Profile</div>
         <div className="nb-panel-purple" style={{ padding: 'var(--space-7)' }}>
           <div style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'flex-start' }}>
             <img src={profile.avatar_url || ''} alt={profile.username} style={{ width: '72px', height: '72px', border: '2px solid var(--border)',boxShadow:'2px 2px 0 var(--border)',borderRadius:'50%',objectFit:'cover', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.01em' }}>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)', letterSpacing: '0.01em' }}>
                 {profile.name || profile.username}
               </h1>
               <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--accent-purple)', marginBottom: 'var(--space-3)' }}>@{profile.username}</p>
