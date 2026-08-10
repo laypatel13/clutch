@@ -27,7 +27,7 @@ export default function UserProfilePage() {
   return (
     <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
-        <a href="/dashboard" className="btn-nb btn-ghost" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-4)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><ArrowLeft size={14} /> Dashboard</a>
+        <a href="/dashboard" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><ArrowLeft size={14} /> Dashboard</a>
       } />
       <div className="page-container" style={{ maxWidth: '620px', margin: '0 auto', padding: 'var(--space-14) var(--space-8)' }}>
         <div className="section-label">Profile</div>

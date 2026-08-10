@@ -90,7 +90,7 @@ export default function DashboardPage() {
     <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
         <>
-          <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-sync" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
+          <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
             {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
           </button>

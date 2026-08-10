@@ -150,7 +150,7 @@ html[data-theme='dark'] body {
 .btn-nb {
   font-family: var(--font-chrome);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   padding: 8px 18px;
   border: 2px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -166,13 +166,18 @@ html[data-theme='dark'] body {
 .btn-nb:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
 .btn-nb:active { transform: translate(3px, 3px); box-shadow: none; }
 
-.btn-dark { background: var(--bg-dark); color: var(--text-on-dark); }
+.btn-dark { background: var(--bg-dark); color: var(--text-on-dark); border-color: var(--bg-dark); box-shadow: 3px 3px 0px #000000; }
+.btn-dark:hover { box-shadow: 1px 1px 0px #000000; }
 .btn-purple { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 3px 3px 0px #4c1d95; }
 .btn-purple:hover { box-shadow: 1px 1px 0px #4c1d95; }
 .btn-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); box-shadow: 3px 3px 0px #9d0a38; }
 .btn-pink:hover { box-shadow: 1px 1px 0px #9d0a38; }
 .btn-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); box-shadow: 3px 3px 0px #7a8f00; }
 .btn-lime:hover { box-shadow: 1px 1px 0px #7a8f00; }
+.btn-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); box-shadow: 3px 3px 0px #164e63; }
+.btn-cyan:hover { box-shadow: 1px 1px 0px #164e63; }
+.btn-grey { background: #6b7280; color: #fff; border-color: #6b7280; box-shadow: 3px 3px 0px #374151; }
+.btn-grey:hover { box-shadow: 1px 1px 0px #374151; }
 .btn-ghost { background: transparent; color: var(--text-primary); border-color: var(--border-light); box-shadow: 3px 3px 0px var(--border-light); }
 
 /* CIRCULAR ICON BUTTON — nav utility buttons (github, theme toggle) */
