@@ -323,8 +323,8 @@ html[data-theme='dark'] body {
 
 /* DASHBOARD & PROFILE PAGES — quieter typography, no all-caps for section labels/tags/stats.
    Scoped to .dashboard-content / .profile-content so Landing/Navbar/buttons are untouched. */
-.dashboard-content .section-label { text-transform: none; letter-spacing: 0.02em; }
+.dashboard-content .section-label { text-transform: none; letter-spacing: 0.02em; font-weight: 500; gap: var(--space-3); }
 .profile-content .section-label { text-transform: none; letter-spacing: 0.02em; }
 .dashboard-content .tag { text-transform: none; letter-spacing: 0.01em; }
-.dashboard-content .stat-label { text-transform: none; letter-spacing: 0.02em; }
+.dashboard-content .stat-label { text-transform: none; letter-spacing: 0.02em; font-weight: 400; }
 .dashboard-content .btn-nb { text-transform: none; letter-spacing: 0.01em; }
