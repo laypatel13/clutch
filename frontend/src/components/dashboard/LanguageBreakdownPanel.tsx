@@ -33,7 +33,7 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
       </div>
 
       {top5.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-6)' }}>
+        <div className="lang-breakdown-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: 'var(--space-6)' }}>
           {/* Left Column: Progress Bars */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
             {top5.map(([name, detail], idx) => {

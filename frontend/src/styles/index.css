@@ -357,13 +357,6 @@ html[data-theme='dark'] body {
   }
 }
 
-/* STATS GRID — smaller minimum card width on very small phones so two
-   cards still fit per row instead of one giant column */
-@media (max-width: 380px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
-  }
-}
 
 /* DASHBOARD & PROFILE PAGES — quieter typography, no all-caps for section labels/tags/stats.
    Scoped to .dashboard-content / .profile-content so Landing/Navbar/buttons are untouched. */

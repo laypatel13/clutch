@@ -30,7 +30,7 @@ export default function NavigationBar({ rightContent }: NavigationBarProps) {
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-xl)', color: 'var(--text-primary)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>Clutch</span>
         <span className={user ? 'tag tag-green' : 'tag tag-green'}>{user ? 'CONNECTED' : 'CONNECT'}</span>
       </a>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+      <div className="nb-nav-right">
         {rightContent}
 
         <a

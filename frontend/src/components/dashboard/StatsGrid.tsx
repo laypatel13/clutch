@@ -9,7 +9,7 @@ interface StatsGridProps {
 
 export default function StatsGrid({ activity, streak }: StatsGridProps) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(155px, 1fr))', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
+    <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(155px, 100%), 1fr))', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
       <StatCard label="Commits" value={activity?.total_commits ?? '—'} icon={<GitCommit size={13} />} color="purple" />
       <StatCard label="Pull Requests" value={activity?.total_prs ?? '—'} icon={<GitPullRequest size={13} />} color="pink" />
       <StatCard label="Streak" value={streak ? `${streak.current_streak}d` : '—'} icon={<Flame size={13} />} color="yellow" />

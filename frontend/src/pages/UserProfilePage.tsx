@@ -32,17 +32,17 @@ export default function UserProfilePage() {
       <div className="page-container profile-content" style={{ maxWidth: '620px', margin: '0 auto', padding: 'var(--space-14) var(--space-8)' }}>
         <div className="section-label">Profile</div>
         <div className="nb-panel-purple" style={{ padding: 'var(--space-7)' }}>
-          <div style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'flex-start' }}>
+          <div className="profile-header-row" style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'flex-start' }}>
             <img src={profile.avatar_url || ''} alt={profile.username} style={{ width: '72px', height: '72px', border: '2px solid var(--border)',boxShadow:'2px 2px 0 var(--border)',borderRadius:'50%',objectFit:'cover', flexShrink: 0 }} />
-            <div style={{ flex: 1 }}>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)', letterSpacing: '0.01em' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)', letterSpacing: '0.01em', wordBreak: 'break-word' }}>
                 {profile.name || profile.username}
               </h1>
               <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--accent-purple)', marginBottom: 'var(--space-3)' }}>@{profile.username}</p>
               {profile.bio && (
                 <p style={{ fontFamily: 'var(--font-body)', fontWeight: 300, fontSize: 'var(--text-base)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)', lineHeight: 'var(--leading-relaxed)' }}>{profile.bio}</p>
               )}
-              <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+              <div className="profile-meta-row" style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
                 {profile.location && (
                   <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
                     <MapPin size={12} color="var(--accent-yellow)" />{profile.location}
