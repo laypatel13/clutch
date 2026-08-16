@@ -62,9 +62,9 @@ export default function PullsPage() {
         </div>
 
         <PRSummaryCards summary={summary} />
-        {summary && <StalePRPanel stalePrs={summary.stale_prs} />}
         {summary && <PRSizeBreakdown distribution={summary.size_distribution} />}
         <PRList pulls={pulls} />
+        {summary && <StalePRPanel stalePrs={summary.stale_prs} />}
       </div>
     </div>
   )
