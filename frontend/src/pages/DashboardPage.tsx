@@ -62,6 +62,9 @@ export default function DashboardPage() {
     <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
         <>
+          <a href="/pulls" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', whiteSpace: 'nowrap' }}>
+            Pull Requests
+          </a>
           <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
             {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}

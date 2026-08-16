@@ -4,6 +4,7 @@ import { useAuthentication } from '../hooks/useAuthentication'
 import LandingPage from '../pages/LandingPage'
 import DashboardPage from '../pages/DashboardPage'
 import UserProfilePage from '../pages/UserProfilePage'
+import PullsPage from '../pages/PullsPage'
 import AuthenticationCallbackPage from '../pages/AuthenticationCallbackPage'
 import LoadingScreen from '../components/common/LoadingScreen'
 
@@ -22,6 +23,11 @@ export default function AppRoutes() {
         <Route path="/dashboard" element={
           <PrivateRoute>
             <DashboardPage />
+          </PrivateRoute>
+        } />
+        <Route path="/pulls" element={
+          <PrivateRoute>
+            <PullsPage />
           </PrivateRoute>
         } />
         <Route path="/u/:username" element={<UserProfilePage />} />
