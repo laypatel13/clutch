@@ -13,7 +13,7 @@ export default function StalePRPanel({ stalePrs }: StalePRPanelProps) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
         <AlertTriangle size={15} color="var(--accent-pink)" />
         <span className="section-label" style={{ marginBottom: 0 }}>
-          {stalePrs.length} PR{stalePrs.length > 1 ? 's' : ''} need attention
+          {stalePrs.length} pull request{stalePrs.length > 1 ? 's' : ''} need attention
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>

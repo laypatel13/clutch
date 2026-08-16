@@ -48,16 +48,16 @@ export default function PullsPage() {
           </a>
           <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
-            {syncing ? 'Syncing...' : 'Sync PRs'}
+            {syncing ? 'Syncing...' : 'Sync pull requests'}
           </button>
         </>
       } />
 
       <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
         <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
-          <div className="section-label">Pull Requests</div>
+          <div className="section-label">pull requests</div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', letterSpacing: '0.01em' }}>
-            Your PR history
+            Your pull request history
           </h1>
         </div>
 

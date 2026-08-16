@@ -15,9 +15,9 @@ export default function PRSizeBreakdown({ distribution }: PRSizeBreakdownProps) 
 
   return (
     <div className="nb-card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
-      <span className="section-label">PR Size Mix</span>
+      <span className="section-label">pull request size mix</span>
       {total === 0 ? (
-        <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>No synced PRs yet.</p>
+        <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>No synced pull requests yet.</p>
       ) : (
         <>
           <div style={{ display: 'flex', height: '14px', border: '2px solid var(--border)', overflow: 'hidden', marginBottom: 'var(--space-4)' }}>

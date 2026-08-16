@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, GitPullRequest, GitMerge, GitPullRequestClosed, GitPullRequestDraft } from 'lucide-react'
 import type { PullRequestItem, PullRequestState } from '../../types/pulls.types'
 
 interface PRListProps {
@@ -8,10 +8,10 @@ interface PRListProps {
 
 type FilterTab = 'ALL' | PullRequestState
 
-const STATE_TAG: Record<PullRequestState, string> = {
-  OPEN: 'tag-green',
-  MERGED: 'tag-purple',
-  CLOSED: 'tag-outline',
+const STATE_ICON: Record<PullRequestState, { icon: typeof GitPullRequest; color: string; label: string }> = {
+  OPEN: { icon: GitPullRequest, color: 'var(--accent-green)', label: 'open' },
+  MERGED: { icon: GitMerge, color: 'var(--accent-purple)', label: 'merged' },
+  CLOSED: { icon: GitPullRequestClosed, color: 'var(--accent-pink)', label: 'closed' },
 }
 
 function formatDate(iso: string | null) {
@@ -24,16 +24,16 @@ export default function PRList({ pulls }: PRListProps) {
 
   const filtered = filter === 'ALL' ? pulls : pulls.filter(p => p.state === filter)
   const tabs: { key: FilterTab; label: string }[] = [
-    { key: 'ALL', label: `All · ${pulls.length}` },
-    { key: 'OPEN', label: `Open · ${pulls.filter(p => p.state === 'OPEN').length}` },
-    { key: 'MERGED', label: `Merged · ${pulls.filter(p => p.state === 'MERGED').length}` },
-    { key: 'CLOSED', label: `Closed · ${pulls.filter(p => p.state === 'CLOSED').length}` },
+    { key: 'ALL', label: `all · ${pulls.length}` },
+    { key: 'OPEN', label: `open · ${pulls.filter(p => p.state === 'OPEN').length}` },
+    { key: 'MERGED', label: `merged · ${pulls.filter(p => p.state === 'MERGED').length}` },
+    { key: 'CLOSED', label: `closed · ${pulls.filter(p => p.state === 'CLOSED').length}` },
   ]
 
   return (
     <div className="nb-card" style={{ padding: 'var(--space-6)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
-        <span className="section-label" style={{ marginBottom: 0 }}>All Pull Requests</span>
+        <span className="section-label" style={{ marginBottom: 0 }}>all pull requests</span>
         <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
           {tabs.map(tab => (
             <button
@@ -50,38 +50,45 @@ export default function PRList({ pulls }: PRListProps) {
 
       {filtered.length === 0 ? (
         <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
-          No pull requests here — click Sync to load, or try a different filter.
+          No pull requests here — click sync to load, or try a different filter.
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          {filtered.map(pr => (
-            <a
-              key={`${pr.repo}#${pr.pr_number}`}
-              href={pr.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                gap: 'var(--space-3)', padding: 'var(--space-3)', textDecoration: 'none',
-                border: '1px solid var(--border-light)',
-              }}
-            >
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: '2px' }}>
-                  <span className={`tag ${STATE_TAG[pr.state]}`} style={{ fontSize: '10px' }}>{pr.state}</span>
-                  {pr.is_draft && <span className="tag tag-outline" style={{ fontSize: '10px' }}>DRAFT</span>}
-                  {!pr.is_own_repo && <span className="tag tag-outline" style={{ fontSize: '10px' }}>EXTERNAL</span>}
-                  <span style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 'var(--text-sm)', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {pr.title}
-                  </span>
+          {filtered.map(pr => {
+            const stateMeta = STATE_ICON[pr.state]
+            const StateIcon = pr.is_draft ? GitPullRequestDraft : stateMeta.icon
+            const stateColor = pr.is_draft ? 'var(--text-muted)' : stateMeta.color
+            const stateLabel = pr.is_draft ? 'draft' : stateMeta.label
+            return (
+              <a
+                key={`${pr.repo}#${pr.pr_number}`}
+                href={pr.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  gap: 'var(--space-3)', padding: 'var(--space-3)', textDecoration: 'none',
+                  border: '1px solid var(--border-light)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)', minWidth: 0, flex: 1 }}>
+                  <StateIcon size={15} color={stateColor} style={{ flexShrink: 0, marginTop: '2px' }} aria-label={stateLabel} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: '2px' }}>
+                      {!pr.is_own_repo && <span className="tag tag-outline" style={{ fontSize: '10px' }}>external</span>}
+                      <span style={{ fontFamily: 'var(--font-body)', fontWeight: 400, fontSize: 'var(--text-sm)', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {pr.title}
+                      </span>
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                      {pr.repo} #{pr.pr_number} · +{pr.additions}/-{pr.deletions} · {formatDate(pr.created_at)}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                  {pr.repo} #{pr.pr_number} · +{pr.additions}/-{pr.deletions} · {formatDate(pr.created_at)}
-                </div>
-              </div>
-              <ExternalLink size={12} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-            </a>
-          ))}
+                <ExternalLink size={12} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+              </a>
+            )
+          })}
         </div>
       )}
     </div>
