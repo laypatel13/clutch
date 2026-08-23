@@ -67,7 +67,7 @@ export default function PRList({ pulls }: PRListProps) {
   const paged = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
 
   return (
-    <div className="nb-card" style={{ padding: 'var(--space-6)' }}>
+    <div className="nb-card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
         <span className="section-label" style={{ marginBottom: 0 }}>all pull requests</span>
 
