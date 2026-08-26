@@ -17,7 +17,7 @@ labels: enhancement
 
 - [ ] Frontend (web dashboard)
 - [ ] Backend (API)
-- [ ] CLI (`clutch-cli`)
+- [ ] CLI (`myclutch`)
 
 ## Alternatives Considered
 

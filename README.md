@@ -79,7 +79,7 @@
 </td>
 <td align="center" width="33%">
 <h3>⚡ CLI First</h3>
-<p>A powerful terminal companion (<code>clutch-cli</code>) for instant access to streaks, stats, and insights.</p>
+<p>A powerful terminal companion (<code>myclutch</code>) for instant access to streaks, stats, and insights.</p>
 </td>
 </tr>
 <tr>
@@ -262,7 +262,7 @@ The frontend will run at `http://localhost:5173`.
 ### 4️⃣ CLI Setup
 
 ```bash
-pip install clutch-cli
+pip install myclutch
 ```
 
 Or install locally from source:
@@ -375,7 +375,7 @@ clutch/
 │   ├── package.json
 │   └── .env.example
 │
-└── cli/                              # Command Line Tool (published as clutch-cli)
+└── cli/                              # Command Line Tool (published as myclutch)
     ├── clutch_cli/
     │   ├── __init__.py
     │   ├── main.py                   # CLI entry point using Typer
