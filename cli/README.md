@@ -1,10 +1,10 @@
 <div align="center">
 
-# ⚡ clutch-cli
+# ⚡ myclutch
 
 ### *The CLI companion for Clutch — GitHub tracks your work. Clutch tracks you.*
 
-[![PyPI](https://img.shields.io/pypi/v/clutch-cli?style=for-the-badge&color=green)](https://pypi.org/project/clutch-cli)
+[![PyPI](https://img.shields.io/pypi/v/myclutch?style=for-the-badge&color=green)](https://pypi.org/project/myclutch)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](https://github.com/laypatel13/clutch/blob/main/LICENSE)
 
@@ -12,12 +12,12 @@
 
 ---
 
-`clutch-cli` is the terminal companion for [Clutch](https://clutch-woad.vercel.app) — an open-source AI-powered developer activity dashboard. Get your GitHub streaks, stats, coding patterns, and AI insights without leaving your terminal.
+`myclutch` is the terminal companion for [Clutch](https://clutch-woad.vercel.app) — an open-source AI-powered developer activity dashboard. Get your GitHub streaks, stats, coding patterns, and AI insights without leaving your terminal.
 
 ## Installation
 
 ```bash
-pip install clutch-cli
+pip install myclutch
 ```
 
 ## Quick Start

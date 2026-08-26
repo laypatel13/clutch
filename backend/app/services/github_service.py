@@ -186,6 +186,125 @@ class GitHubService:
             )
         }
 
+    async def get_pull_requests(self, username: str, max_results: int = 200) -> list[dict]:
+        """Fetch the user's authored pull requests via GitHub's search API.
+
+        Paginates in pages of 100 (GraphQL's max page size for search) up to
+        max_results total. This is a per-user OAuth call, so it draws from
+        that user's own ~5000 point/hour GraphQL budget, not a shared pool.
+        """
+        query = """
+        query($searchQuery: String!, $cursor: String) {
+          search(query: $searchQuery, type: ISSUE, first: 100, after: $cursor) {
+            pageInfo { hasNextPage endCursor }
+            nodes {
+              ... on PullRequest {
+                number
+                title
+                url
+                state
+                isDraft
+                additions
+                deletions
+                changedFiles
+                createdAt
+                mergedAt
+                closedAt
+                reviews { totalCount }
+                repository {
+                  nameWithOwner
+                  owner { login }
+                }
+              }
+            }
+          }
+        }
+        """
+        search_query = f"author:{username} type:pr"
+        pull_requests: list[dict] = []
+        cursor = None
+
+        async with httpx.AsyncClient() as client:
+            while len(pull_requests) < max_results:
+                response = await client.post(
+                    "https://api.github.com/graphql",
+                    headers=self.headers,
+                    json={"query": query, "variables": {"searchQuery": search_query, "cursor": cursor}},
+                )
+                data = response.json()
+                search = data.get("data", {}).get("search")
+                if not search:
+                    break
+
+                for node in search["nodes"]:
+                    if not node:  # deleted/inaccessible PRs come back null
+                        continue
+                    repo = node["repository"]
+                    pull_requests.append({
+                        "repo": repo["nameWithOwner"],
+                        "is_own_repo": repo["owner"]["login"].lower() == username.lower(),
+                        "pr_number": node["number"],
+                        "title": node["title"],
+                        "url": node["url"],
+                        "state": node["state"],
+                        "is_draft": node["isDraft"],
+                        "additions": node["additions"],
+                        "deletions": node["deletions"],
+                        "changed_files": node["changedFiles"],
+                        "review_count": node["reviews"]["totalCount"],
+                        "created_at": node["createdAt"],
+                        "merged_at": node["mergedAt"],
+                        "closed_at": node["closedAt"],
+                    })
+
+                page_info = search["pageInfo"]
+                if not page_info["hasNextPage"] or len(pull_requests) >= max_results:
+                    break
+                cursor = page_info["endCursor"]
+
+        return pull_requests[:max_results]
+
+    async def sync_pull_requests_to_db(self, user, db) -> int:
+        """Fetch the user's PRs and upsert them into the pull_requests table."""
+        from app.models.pull_request import PullRequest
+
+        prs = await self.get_pull_requests(user.username)
+
+        synced = 0
+        for pr in prs:
+            existing = (
+                db.query(PullRequest)
+                .filter(
+                    PullRequest.user_id == user.id,
+                    PullRequest.repo == pr["repo"],
+                    PullRequest.pr_number == pr["pr_number"],
+                )
+                .first()
+            )
+            fields = {
+                "title": pr["title"],
+                "url": pr["url"],
+                "state": pr["state"],
+                "is_draft": pr["is_draft"],
+                "is_own_repo": pr["is_own_repo"],
+                "additions": pr["additions"],
+                "deletions": pr["deletions"],
+                "changed_files": pr["changed_files"],
+                "review_count": pr["review_count"],
+                "pr_created_at": datetime.strptime(pr["created_at"], "%Y-%m-%dT%H:%M:%SZ"),
+                "pr_merged_at": datetime.strptime(pr["merged_at"], "%Y-%m-%dT%H:%M:%SZ") if pr["merged_at"] else None,
+                "pr_closed_at": datetime.strptime(pr["closed_at"], "%Y-%m-%dT%H:%M:%SZ") if pr["closed_at"] else None,
+            }
+            if existing:
+                for key, value in fields.items():
+                    setattr(existing, key, value)
+            else:
+                db.add(PullRequest(user_id=user.id, repo=pr["repo"], pr_number=pr["pr_number"], **fields))
+            synced += 1
+
+        db.commit()
+        return synced
+
     async def sync_to_db(self, user, db) -> int:
         """Sync GitHub activity to the database."""
         from app.models.activity import DailyActivity

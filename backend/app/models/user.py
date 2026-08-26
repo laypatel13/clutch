@@ -31,3 +31,4 @@ class User(Base):
     last_synced_at = Column(DateTime(timezone=True), nullable=True)
     activities = relationship("DailyActivity", back_populates="user")
     weekly_insights = relationship("WeeklyInsight", back_populates="user")
+    pull_requests = relationship("PullRequest", back_populates="user")

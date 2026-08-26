@@ -52,7 +52,7 @@ export default function UserProfilePage() {
                   <Users size={12} color="var(--accent-pink)" />{profile.followers} followers
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-                  <BookOpen size={12} color="var(--accent-purple)" />{profile.public_repos} repos
+                  <BookOpen size={12} color="var(--accent-purple)" />{profile.public_repos} repositories
                 </span>
               </div>
             </div>

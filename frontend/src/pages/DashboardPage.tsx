@@ -7,22 +7,15 @@ import LoadingScreen from '../components/common/LoadingScreen'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import StatsGrid from '../components/dashboard/StatsGrid'
 import CommitActivityChart from '../components/dashboard/CommitActivityChart'
-import LanguageBreakdownPanel from '../components/dashboard/LanguageBreakdownPanel'
-import ContributionHeatmapPanel from '../components/dashboard/ContributionHeatmapPanel'
-import AIInsightPanel from '../components/dashboard/AIInsightPanel'
-import type { ActivitySummary, StreakSummary, WeeklyInsight, HeatmapData, LanguageBreakdown } from '../types/dashboard.types'
+import type { ActivitySummary, StreakSummary } from '../types/dashboard.types'
 
 export default function DashboardPage() {
   const { user, logout } = useAuthentication()
   const [activity, setActivity] = useState<ActivitySummary | null>(null)
   const [streak, setStreak] = useState<StreakSummary | null>(null)
-  const [insight, setInsight] = useState<WeeklyInsight | null>(null)
-  const [heatmap, setHeatmap] = useState<HeatmapData | null>(null)
   const [lastSynced, setLastSynced] = useState<Date | null>(null)
-  const [languages, setLanguages] = useState<LanguageBreakdown | null>(null)
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
-  const [insightLoading, setInsightLoading] = useState(false)
 
   useEffect(() => { fetchDashboardData().then(() => setLastSynced(new Date())) }, [])
 
@@ -35,13 +28,6 @@ export default function DashboardPage() {
       ])
       setActivity(activityRes.data)
       setStreak(streakRes.data)
-      setInsightLoading(true)
-      httpClient.get('/insights/weekly')
-        .then(r => setInsight(r.data))
-        .catch(() => {})
-        .finally(() => setInsightLoading(false))
-      httpClient.get('/github/heatmap').then(r => setHeatmap(r.data)).catch(() => {})
-      httpClient.get('/github/languages').then(r => setLanguages(r.data)).catch(() => {})
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }
@@ -76,7 +62,10 @@ export default function DashboardPage() {
     <div style={{ minHeight: '100vh' }}>
       <NavigationBar rightContent={
         <>
-          <button onClick={handleSync} disabled={syncing || insightLoading} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
+          <a href="/pulls" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', whiteSpace: 'nowrap' }}>
+            pull requests
+          </a>
+          <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
             {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
           </button>
@@ -91,11 +80,8 @@ export default function DashboardPage() {
 
       <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
         <DashboardHeader name={user?.name} username={user?.username} />
-        <StatsGrid activity={activity} streak={streak} />
+        <StatsGrid streak={streak} />
         <CommitActivityChart chartData={chartData} />
-        <LanguageBreakdownPanel languages={languages} />
-        <ContributionHeatmapPanel data={heatmap} />
-        <AIInsightPanel insight={insight} insightLoading={insightLoading} />
       </div>
     </div>
   )

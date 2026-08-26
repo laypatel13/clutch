@@ -13,7 +13,7 @@ labels: bug
 
 - [ ] Frontend (web dashboard)
 - [ ] Backend (API)
-- [ ] CLI (`clutch-cli`)
+- [ ] CLI (`myclutch`)
 
 ## Steps to Reproduce
 

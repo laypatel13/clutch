@@ -225,16 +225,21 @@ html[data-theme='dark'] body {
   letter-spacing: normal;
 }
 
-/* TAGS */
-.tag { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 3px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--border); }
-.tag-purple { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
-.tag-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); }
-.tag-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); }
-.tag-green { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
-.tag-yellow { background: var(--accent-yellow); color: #fff; border-color: var(--accent-yellow); }
-.tag-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); }
-.tag-outline { background: transparent; color: var(--text-secondary); border-color: var(--border-light); }
-.tag-dark { background: var(--bg-dark); color: var(--text-on-dark); }
+/* TAGS — brutalist mono stamp: bordered, shadowed, quiet lowercase mono text */
+.tag { font-family: var(--font-chrome); font-weight: 700; font-size: var(--text-xs); padding: 4px 10px; letter-spacing: 0.01em; text-transform: none; display: inline-block; border: 2px solid var(--border); box-shadow: 2px 2px 0px var(--border); background: var(--bg-card); color: var(--text-primary); }
+.tag-purple { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 2px 2px 0px #4c1d95; }
+.tag-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); box-shadow: 2px 2px 0px #9d0a38; }
+.tag-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); box-shadow: 2px 2px 0px #164e63; }
+.tag-green { background: var(--accent-green); color: #fff; border-color: var(--accent-green); box-shadow: 2px 2px 0px #065f46; }
+.tag-yellow { background: var(--accent-yellow); color: #fff; border-color: var(--accent-yellow); box-shadow: 2px 2px 0px #78350f; }
+.tag-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); box-shadow: 2px 2px 0px #7a8f00; }
+.tag-outline { background: var(--bg-card); color: var(--text-secondary); border-color: var(--border-light); box-shadow: 2px 2px 0px var(--border-light); }
+.tag-dark { background: var(--bg-dark); color: var(--text-on-dark); border-color: var(--bg-dark); box-shadow: 2px 2px 0px #000000; }
+
+/* STATUS BADGE — nav connection indicator only. Kept as the original soft
+   pill on purpose, separate from the .tag brutalist stamp treatment. */
+.badge-status { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 3px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--accent-green); background: var(--accent-green); color: #fff; }
+.badge-status-pink { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 1px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--accent-pink); background: var(--accent-pink); color: #fff; }
 
 /* NAV */
 .nb-nav {
@@ -362,6 +367,5 @@ html[data-theme='dark'] body {
    Scoped to .dashboard-content / .profile-content so Landing/Navbar/buttons are untouched. */
 .dashboard-content .section-label { text-transform: none; letter-spacing: 0.02em; font-weight: 500; gap: var(--space-3); }
 .profile-content .section-label { text-transform: none; letter-spacing: 0.02em; }
-.dashboard-content .tag { text-transform: none; letter-spacing: 0.01em; }
 .dashboard-content .stat-label { text-transform: none; letter-spacing: 0.02em; font-weight: 400; }
 .dashboard-content .btn-nb { text-transform: none; letter-spacing: 0.01em; }

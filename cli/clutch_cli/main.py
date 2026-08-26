@@ -6,13 +6,14 @@ from clutch_cli.repositories import list as repositories_list
 from clutch_cli.insights import weekly
 from clutch_cli.system import status
 from clutch_cli.repositories.languages import languages as languages_command
+from clutch_cli.theme import banner
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 app = typer.Typer(
     name="clutch",
     help="GitHub tracks your work. Clutch tracks you.",
-    no_args_is_help=True,
+    no_args_is_help=False,
 )
 
 
@@ -21,13 +22,14 @@ def _version_callback(value: bool):
         typer.echo(
             f"clutch {__version__}\n"
             "GitHub: https://github.com/laypatel13/clutch/releases\n"
-            "PyPI: https://pypi.org/project/clutch-cli"
+            "PyPI: https://pypi.org/project/myclutch"
         )      
         raise typer.Exit()
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
+    ctx: typer.Context,
     version: bool = typer.Option(
         None,
         "--version",
@@ -37,7 +39,10 @@ def main(
         is_eager=True,
     ),
 ):
-    pass
+    if ctx.invoked_subcommand is None:
+        banner(version=__version__)
+        typer.echo(ctx.get_help())
+        raise typer.Exit()
 
 
 # Authentication

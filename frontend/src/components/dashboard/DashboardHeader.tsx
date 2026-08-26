@@ -8,7 +8,7 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({ name, username }: DashboardHeaderProps) {
   return (
     <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
-      <div className="section-label">Dashboard</div>
+      <div className="section-label">dashboard</div>
       <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)', letterSpacing: '0.01em' }}>
         {name || username}
       </h1>

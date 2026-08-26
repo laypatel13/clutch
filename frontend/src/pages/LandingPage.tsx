@@ -47,18 +47,18 @@ export default function LandingPage() {
 
           {/* MINI STAT ROW */}
           <a
-            href="https://pypi.org/project/clutch-cli/"
+            href="https://pypi.org/project/myclutch/"
             target="_blank"
             rel="noopener noreferrer"
             className="nb-card"
             style={{ display: 'block', textDecoration: 'none', textAlign: 'left', padding: 'var(--space-3) var(--space-4)' }}
           >
             <div style={{ fontFamily: 'var(--font-chrome)', fontWeight: 700, fontSize: 'var(--text-lg)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)' }}>Command Line Interface</div>
-            <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '4px' }}>Access Clutch in your terminal · View on PyPI <ArrowRight size={12} /></div>
+            <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '4px' }}>Access Clutch in your terminal ⚙️ <ArrowRight size={12} /></div>
           </a>
 
           <div style={{ marginTop: 'var(--space-5)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', padding: 'var(--space-3) var(--space-4)', background: 'var(--bg-panel)', border: '1px solid var(--border-light)' }}>
-            $ pip install clutch-cli
+            $ pip install myclutch
           </div>
         </div>
       </main>

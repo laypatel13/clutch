@@ -4,7 +4,7 @@ import typer
 from rich.table import Table
 from rich import box
 from clutch_cli.config import API_BASE_URL, get_token, get_username
-from clutch_cli.theme import console, ACCENT, DIM, SUCCESS, ERROR, WARNING, header, footer
+from clutch_cli.theme import console, ACCENT, DIM, SUCCESS, ERROR, WARNING, footer, mini_banner
 
 
 def status(json_output: bool = typer.Option(False, "--json", "-j", help="Output as JSON")):
@@ -16,7 +16,7 @@ def status(json_output: bool = typer.Option(False, "--json", "-j", help="Output 
         if json_output:
             typer.echo(json.dumps({"logged_in": False, "username": None, "token_valid": False, "api_reachable": None, "api_url": API_BASE_URL}))
         else:
-            header("STATUS")
+            mini_banner()
             table = Table(box=box.SIMPLE, show_header=False, pad_edge=False)
             table.add_column("Check", style=DIM, width=18)
             table.add_column("Result", style="bold white")
@@ -57,7 +57,7 @@ def status(json_output: bool = typer.Option(False, "--json", "-j", help="Output 
         }))
         return
 
-    header("STATUS")
+    mini_banner()
     table = Table(box=box.SIMPLE, show_header=False, pad_edge=False)
     table.add_column("Check", style=DIM, width=18)
     table.add_column("Result", style="bold white")

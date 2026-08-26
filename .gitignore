@@ -34,4 +34,6 @@ dist/
 
 # Logs
 *.log
-logs/
+logs/dist/
+build/
+*.egg-info/
