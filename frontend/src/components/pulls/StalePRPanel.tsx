@@ -15,6 +15,7 @@ export default function StalePRPanel({ stalePrs }: StalePRPanelProps) {
         <span className="section-label" style={{ marginBottom: 0 }}>
           {stalePrs.length} pull request{stalePrs.length > 1 ? 's' : ''} need attention
         </span>
+        <span className="tag tag-pink" style={{ marginLeft: 'auto' }}>stale</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         {stalePrs.map(pr => (

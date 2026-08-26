@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { RefreshCw, ArrowLeft } from 'lucide-react'
 import httpClient from '../api/httpClient'
+import { useAuthentication } from '../hooks/useAuthentication'
 import NavigationBar from '../components/layout/NavigationBar'
 import LoadingScreen from '../components/common/LoadingScreen'
 import PRSummaryCards from '../components/pulls/PRSummaryCards'
@@ -10,12 +11,14 @@ import PRList from '../components/pulls/PRList'
 import type { PullRequestItem, PullRequestSummary } from '../types/pulls.types'
 
 export default function PullsPage() {
+  const { user } = useAuthentication()
   const [pulls, setPulls] = useState<PullRequestItem[]>([])
   const [summary, setSummary] = useState<PullRequestSummary | null>(null)
+  const [lastSynced, setLastSynced] = useState<Date | null>(null)
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
 
-  useEffect(() => { fetchData() }, [])
+  useEffect(() => { fetchData().then(() => setLastSynced(new Date())) }, [])
 
   const fetchData = async () => {
     setLoading(true)
@@ -34,8 +37,22 @@ export default function PullsPage() {
     setSyncing(true)
     await httpClient.post('/github/pulls/sync').catch(() => { })
     await fetchData()
+    setLastSynced(new Date())
     setSyncing(false)
   }
+
+  const getSyncedAgoText = () => {
+    if (!lastSynced) return null
+    const diffMs = Date.now() - lastSynced.getTime()
+    const diffMin = Math.floor(diffMs / 60000)
+    if (diffMin < 1) return 'Just synced'
+    if (diffMin === 1) return '1min ago'
+    if (diffMin < 60) return `${diffMin}min ago`
+    const diffHr = Math.floor(diffMin / 60)
+    return `${diffHr}hour ago`
+  }
+
+  const uniqueRepoCount = useMemo(() => new Set(pulls.map(p => p.repo)).size, [pulls])
 
   if (loading) return <LoadingScreen message="Loading pull requests..." />
 
@@ -48,7 +65,7 @@ export default function PullsPage() {
           </a>
           <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
             <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
-            {syncing ? 'Syncing...' : 'Sync pull requests'}
+            {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
           </button>
         </>
       } />
@@ -56,9 +73,12 @@ export default function PullsPage() {
       <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
         <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
           <div className="section-label">pull requests</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', letterSpacing: '0.01em' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-4xl)', color: 'var(--text-primary)', marginBottom: 'var(--space-1)', letterSpacing: '0.01em' }}>
             Your pull request history
           </h1>
+          <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
+            @{user?.username} · {summary ? `${summary.total_prs} pull requests across ${uniqueRepoCount} repos` : 'All time'}
+          </div>
         </div>
 
         <PRSummaryCards summary={summary} />

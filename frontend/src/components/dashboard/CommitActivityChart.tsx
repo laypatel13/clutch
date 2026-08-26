@@ -8,8 +8,8 @@ export default function CommitActivityChart({ chartData }: CommitActivityChartPr
   return (
     <div className="nb-panel-purple" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
-        <span className="section-label" style={{ marginBottom: 0 }}>Commit Activity</span>
-        <span className="tag tag-outline">Last 14 days</span>
+        <span className="section-label" style={{ marginBottom: 0 }}>commit activity</span>
+        <span className="tag tag-outline">last 14 days</span>
       </div>
       {chartData.length > 0 ? (
         <ResponsiveContainer width="100%" height={130}>

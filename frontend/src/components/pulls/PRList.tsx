@@ -26,7 +26,7 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
 ]
 
 const REPO_OPTIONS: { value: RepoFilter; label: string }[] = [
-  { value: 'ALL', label: 'all repository' },
+  { value: 'ALL', label: 'all repos' },
   { value: 'INTERNAL', label: 'internal' },
   { value: 'EXTERNAL', label: 'external' },
 ]
@@ -102,7 +102,7 @@ export default function PRList({ pulls }: PRListProps) {
 
       {filtered.length === 0 ? (
         <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
-          No pull requests here — click sync to load, or try different filters.
+          No pull requests here — click Sync to load, or try different filters.
         </p>
       ) : (
         <>

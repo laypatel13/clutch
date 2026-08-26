@@ -13,9 +13,9 @@ export default function PRSummaryCards({ summary }: PRSummaryCardsProps) {
 
   return (
     <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(155px, 100%), 1fr))', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
-      <StatCard label="Merge Rate" value={mergeRate} icon={<Percent size={13} />} color="purple" />
-      <StatCard label="Avg Time to Merge" value={timeToMerge} icon={<Timer size={13} />} color="cyan" />
-      <StatCard label="External Repositories" value={external} icon={<Globe size={13} />} color="green" />
+      <StatCard label="merge rate" value={mergeRate} icon={<Percent size={13} />} color="purple" />
+      <StatCard label="average time to merge" value={timeToMerge} icon={<Timer size={13} />} color="cyan" />
+      <StatCard label="external repositories" value={external} icon={<Globe size={13} />} color="green" />
     </div>
   )
 }
