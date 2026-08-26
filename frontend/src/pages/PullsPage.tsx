@@ -77,7 +77,7 @@ export default function PullsPage() {
             Your pull request history
           </h1>
           <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-            @{user?.username} · {summary ? `${summary.total_prs} pull requests across ${uniqueRepoCount} repos` : 'All time'}
+            @{user?.username} · {summary ? `${summary.total_prs} pull requests across ${uniqueRepoCount} repositories` : 'All time'}
           </div>
         </div>
 

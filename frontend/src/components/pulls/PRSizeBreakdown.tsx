@@ -1,4 +1,3 @@
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import type { PRSizeDistribution } from '../../types/pulls.types'
 
 interface PRSizeBreakdownProps {
@@ -6,16 +5,16 @@ interface PRSizeBreakdownProps {
 }
 
 const SEGMENTS: { key: keyof PRSizeDistribution; label: string; color: string }[] = [
-  { key: 'small', label: 'Small (<50 lines)', color: 'var(--accent-green)' },
-  { key: 'medium', label: 'Medium (50-300)', color: 'var(--accent-cyan)' },
-  { key: 'large', label: 'Large (300+)', color: 'var(--accent-pink)' },
+  { key: 'small', label: 'Small (<50 lines)', color: '#f97316' },
+  { key: 'medium', label: 'Medium (50-300)', color: '#7c3aed' },
+  { key: 'large', label: 'Large (300+)', color: '#e8185a' },
 ]
 
 export default function PRSizeBreakdown({ distribution }: PRSizeBreakdownProps) {
   const total = distribution.small + distribution.medium + distribution.large
-  const chartData = SEGMENTS
-    .map(seg => ({ name: seg.label, value: distribution[seg.key], color: seg.color }))
-    .filter(d => d.value > 0)
+  const segments = SEGMENTS
+    .map(seg => ({ ...seg, count: distribution[seg.key] }))
+    .filter(s => s.count > 0)
 
   return (
     <div className="nb-panel-cyan" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
@@ -26,47 +25,55 @@ export default function PRSizeBreakdown({ distribution }: PRSizeBreakdownProps) 
       {total === 0 ? (
         <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>No synced pull requests yet.</p>
       ) : (
-        <div style={{ display: 'flex', gap: 'var(--space-6)', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', width: 150, height: 150, flexShrink: 0 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={44}
-                  outerRadius={70}
-                  stroke="var(--border)"
-                  strokeWidth={2}
-                  isAnimationActive={false}
-                >
-                  {chartData.map((entry, idx) => (
-                    <Cell key={idx} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ background: 'var(--bg-card)', border: '2px solid var(--accent-cyan)', borderRadius: 0, fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-primary)', boxShadow: '4px 4px 0px var(--accent-cyan)' }}
-                  formatter={(value, name) => [`${value} (${Math.round((Number(value) / total) * 100)}%)`, name]}
+        <div>
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '18px',
+              overflow: 'hidden',
+              background: 'var(--bg-panel)',
+              border: '2px solid #6b7280',
+              boxShadow: '3px 3px 0px #6b7280',
+            }}
+          >
+            {segments.map((seg, idx) => {
+              const pct = (seg.count / total) * 100
+              return (
+                <div
+                  key={seg.key}
+                  title={`${seg.label} · ${seg.count} (${Math.round(pct)}%)`}
+                  style={{
+                    width: `${pct}%`,
+                    background: seg.color,
+                    borderRight: idx < segments.length - 1 ? '2px solid var(--bg-panel)' : 'none',
+                    transition: 'width 0.3s ease',
+                  }}
                 />
-              </PieChart>
-            </ResponsiveContainer>
-            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
-              <div style={{ fontFamily: 'var(--font-chrome)', fontWeight: 700, fontSize: 'var(--text-2xl)', color: 'var(--text-primary)' }}>{total}</div>
-              <div className="stat-label">PRs</div>
-            </div>
+              )
+            })}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', minWidth: 180 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-5)', marginTop: 'var(--space-5)' }}>
             {SEGMENTS.map(seg => {
               const count = distribution[seg.key]
               if (count === 0) return null
+              const pct = Math.round((count / total) * 100)
               return (
                 <div key={seg.key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                  <span style={{ width: '10px', height: '10px', background: seg.color, border: '1px solid var(--border)', display: 'inline-block', flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                    {seg.label} · {count} ({Math.round((count / total) * 100)}%)
+                  <span
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      background: seg.color,
+                      display: 'inline-block',
+                      flexShrink: 0,
+                      border: '1px solid #6b7280',
+                      boxShadow: '2px 2px 0px #6b7280',
+                    }}
+                  />
+                  <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
+                    {seg.label} · <strong style={{ color: 'var(--text-primary)' }}>{count}</strong> ({pct}%)
                   </span>
                 </div>
               )
