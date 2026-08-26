@@ -226,7 +226,7 @@ html[data-theme='dark'] body {
 }
 
 /* TAGS — brutalist mono stamp: bordered, shadowed, quiet lowercase mono text */
-.tag { font-family: var(--font-chrome); font-weight: 500; font-size: var(--text-xs); padding: 4px 10px; letter-spacing: 0.01em; text-transform: none; display: inline-block; border: 2px solid var(--border); box-shadow: 2px 2px 0px var(--border); background: var(--bg-card); color: var(--text-primary); }
+.tag { font-family: var(--font-chrome); font-weight: 700; font-size: var(--text-xs); padding: 4px 10px; letter-spacing: 0.01em; text-transform: none; display: inline-block; border: 2px solid var(--border); box-shadow: 2px 2px 0px var(--border); background: var(--bg-card); color: var(--text-primary); }
 .tag-purple { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 2px 2px 0px #4c1d95; }
 .tag-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); box-shadow: 2px 2px 0px #9d0a38; }
 .tag-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); box-shadow: 2px 2px 0px #164e63; }
@@ -239,6 +239,7 @@ html[data-theme='dark'] body {
 /* STATUS BADGE — nav connection indicator only. Kept as the original soft
    pill on purpose, separate from the .tag brutalist stamp treatment. */
 .badge-status { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 3px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--accent-green); background: var(--accent-green); color: #fff; }
+.badge-status-pink { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 1px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--accent-pink); background: var(--accent-pink); color: #fff; }
 
 /* NAV */
 .nb-nav {
