@@ -10,6 +10,32 @@ def _size_bucket(additions: int, deletions: int) -> str:
     return "large"
 
 
+def get_review_stats(prs) -> dict:
+    """Review-engagement metrics derived from synced PRs.
+
+    Surfaces the review_count column, which is synced from GitHub and stored on
+    every PR but never aggregated anywhere. Pure: reads the passed-in list,
+    never hits GitHub or the DB.
+    """
+    merged = [p for p in prs if p.state == "MERGED"]
+    if not merged:
+        return {
+            "merged_prs": 0,
+            "reviewed_rate": None,
+            "avg_reviews_per_merged_pr": None,
+            "unreviewed_merged_count": 0,
+        }
+
+    reviewed = [p for p in merged if (p.review_count or 0) > 0]
+    total_reviews = sum((p.review_count or 0) for p in merged)
+    return {
+        "merged_prs": len(merged),
+        "reviewed_rate": round(len(reviewed) / len(merged), 3),
+        "avg_reviews_per_merged_pr": round(total_reviews / len(merged), 2),
+        "unreviewed_merged_count": len(merged) - len(reviewed),
+    }
+
+
 def get_pr_summary(user, db) -> dict:
     """Compute derived PR-quality metrics from the synced pull_requests table.
 
