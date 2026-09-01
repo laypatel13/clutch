@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useAuthentication } from '../hooks/useAuthentication'
 import httpClient from '../api/httpClient'
-import { RefreshCw, LogOut } from 'lucide-react'
-import NavigationBar from '../components/layout/NavigationBar'
+import { RefreshCw } from 'lucide-react'
+import AppLayout from '../components/layout/AppLayout'
 import LoadingScreen from '../components/common/LoadingScreen'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import StatsGrid from '../components/dashboard/StatsGrid'
@@ -10,7 +10,7 @@ import CommitActivityChart from '../components/dashboard/CommitActivityChart'
 import type { ActivitySummary, StreakSummary } from '../types/dashboard.types'
 
 export default function DashboardPage() {
-  const { user, logout } = useAuthentication()
+  const { user } = useAuthentication()
   const [activity, setActivity] = useState<ActivitySummary | null>(null)
   const [streak, setStreak] = useState<StreakSummary | null>(null)
   const [lastSynced, setLastSynced] = useState<Date | null>(null)
@@ -59,30 +59,17 @@ export default function DashboardPage() {
     ?.map(d => ({ date: d.date.slice(5), commits: d.commits })) || []
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <NavigationBar rightContent={
-        <>
-          <a href="/pulls" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', whiteSpace: 'nowrap' }}>
-            pull requests
-          </a>
-          <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
-            <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
-            {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
-          </button>
-          <a href={`/u/${user?.username}`}>
-            <img src={user?.avatar_url || ''} alt={user?.username} style={{ width: '32px', height: '32px', border: '2px solid var(--border)',borderRadius: '50%',boxShadow: '2px 2px 0 var(--border)',objectFit: 'cover', cursor: 'pointer', display: 'block' }} />
-          </a>
-          <button onClick={logout} className="btn-nb btn-pink" style={{ fontSize: 'var(--text-sm)', padding: 'var(--space-2) var(--space-3)' }}>
-            <LogOut size={12} />
-          </button>
-        </>
-      } />
-
+    <AppLayout rightContent={
+      <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
+        <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
+        {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
+      </button>
+    }>
       <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
         <DashboardHeader name={user?.name} username={user?.username} />
         <StatsGrid streak={streak} />
         <CommitActivityChart chartData={chartData} />
       </div>
-    </div>
+    </AppLayout>
   )
 }
