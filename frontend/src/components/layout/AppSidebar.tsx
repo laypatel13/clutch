@@ -24,45 +24,47 @@ export default function AppSidebar() {
 
   return (
     <aside className="app-sidebar" data-expanded={expanded}>
-      <nav className="app-sidebar-nav">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path
-            || (item.path.startsWith('/u/') && location.pathname.startsWith('/u/'))
-          const Icon = item.icon
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="app-sidebar-item"
-              data-active={isActive}
-              aria-label={item.label}
-              title={expanded ? undefined : item.label}
-            >
-              <Icon size={18} strokeWidth={2} className="app-sidebar-icon" />
-              <span className="app-sidebar-label">{item.label}</span>
-            </Link>
-          )
-        })}
-      </nav>
+      <div className="app-sidebar-inner">
+        <nav className="app-sidebar-nav">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path
+              || (item.path.startsWith('/u/') && location.pathname.startsWith('/u/'))
+            const Icon = item.icon
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="app-sidebar-item"
+                data-active={isActive}
+                aria-label={item.label}
+                title={expanded ? undefined : item.label}
+              >
+                <Icon size={18} strokeWidth={2} className="app-sidebar-icon" />
+                <span className="app-sidebar-label">{item.label}</span>
+              </Link>
+            )
+          })}
+        </nav>
 
-      <div className="app-sidebar-bottom">
-        <button
-          onClick={logout}
-          className="app-sidebar-item app-sidebar-logout"
-          aria-label="Log out"
-          title={expanded ? undefined : 'Log out'}
-        >
-          <LogOut size={18} strokeWidth={2} className="app-sidebar-icon" />
-          <span className="app-sidebar-label">Log out</span>
-        </button>
+        <div className="app-sidebar-bottom">
+          <button
+            onClick={logout}
+            className="app-sidebar-item app-sidebar-logout"
+            aria-label="Log out"
+            title={expanded ? undefined : 'Log out'}
+          >
+            <LogOut size={18} strokeWidth={2} className="app-sidebar-icon" />
+            <span className="app-sidebar-label">Log out</span>
+          </button>
 
-        <button
-          onClick={toggleExpanded}
-          className="app-sidebar-toggle"
-          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          {expanded ? <ChevronsLeft size={16} /> : <ChevronsRight size={16} />}
-        </button>
+          <button
+            onClick={toggleExpanded}
+            className="app-sidebar-toggle"
+            aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            {expanded ? <ChevronsLeft size={16} /> : <ChevronsRight size={16} />}
+          </button>
+        </div>
       </div>
     </aside>
   )

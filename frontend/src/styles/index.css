@@ -96,13 +96,11 @@ body {
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
-  overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
 }
 
 #root {
-  overflow-x: hidden;
   width: 100%;
 }
 
@@ -280,6 +278,19 @@ html[data-theme='dark'] body {
   flex-shrink: 0;
   border-right: 2px solid var(--border);
   background: var(--bg-card);
+  transition: width 0.15s ease;
+}
+.app-sidebar[data-expanded='true'] { --sidebar-w: 200px; }
+
+/* Pinned in view while the outer .app-sidebar stretches (via flex
+   align-items: stretch on .app-shell) to match the full content
+   height, so the border/background run the whole length of the page
+   instead of stopping at one viewport's worth of scroll.
+   overflow: hidden lives HERE, not on .app-sidebar — putting it on an
+   ancestor of a sticky element breaks its stickiness (it stops
+   tracking window scroll and just sits at its static flex position),
+   which was the "hanging in the middle" bug. */
+.app-sidebar-inner {
   position: sticky;
   top: 60px;
   height: calc(100vh - 60px);
@@ -287,10 +298,8 @@ html[data-theme='dark'] body {
   flex-direction: column;
   justify-content: space-between;
   padding: var(--space-4) 0;
-  transition: width 0.15s ease;
   overflow: hidden;
 }
-.app-sidebar[data-expanded='true'] { --sidebar-w: 200px; }
 
 .app-sidebar-nav {
   display: flex;
