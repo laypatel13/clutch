@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { GITHUB_REPOSITORY_URL } from '../../constants/config.constants'
 import { useAuthentication } from '../../hooks/useAuthentication'
 
@@ -26,10 +27,10 @@ export default function NavigationBar({ rightContent }: NavigationBarProps) {
   }, [isDark]);
   return (
     <nav className="nb-nav blur-fade-in">
-      <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none' }}>
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none' }}>
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-xl)', color: 'var(--text-primary)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>Clutch</span>
         <span className="badge-status">{user ? 'CONNECTED' : 'CONNECT'}</span>
-      </a>
+      </Link>
       <div className="nb-nav-right">
         {rightContent}
 

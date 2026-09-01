@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
-import { RefreshCw, ArrowLeft } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import httpClient from '../api/httpClient'
 import { useAuthentication } from '../hooks/useAuthentication'
-import NavigationBar from '../components/layout/NavigationBar'
+import AppLayout from '../components/layout/AppLayout'
 import LoadingScreen from '../components/common/LoadingScreen'
 import PRSummaryCards from '../components/pulls/PRSummaryCards'
 import StalePRPanel from '../components/pulls/StalePRPanel'
@@ -57,19 +57,12 @@ export default function PullsPage() {
   if (loading) return <LoadingScreen message="Loading pull requests..." />
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <NavigationBar rightContent={
-        <>
-          <a href="/dashboard" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <ArrowLeft size={14} /> Dashboard
-          </a>
-          <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
-            <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
-            {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
-          </button>
-        </>
-      } />
-
+    <AppLayout rightContent={
+      <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
+        <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
+        {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
+      </button>
+    }>
       <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
         <div style={{ marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)', borderBottom: '2px solid var(--border)' }}>
           <div className="section-label">pull requests</div>
@@ -86,6 +79,6 @@ export default function PullsPage() {
         <PRList pulls={pulls} />
         {summary && <StalePRPanel stalePrs={summary.stale_prs} />}
       </div>
-    </div>
+    </AppLayout>
   )
 }

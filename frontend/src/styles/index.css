@@ -267,6 +267,113 @@ html[data-theme='dark'] body {
   row-gap: var(--space-2);
 }
 
+/* APP SHELL — sidebar + content, sits below the sticky top nav */
+.app-shell {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - 60px);
+}
+
+.app-sidebar {
+  --sidebar-w: 64px;
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  border-right: 2px solid var(--border);
+  background: var(--bg-card);
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+  transition: width 0.15s ease;
+  overflow: hidden;
+}
+.app-sidebar[data-expanded='true'] { --sidebar-w: 200px; }
+
+.app-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+}
+
+.app-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  border: 2px solid transparent;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+}
+.app-sidebar-item:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-hover);
+  color: var(--text-primary);
+}
+.app-sidebar-item[data-active='true'] {
+  background: var(--bg-panel);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+}
+.app-sidebar-icon { flex-shrink: 0; }
+.app-sidebar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+.app-sidebar[data-expanded='true'] .app-sidebar-label { opacity: 1; }
+
+.app-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+}
+.app-sidebar-logout { color: var(--accent-pink); }
+.app-sidebar-logout:hover { border-color: var(--accent-pink); box-shadow: 2px 2px 0px var(--accent-pink); }
+
+.app-sidebar-toggle {
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  flex-shrink: 0;
+}
+.app-sidebar-toggle:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
+
+.app-shell-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Below tablet width, the sidebar is always an icon-only rail — no
+   expand/collapse choice, so the toggle is hidden and labels stay off
+   regardless of the stored preference. */
+@media (max-width: 768px) {
+  .app-sidebar[data-expanded='true'] { --sidebar-w: 64px; }
+  .app-sidebar-label { display: none; }
+  .app-sidebar-toggle { display: none; }
+}
+
 /* SECTION LABEL */
 .section-label {
   font-family: var(--font-chrome);
