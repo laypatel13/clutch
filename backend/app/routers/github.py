@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.services.github_service import GitHubService
-from app.services.pr_analytics import get_pr_summary
+from app.services.pr_analytics import get_pr_summary, get_review_stats
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.pull_request import PullRequest
@@ -123,3 +123,13 @@ async def pull_requests_summary(
 ):
     """Get derived PR-quality metrics: merge rate, time-to-merge, size mix, stale PRs."""
     return get_pr_summary(current_user, db)
+
+
+@router.get("/pulls/reviews")
+async def pull_requests_review_stats(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Review-engagement metrics: reviewed rate, avg reviews, unreviewed merged PRs."""
+    prs = db.query(PullRequest).filter(PullRequest.user_id == current_user.id).all()
+    return get_review_stats(prs)
