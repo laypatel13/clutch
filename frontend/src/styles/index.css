@@ -211,6 +211,16 @@ button {
      compresses --space-14 and --space-18 to tighten page gutters, which would
      shrink any component sized from them. Fixed sizes belong here instead. */
   --avatar-size: 72px;
+
+  /* Live height of the sticky top nav, measured and written by NavigationBar.
+     The sidebar offsets itself by this. It must never be hardcoded: the nav
+     is ~66px on desktop, and taller whenever its contents wrap. The value
+     here is only the pre-measurement fallback for the first paint. */
+  --nav-h: 66px;
+
+  /* Minimum comfortable tap size. Applied on coarse pointers only, so mouse
+     users keep the compact chrome. */
+  --tap-min: 44px;
 }
 
 /* Dark theme remaps surfaces, borders, text and shadows.
@@ -625,6 +635,11 @@ html[data-theme='dark'] body {
 /* ==========================================================================
    NAV
    ========================================================================== */
+/* The nav stays a SINGLE row at every width. It used to wrap, which pushed
+   the action buttons onto a second line on phones and — because the sticky
+   sidebar offsets itself by the nav's height — knocked the sidebar out of
+   alignment by ~40px. Instead of wrapping, the brand shrinks and the lowest
+   priority items are dropped at the narrow breakpoints below. */
 .nb-nav {
   border-bottom: 2px solid var(--border);
   background: var(--bg-card);
@@ -635,9 +650,8 @@ html[data-theme='dark'] body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  row-gap: var(--space-2);
-  column-gap: var(--space-3);
+  flex-wrap: nowrap;
+  gap: var(--space-3);
   max-width: 100vw;
 }
 
@@ -645,9 +659,9 @@ html[data-theme='dark'] body {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
-  row-gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .nb-nav-brand {
@@ -655,6 +669,15 @@ html[data-theme='dark'] body {
   align-items: center;
   gap: var(--space-3);
   text-decoration: none;
+  min-width: 0;
+  flex-shrink: 1;
+}
+/* The wordmark never shrinks — a truncated brand ("C...") is worse than
+   dropping a secondary action, so the narrow breakpoints below give up the
+   status badge and the repo link instead. */
+.nb-nav-brand .wordmark {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -663,7 +686,7 @@ html[data-theme='dark'] body {
 .app-shell {
   display: flex;
   align-items: stretch;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100dvh - var(--nav-h));
 }
 
 .app-sidebar {
@@ -686,8 +709,8 @@ html[data-theme='dark'] body {
    which was the "hanging in the middle" bug. */
 .app-sidebar-inner {
   position: sticky;
-  top: 60px;
-  height: calc(100vh - 60px);
+  top: var(--nav-h);
+  height: calc(100dvh - var(--nav-h));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -959,7 +982,12 @@ html[data-theme='dark'] body {
   margin-bottom: var(--space-5);
 }
 
-.app-root { min-height: 100vh; }
+/* dvh so mobile browser chrome doesn't push the page past the viewport;
+   the vh line stays as the fallback for browsers without dvh. */
+.app-root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
 
 .loading-message {
   font-family: var(--font-chrome);
@@ -1436,6 +1464,25 @@ html[data-theme='dark'] body {
   .nb-nav {
     padding: var(--space-3) var(--space-5);
   }
+
+  /* One stat card per row. Two columns fit arithmetically at this width but
+     leave ~167px per card, which crams labels like "average time to merge". */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* The filter row is the panel header's second line here, so let it use the
+     full width rather than being squeezed against the section label. */
+  .panel-header { align-items: flex-start; }
+  .pr-filters { width: 100%; }
+  .pr-select { flex: 1; }
+}
+
+/* Below this width the nav cannot fit brand + status + action + two icon
+   buttons on one row. Drop the ambient status badge first: it is the lowest
+   priority item, and the primary action already communicates signed-in state. */
+@media (max-width: 520px) {
+  .nb-nav-status { display: none; }
 }
 
 /* PROFILE HEADER — stack avatar above info on narrow screens instead of
@@ -1455,6 +1502,45 @@ html[data-theme='dark'] body {
   .btn-nb {
     font-size: var(--text-xs);
     padding: var(--space-2) var(--space-3);
+  }
+
+  /* Next item to go after the status badge. It links to the source repo
+     rather than driving the app, and the Landing footer still carries it. */
+  .nb-nav-github { display: none; }
+}
+
+/* ==========================================================================
+   TOUCH INPUT
+   Keyed on pointer type rather than width: a small window on a laptop still
+   has a mouse, while a large tablet still has fingers. Controls sized for a
+   cursor (28-38px) are below the 44px minimum for a fingertip.
+   ========================================================================== */
+@media (pointer: coarse) {
+  .btn-nb,
+  .pr-select,
+  .chip {
+    min-height: var(--tap-min);
+  }
+
+  .icon-btn-circle,
+  .app-sidebar-toggle {
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+
+  .app-sidebar-item { min-height: var(--tap-min); }
+
+  /* iOS Safari zooms the page when a control smaller than 16px takes focus.
+     The select is the only focusable control in the app, but that is enough. */
+  .pr-select { font-size: var(--text-lg); }
+
+  /* Removes the 300ms tap delay without disabling pinch-zoom. */
+  .btn-nb,
+  .chip,
+  .icon-btn-circle,
+  .app-sidebar-item,
+  .pr-row {
+    touch-action: manipulation;
   }
 }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Sun, Moon } from 'lucide-react'
 import { GITHUB_REPOSITORY_URL } from '../../constants/config.constants'
@@ -22,11 +22,28 @@ export default function NavigationBar({ rightContent }: NavigationBarProps) {
     localStorage.setItem('theme', theme)
   }, [isDark])
 
+  // The sticky sidebar positions itself directly beneath this nav, so it needs
+  // the nav's real height. Publish it as --nav-h instead of hardcoding: the
+  // height changes with viewport width and with whatever rightContent a page
+  // passes in, and a stale value shows up as a misaligned sidebar.
+  const navRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+    const publishHeight = () => {
+      document.documentElement.style.setProperty('--nav-h', `${nav.offsetHeight}px`)
+    }
+    publishHeight()
+    const observer = new ResizeObserver(publishHeight)
+    observer.observe(nav)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <nav className="nb-nav blur-fade-in">
+    <nav ref={navRef} className="nb-nav blur-fade-in">
       <Link to="/" className="nb-nav-brand">
         <span className="wordmark">Clutch</span>
-        <span className="badge badge-green">{user ? 'CONNECTED' : 'CONNECT'}</span>
+        <span className="badge badge-green nb-nav-status">{user ? 'CONNECTED' : 'CONNECT'}</span>
       </Link>
       <div className="nb-nav-right">
         {rightContent}
@@ -36,7 +53,7 @@ export default function NavigationBar({ rightContent }: NavigationBarProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="View on GitHub"
-          className="icon-btn-circle"
+          className="icon-btn-circle nb-nav-github"
         >
           <GitHubIcon />
         </a>
