@@ -1,3 +1,4 @@
+import PanelHeader from '../common/PanelHeader'
 import type { PRSizeDistribution } from '../../types/pulls.types'
 
 interface PRSizeBreakdownProps {
@@ -5,9 +6,9 @@ interface PRSizeBreakdownProps {
 }
 
 const SEGMENTS: { key: keyof PRSizeDistribution; label: string; color: string }[] = [
-  { key: 'small', label: 'Small (<50 lines)', color: '#f97316' },
-  { key: 'medium', label: 'Medium (50-300)', color: '#7c3aed' },
-  { key: 'large', label: 'Large (300+)', color: '#e8185a' },
+  { key: 'small', label: 'Small (<50 lines)', color: 'var(--accent-orange)' },
+  { key: 'medium', label: 'Medium (50-300)', color: 'var(--accent-purple)' },
+  { key: 'large', label: 'Large (300+)', color: 'var(--accent-pink)' },
 ]
 
 export default function PRSizeBreakdown({ distribution }: PRSizeBreakdownProps) {
@@ -17,63 +18,43 @@ export default function PRSizeBreakdown({ distribution }: PRSizeBreakdownProps) 
     .filter(s => s.count > 0)
 
   return (
-    <div className="nb-panel-cyan" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
-        <span className="section-label" style={{ marginBottom: 0 }}>pull request size mix</span>
-        <span className="tag tag-outline">{total} total</span>
-      </div>
+    <div className="nb-card nb-accent-cyan panel">
+      <PanelHeader
+        label="pull request size mix"
+        trailing={<span className="tag tag-outline">{total} total</span>}
+      />
       {total === 0 ? (
-        <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>No synced pull requests yet.</p>
+        <p className="empty-state">No synced pull requests yet.</p>
       ) : (
         <div>
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '18px',
-              overflow: 'hidden',
-              background: 'var(--bg-panel)',
-              border: '2px solid #6b7280',
-              boxShadow: '3px 3px 0px #6b7280',
-            }}
-          >
+          <div className="size-bar">
             {segments.map((seg, idx) => {
               const pct = (seg.count / total) * 100
               return (
                 <div
                   key={seg.key}
+                  className="size-bar-segment"
                   title={`${seg.label} · ${seg.count} (${Math.round(pct)}%)`}
                   style={{
                     width: `${pct}%`,
                     background: seg.color,
                     borderRight: idx < segments.length - 1 ? '2px solid var(--bg-panel)' : 'none',
-                    transition: 'width 0.3s ease',
                   }}
                 />
               )
             })}
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-5)', marginTop: 'var(--space-5)' }}>
+          <div className="size-legend">
             {SEGMENTS.map(seg => {
               const count = distribution[seg.key]
               if (count === 0) return null
               const pct = Math.round((count / total) * 100)
               return (
-                <div key={seg.key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                  <span
-                    style={{
-                      width: '10px',
-                      height: '10px',
-                      background: seg.color,
-                      display: 'inline-block',
-                      flexShrink: 0,
-                      border: '1px solid #6b7280',
-                      boxShadow: '2px 2px 0px #6b7280',
-                    }}
-                  />
-                  <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
-                    {seg.label} · <strong style={{ color: 'var(--text-primary)' }}>{count}</strong> ({pct}%)
+                <div key={seg.key} className="size-legend-item">
+                  <span className="size-legend-swatch" style={{ background: seg.color }} />
+                  <span className="size-legend-label">
+                    {seg.label} · <strong>{count}</strong> ({pct}%)
                   </span>
                 </div>
               )

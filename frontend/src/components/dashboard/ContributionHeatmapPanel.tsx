@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PanelHeader from '../common/PanelHeader'
 import type { HeatmapData, HeatmapDay } from '../../types/dashboard.types'
 
 interface HeatmapProps {
@@ -14,15 +15,19 @@ interface HoveredCell {
 const DAY_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', '']
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+const CELL_SIZE = 11
+const CELL_GAP = 3
+const LABEL_GUTTER = 24
+
+// Five steps of one green ramp, defined as tokens so the scale stays in the
+// design system and flips direction for the dark theme.
 function intensity(count: number, max: number): string {
-  if (count === 0) return 'var(--bg-panel)'
-
+  if (count === 0) return 'var(--heat-0)'
   const ratio = count / Math.max(max, 1)
-
-  if (ratio > 0.75) return '#0d4a24'
-  if (ratio > 0.5) return '#1f8a4c'
-  if (ratio > 0.25) return '#4dc47e'
-  return '#8fdfad'
+  if (ratio > 0.75) return 'var(--heat-4)'
+  if (ratio > 0.5) return 'var(--heat-3)'
+  if (ratio > 0.25) return 'var(--heat-2)'
+  return 'var(--heat-1)'
 }
 
 function formatCount(count: number): string {
@@ -33,11 +38,7 @@ function HeatmapGrid({ data }: HeatmapProps) {
   const [hovered, setHovered] = useState<HoveredCell | null>(null)
 
   if (!data || data.days.length === 0) {
-    return (
-      <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
-        No activity data — click Sync to load.
-      </p>
-    )
+    return <p className="empty-state">No activity data — click Sync to load.</p>
   }
 
   // Build week columns, padding the first week so it starts on Monday
@@ -65,9 +66,6 @@ function HeatmapGrid({ data }: HeatmapProps) {
     }
   })
 
-  const cellSize = 11
-  const cellGap = 3
-
   const handleEnter = (day: HeatmapDay | null) => (e: React.MouseEvent<HTMLDivElement>) => {
     if (!day) return
     const cellRect = e.currentTarget.getBoundingClientRect()
@@ -83,44 +81,41 @@ function HeatmapGrid({ data }: HeatmapProps) {
   const handleLeave = () => setHovered(null)
 
   return (
-    <div style={{ overflowX: 'auto', paddingBottom: 'var(--space-2)' }}>
-      <div data-heatmap-wrapper style={{ display: 'inline-block', position: 'relative' }}>
-        {/* Month labels */}
-        <div style={{ display: 'flex', marginLeft: 24, marginBottom: 'var(--space-1)' }}>
+    <div className="heatmap-scroll">
+      <div data-heatmap-wrapper className="heatmap-wrapper">
+        <div className="heatmap-months" style={{ marginLeft: LABEL_GUTTER }}>
           {weeks.map((_, wi) => {
             const m = monthLabels.find((m) => m.week === wi)
             return (
-              <div key={wi} style={{ width: cellSize + cellGap, fontFamily: 'var(--font-chrome)', fontSize: 10, color: 'var(--text-muted)' }}>
+              <div key={wi} className="heatmap-month-label" style={{ width: CELL_SIZE + CELL_GAP }}>
                 {m ? m.label : ''}
               </div>
             )
           })}
         </div>
 
-        <div style={{ display: 'flex', gap: cellGap }}>
-          {/* Day-of-week labels */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: cellGap, marginRight: 'var(--space-1)' }}>
+        <div className="heatmap-body" style={{ gap: CELL_GAP }}>
+          <div className="heatmap-daylabels" style={{ gap: CELL_GAP }}>
             {DAY_LABELS.map((label, i) => (
-              <div key={i} style={{ width: 18, height: cellSize, fontFamily: 'var(--font-chrome)', fontSize: 9, color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+              <div key={i} className="heatmap-day-label" style={{ height: CELL_SIZE }}>
                 {label}
               </div>
             ))}
           </div>
 
-          {/* Week columns */}
           {weeks.map((week, wi) => (
-            <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: cellGap }}>
+            <div key={wi} className="heatmap-week" style={{ gap: CELL_GAP }}>
               {week.map((day, di) => (
                 <div
                   key={di}
                   onMouseEnter={handleEnter(day)}
                   onMouseLeave={handleLeave}
+                  className="heatmap-cell"
+                  data-empty={day ? undefined : 'true'}
                   style={{
-                    width: cellSize,
-                    height: cellSize,
-                    background: day ? intensity(day.count, data.max_count) : 'transparent',
-                    border: day ? '1px solid var(--border)' : 'none',
-                    cursor: day ? 'pointer' : 'default',
+                    width: CELL_SIZE,
+                    height: CELL_SIZE,
+                    background: day ? intensity(day.count, data.max_count) : undefined,
                   }}
                 />
               ))}
@@ -128,37 +123,26 @@ function HeatmapGrid({ data }: HeatmapProps) {
           ))}
         </div>
 
-        {/* Legend */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginTop: 'var(--space-3)', marginLeft: 24 }}>
-          <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 10, color: 'var(--text-muted)', marginRight: 'var(--space-1)' }}>Less</span>
+        <div className="heatmap-legend" style={{ marginLeft: LABEL_GUTTER }}>
+          <span className="heatmap-legend-text">Less</span>
           {[0, 0.2, 0.4, 0.7, 1].map((r, i) => (
-            <div key={i} style={{ width: cellSize, height: cellSize, background: intensity(Math.round(r * data.max_count), data.max_count), border: '1px solid var(--border)' }} />
+            <div
+              key={i}
+              className="heatmap-cell"
+              style={{
+                width: CELL_SIZE,
+                height: CELL_SIZE,
+                background: intensity(Math.round(r * data.max_count), data.max_count),
+              }}
+            />
           ))}
-          <span style={{ fontFamily: 'var(--font-chrome)', fontSize: 10, color: 'var(--text-muted)', marginLeft: 'var(--space-1)' }}>More</span>
+          <span className="heatmap-legend-text">More</span>
         </div>
 
-        {/* Tooltip */}
         {hovered && (
-          <div
-            style={{
-              position: 'absolute',
-              left: hovered.x,
-              top: hovered.y - 8,
-              transform: 'translate(-50%, -100%)',
-              background: 'var(--bg-card)',
-              border: '2px solid var(--accent-purple)',
-              boxShadow: '3px 3px 0px var(--accent-purple)',
-              padding: 'var(--space-2) var(--space-3)',
-              fontFamily: 'var(--font-chrome)',
-              fontSize: 11,
-              color: 'var(--text-primary)',
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-              zIndex: 20,
-            }}
-          >
-            <div style={{ fontWeight: 700 }}>{hovered.day.date}</div>
-            <div style={{ color: 'var(--text-muted)' }}>{formatCount(hovered.day.count)}</div>
+          <div className="heatmap-tooltip" style={{ left: hovered.x, top: hovered.y - 8 }}>
+            <div className="heatmap-tooltip-date">{hovered.day.date}</div>
+            <div className="heatmap-tooltip-count">{formatCount(hovered.day.count)}</div>
           </div>
         )}
       </div>
@@ -168,13 +152,15 @@ function HeatmapGrid({ data }: HeatmapProps) {
 
 export default function Heatmap({ data }: HeatmapProps) {
   return (
-    <div className="nb-card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)', ['--card-accent' as any]: 'var(--accent-yellow)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
-        <span className="section-label" style={{ marginBottom: 0 }}>Contribution Heatmap</span>
-        <span className="tag tag-outline">
-          {data ? `${data.total_contributions} in the last year` : 'Last 12 months'}
-        </span>
-      </div>
+    <div className="nb-card nb-accent-yellow panel">
+      <PanelHeader
+        label="contribution heatmap"
+        trailing={
+          <span className="tag tag-outline">
+            {data ? `${data.total_contributions} in the last year` : 'last 12 months'}
+          </span>
+        }
+      />
       <HeatmapGrid data={data} />
     </div>
   )

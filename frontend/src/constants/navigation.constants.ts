@@ -15,6 +15,4 @@ export const getNavItems = (username?: string): NavItem[] => [
   { label: 'Profile', path: `/u/${username || ''}`, icon: CircleUserRound },
 ]
 
-export const SIDEBAR_COLLAPSED_WIDTH = 64
-export const SIDEBAR_EXPANDED_WIDTH = 200
 export const SIDEBAR_STORAGE_KEY = 'sidebar-expanded'

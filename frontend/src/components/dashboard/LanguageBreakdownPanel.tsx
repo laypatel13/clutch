@@ -1,12 +1,8 @@
+import PanelHeader from '../common/PanelHeader'
+import type { AccentName } from '../common/StatCard'
 import type { LanguageBreakdown } from '../../types/dashboard.types'
 
-const languageColors = [
-  'var(--accent-purple)',
-  'var(--accent-pink)',
-  'var(--accent-cyan)',
-  'var(--accent-green)',
-  'var(--accent-yellow)',
-]
+const LANGUAGE_ACCENTS: AccentName[] = ['purple', 'pink', 'cyan', 'green', 'yellow']
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return '0 Bytes'
@@ -26,75 +22,59 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
     : []
 
   return (
-    <div className="nb-panel-cyan" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-4)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
-        <span className="section-label" style={{ marginBottom: 0 }}>Language Breakdown</span>
-        <span className="tag tag-outline">Top 5 Languages</span>
-      </div>
+    <div className="nb-card nb-accent-cyan panel">
+      <PanelHeader
+        label="language breakdown"
+        trailing={<span className="tag tag-outline">top 5 languages</span>}
+      />
 
       {top5.length > 0 ? (
-        <div className="lang-breakdown-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: 'var(--space-6)' }}>
-          {/* Left Column: Progress Bars */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        <div className="lang-grid">
+          <div className="lang-bars">
             {top5.map(([name, detail], idx) => {
-              const color = languageColors[idx % languageColors.length]
+              const accent = LANGUAGE_ACCENTS[idx % LANGUAGE_ACCENTS.length]
               return (
-                <div key={name} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--text-sm)' }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 300, color: 'var(--text-muted)' }}>{name}</span>
-                    <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                <div key={name} className="lang-bar-row">
+                  <div className="lang-bar-meta">
+                    <span className="lang-bar-name">{name}</span>
+                    <span className="meta-mono">
                       {formatBytes(detail.bytes)} ({detail.percentage}%)
                     </span>
                   </div>
-                  <div style={{
-                    width: '100%',
-                    height: '16px',
-                    backgroundColor: 'var(--bg)',
-                    border: `2px solid ${color}`,
-                    overflow: 'hidden',
-                    position: 'relative'
-                  }}>
-                    <div style={{
-                      width: `${detail.percentage}%`,
-                      height: '100%',
-                      backgroundColor: color,
-                      borderRight: detail.percentage < 100 ? `2px solid ${color}` : 'none',
-                      transition: 'width 0.6s ease-in-out'
-                    }} />
+                  <div className="lang-bar" style={{ borderColor: `var(--accent-${accent})` }}>
+                    <div
+                      className="lang-bar-fill"
+                      style={{
+                        width: `${detail.percentage}%`,
+                        background: `var(--accent-${accent})`,
+                      }}
+                    />
                   </div>
                 </div>
               )
             })}
           </div>
 
-          {/* Right Column: Mini Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 'var(--space-3)', alignContent: 'start' }}>
+          <div className="lang-cards">
             {top5.map(([name, detail], idx) => {
-              const color = languageColors[idx % languageColors.length]
+              const accent = LANGUAGE_ACCENTS[idx % LANGUAGE_ACCENTS.length]
               return (
-                <div key={name} className="nb-card" style={{
-                  padding: 'var(--space-3)',
-                  ['--card-accent' as any]: color,
-                  background: 'var(--bg-card)',
-                }}>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)', fontWeight: 300, color: 'var(--text-muted)', marginBottom: 'var(--space-1)' }}>
-                    {name}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xl)', fontWeight: 700, color }}>
+                <div key={name} className={`nb-card nb-accent-${accent} lang-card`}>
+                  <div className="lang-card-name">{name}</div>
+                  <div
+                    className="lang-card-pct"
+                    style={{ color: `var(--accent-${accent}-on-surface)` }}
+                  >
                     {detail.percentage}%
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
-                    {formatBytes(detail.bytes)}
-                  </div>
+                  <div className="lang-card-bytes">{formatBytes(detail.bytes)}</div>
                 </div>
               )
             })}
           </div>
         </div>
       ) : (
-        <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-8) 0' }}>
-          No language breakdown data — click Sync to load.
-        </p>
+        <p className="empty-state">No language breakdown data — click Sync to load.</p>
       )}
     </div>
   )

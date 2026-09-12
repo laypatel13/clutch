@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import httpClient from '../api/httpClient'
 import { MapPin, Users, BookOpen, ArrowLeft } from 'lucide-react'
 import NavigationBar from '../components/layout/NavigationBar'
+import PageContainer from '../components/layout/PageContainer'
 import LoadingScreen from '../components/common/LoadingScreen'
 import type { PublicUserProfile } from '../types/user.types'
 
@@ -16,49 +17,45 @@ export default function UserProfilePage() {
   }, [username])
 
   if (notFound) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 'var(--space-3)' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', color: 'var(--text-primary)', letterSpacing: '0.01em' }}>User not found</h1>
-      <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>@{username} doesn't exist or has a private profile.</p>
+    <div className="centered-viewport">
+      <h1 className="entity-title">User not found</h1>
+      <p className="meta-text">@{username} doesn't exist or has a private profile.</p>
     </div>
   )
 
   if (!profile) return <LoadingScreen message="Loading profile..." />
 
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div className="app-root">
       <NavigationBar rightContent={
-        <Link to="/dashboard" className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-4)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}><ArrowLeft size={14} /> Dashboard</Link>
+        <Link to="/dashboard" className="btn-nb btn-grey btn-sm"><ArrowLeft size={14} /> Dashboard</Link>
       } />
-      <div className="page-container profile-content" style={{ maxWidth: '620px', margin: '0 auto', padding: 'var(--space-14) var(--space-8)' }}>
+      <PageContainer width="narrow" padding="roomy" tone="profile">
         <div className="section-label">Profile</div>
-        <div className="nb-panel-purple" style={{ padding: 'var(--space-7)' }}>
-          <div className="profile-header-row" style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'flex-start' }}>
-            <img src={profile.avatar_url || ''} alt={profile.username} style={{ width: '72px', height: '72px', border: '2px solid var(--border)',boxShadow:'2px 2px 0 var(--border)',borderRadius:'50%',objectFit:'cover', flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)', color: 'var(--text-primary)', letterSpacing: '0.01em', wordBreak: 'break-word' }}>
-                {profile.name || profile.username}
-              </h1>
-              <p style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--accent-purple)', marginBottom: 'var(--space-3)' }}>@{profile.username}</p>
-              {profile.bio && (
-                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 300, fontSize: 'var(--text-base)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)', lineHeight: 'var(--leading-relaxed)' }}>{profile.bio}</p>
-              )}
-              <div className="profile-meta-row" style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+        <div className="nb-card nb-accent-purple profile-card">
+          <div className="profile-header-row">
+            <img src={profile.avatar_url || ''} alt={profile.username} className="profile-avatar" />
+            <div className="flex-fill">
+              <h1 className="entity-title profile-name">{profile.name || profile.username}</h1>
+              <p className="profile-handle">@{profile.username}</p>
+              {profile.bio && <p className="body-text profile-bio">{profile.bio}</p>}
+              <div className="profile-meta-row">
                 {profile.location && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-                    <MapPin size={12} color="var(--accent-yellow)" />{profile.location}
+                  <span className="profile-meta-item">
+                    <MapPin size={12} color="var(--accent-yellow-on-surface)" />{profile.location}
                   </span>
                 )}
-                <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-                  <Users size={12} color="var(--accent-pink)" />{profile.followers} followers
+                <span className="profile-meta-item">
+                  <Users size={12} color="var(--accent-pink-on-surface)" />{profile.followers} followers
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>
-                  <BookOpen size={12} color="var(--accent-purple)" />{profile.public_repos} repositories
+                <span className="profile-meta-item">
+                  <BookOpen size={12} color="var(--accent-purple-on-surface)" />{profile.public_repos} repositories
                 </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   )
 }

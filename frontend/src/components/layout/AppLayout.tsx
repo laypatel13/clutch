@@ -9,7 +9,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, rightContent }: AppLayoutProps) {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div className="app-root">
       <NavigationBar rightContent={rightContent} />
       <div className="app-shell">
         <AppSidebar />

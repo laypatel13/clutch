@@ -15,11 +15,11 @@ export default function LoadingScreen({ message = 'Loading...' }: LoadingScreenP
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 'var(--space-5)' }}>
-      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'var(--text-3xl)', color: 'var(--text-primary)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-        Clutch<span className="blink" style={{ color: 'var(--accent-purple)' }}>_</span>
+    <div className="centered-viewport">
+      <div className="wordmark-lg">
+        Clutch<span className="blink wordmark-cursor">_</span>
       </div>
-      <div style={{ fontFamily: 'var(--font-chrome)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{message}</div>
+      <div className="loading-message">{message}</div>
     </div>
   )
 }
