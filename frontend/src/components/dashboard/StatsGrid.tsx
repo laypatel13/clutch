@@ -8,7 +8,7 @@ interface StatsGridProps {
 
 export default function StatsGrid({ streak }: StatsGridProps) {
   return (
-    <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(155px, 100%), 1fr))', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
+    <div className="stats-grid">
       <StatCard label="streak" value={streak ? `${streak.current_streak}d` : '—'} icon={<Flame size={13} />} color="yellow" />
       <StatCard label="best streak" value={streak ? `${streak.longest_streak}d` : '—'} icon={<BarChart3 size={13} />} color="cyan" />
     </div>

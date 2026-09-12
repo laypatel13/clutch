@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuthentication } from '../hooks/useAuthentication'
+import { useSyncAction } from '../hooks/useSyncAction'
 import httpClient from '../api/httpClient'
-import { RefreshCw } from 'lucide-react'
 import AppLayout from '../components/layout/AppLayout'
-import LoadingScreen from '../components/common/LoadingScreen'
+import PageContainer from '../components/layout/PageContainer'
+import SyncButton from '../components/common/SyncButton'
+import { StatCardSkeleton, PanelSkeleton, SkeletonRegion } from '../components/common/Skeleton'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import StatsGrid from '../components/dashboard/StatsGrid'
 import CommitActivityChart from '../components/dashboard/CommitActivityChart'
@@ -13,14 +15,12 @@ export default function DashboardPage() {
   const { user } = useAuthentication()
   const [activity, setActivity] = useState<ActivitySummary | null>(null)
   const [streak, setStreak] = useState<StreakSummary | null>(null)
-  const [lastSynced, setLastSynced] = useState<Date | null>(null)
   const [loading, setLoading] = useState(true)
-  const [syncing, setSyncing] = useState(false)
 
-  useEffect(() => { fetchDashboardData().then(() => setLastSynced(new Date())) }, [])
-
+  // No setLoading(true) here on purpose. This runs on first load AND on
+  // every sync; flipping loading back on would swap the populated page out
+  // for the loading state and throw away the user's scroll position.
   const fetchDashboardData = async () => {
-    setLoading(true)
     try {
       const [activityRes, streakRes] = await Promise.all([
         httpClient.get('/github/activity?days=30'),
@@ -32,26 +32,9 @@ export default function DashboardPage() {
     finally { setLoading(false) }
   }
 
-  const handleSync = async () => {
-    setSyncing(true)
-    await httpClient.post('/github/sync').catch(() => { })
-    await fetchDashboardData()
-    setLastSynced(new Date())
-    setSyncing(false)
-  }
+  const { syncing, lastSynced, markSynced, sync } = useSyncAction('/github/sync', fetchDashboardData)
 
-  const getSyncedAgoText = () => {
-    if (!lastSynced) return null
-    const diffMs = Date.now() - lastSynced.getTime()
-    const diffMin = Math.floor(diffMs / 60000)
-    if (diffMin < 1) return 'Just synced'
-    if (diffMin === 1) return '1min ago'
-    if (diffMin < 60) return `${diffMin}min ago`
-    const diffHr = Math.floor(diffMin / 60)
-    return `${diffHr}hour ago`
-  }
-
-  if (loading) return <LoadingScreen message="Loading activity..." />
+  useEffect(() => { fetchDashboardData().then(markSynced) }, [markSynced])
 
   const chartData = activity?.daily_activity
     ?.sort((a, b) => a.date.localeCompare(b.date))
@@ -60,16 +43,25 @@ export default function DashboardPage() {
 
   return (
     <AppLayout rightContent={
-      <button onClick={handleSync} disabled={syncing} className="btn-nb btn-grey" style={{ fontSize: 'var(--text-sm)', padding: '5px var(--space-3)', whiteSpace: 'nowrap' }}>
-        <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none', flexShrink: 0 }} />
-        {syncing ? 'Syncing...' : (getSyncedAgoText() || 'Sync now')}
-      </button>
+      <SyncButton syncing={syncing} lastSynced={lastSynced} onSync={sync} />
     }>
-      <div className="page-container dashboard-content" style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-9) var(--space-8)' }}>
+      <PageContainer width="wide" tone="dashboard">
         <DashboardHeader name={user?.name} username={user?.username} />
-        <StatsGrid streak={streak} />
-        <CommitActivityChart chartData={chartData} />
-      </div>
+        {loading ? (
+          <SkeletonRegion label="Loading activity">
+            <div className="stats-grid">
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </div>
+            <PanelSkeleton />
+          </SkeletonRegion>
+        ) : (
+          <div className="stagger-in">
+            <StatsGrid streak={streak} />
+            <CommitActivityChart chartData={chartData} />
+          </div>
+        )}
+      </PageContainer>
     </AppLayout>
   )
 }

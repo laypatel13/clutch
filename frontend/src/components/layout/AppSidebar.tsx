@@ -34,6 +34,7 @@ export default function AppSidebar() {
               <Link
                 key={item.path}
                 to={item.path}
+                viewTransition
                 className="app-sidebar-item"
                 data-active={isActive}
                 aria-label={item.label}

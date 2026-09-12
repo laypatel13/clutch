@@ -1,26 +1,166 @@
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-@import "tailwindcss";
 
+/* ==========================================================================
+   BASE RESET
+   The app was built against Tailwind's preflight, which was removed because
+   no component ever used a Tailwind utility class. These are the preflight
+   rules the layout actually depends on: border-box sizing, zeroed default
+   margins (every heading/paragraph sets its own spacing from the --space-*
+   scale), form controls inheriting type, and block-level SVGs so lucide icons
+   sit flush in flex rows instead of picking up baseline gap.
+   ========================================================================== */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+}
+
+html {
+  line-height: var(--leading-normal);
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+ol, ul, menu {
+  list-style: none;
+}
+
+img, svg, video, canvas {
+  display: block;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+button, input, select, optgroup, textarea {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ==========================================================================
+   TOKENS
+   Every value a component needs lives here. Components should reference
+   var(--*) or a class below — never a raw hex, px size, or shadow offset.
+   ========================================================================== */
 :root {
+  /* SURFACES */
   --bg: #f5f0e8;
   --bg-card: #faf7f2;
-  --bg-dark: #1a1a2e;
   --bg-panel: #eee8dc;
+  --bg-dark: #1a1a2e;
+
+  /* BORDERS
+     2px = container edges (cards, panels, buttons, nav, sidebar)
+     1px = internal dividers (list rows, selects, pagination rules, badges) */
   --border: #1a1a2e;
   --border-light: #c8c0b0;
+
+  /* SHADOWS — brutalist hard offsets, never blurred */
   --shadow: 5px 5px 0px #1a1a2e;
   --shadow-sm: 3px 3px 0px #1a1a2e;
   --shadow-hover: 2px 2px 0px #1a1a2e;
+
+  /* ACCENTS — four roles per accent, so a colour never has to be hand-picked:
+       base          brand colour. Borders, hard shadows, icons, chart strokes,
+                     large display text. Bright and unchanged across themes.
+       -fill         background sitting behind white text. Deepened where the
+                     base fails WCGA AA 4.5:1 against white (cyan, green,
+                     yellow, pink, orange all did). Theme-independent, because
+                     the text on top is always white.
+       -deep         the hard drop-shadow cast by a filled tag/button.
+       -on-surface   accent used AS small text or an icon on a page surface.
+                     Theme-aware: the light theme needs the deepened value to
+                     stay readable on cream, the dark theme needs the bright
+                     one. See the [data-theme='dark'] block. */
   --accent-purple: #7c3aed;
+  --accent-purple-fill: #7c3aed;
+  --accent-purple-deep: #4c1d95;
+  --accent-purple-on-surface: var(--accent-purple-fill);
+
   --accent-pink: #e8185a;
+  --accent-pink-fill: #c9134e;
+  --accent-pink-deep: #9d0a38;
+  --accent-pink-on-surface: var(--accent-pink-fill);
+
   --accent-cyan: #0891b2;
+  --accent-cyan-fill: #0e7490;
+  --accent-cyan-deep: #164e63;
+  --accent-cyan-on-surface: var(--accent-cyan-fill);
+
   --accent-green: #059669;
+  --accent-green-fill: #047857;
+  --accent-green-deep: #065f46;
+  --accent-green-on-surface: var(--accent-green-fill);
+
   --accent-yellow: #d97706;
+  --accent-yellow-fill: #b45309;
+  --accent-yellow-deep: #78350f;
+  --accent-yellow-on-surface: var(--accent-yellow-fill);
+
+  --accent-orange: #f97316;
+  --accent-orange-fill: #c2410c;
+  --accent-orange-deep: #9a3412;
+  --accent-orange-on-surface: var(--accent-orange-fill);
+
+  /* Lime is the one accent that carries DARK text instead of white — it is far
+     too bright to sit under white. It is never used as text on a surface. */
   --accent-lime: #c3e600;
+  --accent-lime-fill: #c3e600;
+  --accent-lime-deep: #7a8f00;
+
+  /* Neutral — the grey used by secondary buttons and the PR size-mix chrome.
+     Passes 4.9:1 under white text already, so fill == base. */
+  --accent-neutral: #6b7280;
+  --accent-neutral-fill: #6b7280;
+  --accent-neutral-deep: #374151;
+
+  /* Foreground colours for text sitting ON a filled accent. */
+  --on-accent: #ffffff;
+  --on-accent-dark: #1a1a2e;
+
+  /* CONTRIBUTION HEAT RAMP — five steps derived from --accent-green rather
+     than hand-picked, so the heatmap belongs to the same palette as
+     everything else. --heat-1..3 mix toward --bg-card and so follow the
+     theme automatically; only --heat-4 has to flip direction, because
+     "more" means darker on cream paper and brighter on a dark surface. */
+  --heat-0: var(--bg-panel);
+  --heat-1: color-mix(in srgb, var(--accent-green) 30%, var(--bg-card));
+  --heat-2: color-mix(in srgb, var(--accent-green) 60%, var(--bg-card));
+  --heat-3: var(--accent-green);
+  --heat-4: color-mix(in srgb, var(--accent-green) 70%, #000000);
+
+  /* TEXT */
   --text-primary: #1a1a2e;
   --text-secondary: #4a4a6a;
   --text-muted: #8888aa;
   --text-on-dark: #f5f0e8;
+
+  /* FONTS */
   --font-display: 'League Spartan', sans-serif;
   --font-body: 'Poppins', sans-serif;
   --font-chrome: 'Poppins', sans-serif;
@@ -43,6 +183,7 @@
   --space-18: 72px;
 
   /* TYPE SCALE — consistent step ratio across the app */
+  --text-2xs: 9px;
   --text-xs: 11px;
   --text-sm: 12px;
   --text-base: 14px;
@@ -60,22 +201,86 @@
   --leading-snug: 1.4;
   --leading-normal: 1.6;
   --leading-relaxed: 1.8;
+
+  /* CONTAINER WIDTHS — page shells pick one of these, never a raw px value */
+  --container-wide: 960px;
+  --container-narrow: 640px;
+
+  /* COMPONENT SIZES
+     Deliberately NOT drawn from the --space-* scale: the 640px breakpoint
+     compresses --space-14 and --space-18 to tighten page gutters, which would
+     shrink any component sized from them. Fixed sizes belong here instead. */
+  --avatar-size: 72px;
+
+  /* Live height of the sticky top nav, measured and written by NavigationBar.
+     The sidebar offsets itself by this. It must never be hardcoded: the nav
+     is ~66px on desktop, and taller whenever its contents wrap. The value
+     here is only the pre-measurement fallback for the first paint. */
+  --nav-h: 66px;
+
+  /* Minimum comfortable tap size. Applied on coarse pointers only, so mouse
+     users keep the compact chrome. */
+  --tap-min: 44px;
+
+  /* MOTION
+     Duration is chosen by how far a thing travels and how much it changes —
+     not one value copied everywhere. Press feedback has to stay near-instant
+     or the UI feels laggy; a route change can afford to be slow enough to
+     follow.
+
+     Easing carries meaning: decelerate into place when arriving, accelerate
+     away when leaving, and reserve linear for genuinely constant-rate motion
+     (the sync spinner is the only honest use of it here).
+
+     The curves are deliberately overshoot-free. The brutalist chrome — hard
+     offset shadows, square corners, flat press states — reads as mechanical,
+     and a springy bounce would fight it. */
+  --dur-instant: 80ms;   /* press feedback */
+  --dur-fast: 140ms;     /* hover, state change */
+  --dur-base: 240ms;     /* entry, reveal */
+  --dur-slow: 400ms;     /* route change */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);        /* arriving */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);         /* leaving */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);     /* moving within a view */
+
+  /* Gap between consecutive items in a staggered reveal. */
+  --stagger-step: 40ms;
 }
 
-[data-theme='dark']{
-  --bg:#16161d;
-  --text-primary:#ececf1;
-  --bg-card:#232334;
-  --bg-panel:#1c1c28;
-  --border:#33334a;
-  --border-light:#3d3d54;
-  --text-secondary:#b8b8c7;
-  --text-muted:#8f8fa3;
-  --bg-dark:#202033;
-  --shadow:5px 5px 0px #0a0a10;
-  --shadow-sm:3px 3px 0px #0a0a10;
-  --shadow-hover:2px 2px 0px #0a0a10;
+/* Dark theme remaps surfaces, borders, text and shadows.
+   Accent BASE colours are deliberately NOT remapped — the saturated brand
+   palette is meant to read identically on cream paper and on dark, and it
+   gains contrast against a dark background rather than losing it. Only
+   -on-surface flips, because a colour dark enough to carry white text in the
+   light theme becomes unreadable as text on a dark surface. */
+[data-theme='dark'] {
+  --bg: #16161d;
+  --bg-card: #232334;
+  --bg-panel: #1c1c28;
+  --bg-dark: #202033;
+  --border: #33334a;
+  --border-light: #3d3d54;
+  --text-primary: #ececf1;
+  --text-secondary: #b8b8c7;
+  --text-muted: #8f8fa3;
+  --shadow: 5px 5px 0px #0a0a10;
+  --shadow-sm: 3px 3px 0px #0a0a10;
+  --shadow-hover: 2px 2px 0px #0a0a10;
+
+  --accent-purple-on-surface: var(--accent-purple);
+  --accent-pink-on-surface: var(--accent-pink);
+  --accent-cyan-on-surface: var(--accent-cyan);
+  --accent-green-on-surface: var(--accent-green);
+  --accent-yellow-on-surface: var(--accent-yellow);
+  --accent-orange-on-surface: var(--accent-orange);
+
+  --heat-4: color-mix(in srgb, var(--accent-green) 75%, #ffffff);
 }
+
+/* ==========================================================================
+   DOCUMENT
+   ========================================================================== */
 html {
   overflow-x: hidden;
   width: 100%;
@@ -95,7 +300,7 @@ body {
   font-size: var(--text-md);
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard);
   width: 100%;
   max-width: 100vw;
 }
@@ -112,16 +317,151 @@ html[data-theme='dark'] body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); }
-::selection { background: rgba(124,58,237,0.2); }
+::selection { background: rgba(124, 58, 237, 0.2); }
 
-/* NOTEBOOK CARD — core brutalist paper card.
-   Optionally set --card-accent inline to color the border/shadow;
-   hover/active keep that same accent instead of falling back to a flat dark shadow. */
+/* Keyboard focus. One rule for every interactive element — without this the
+   brutalist chrome falls back to the browser's default ring. */
+:focus-visible {
+  outline: 2px solid var(--accent-purple);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY ROLES
+   Four title roles, distinguished by what the text IS rather than by how big
+   it happened to look: a hero, a page heading, an entity named inside a card,
+   and the brand wordmark.
+   ========================================================================== */
+.display-title,
+.page-title,
+.entity-title,
+.wordmark,
+.wordmark-lg {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.display-title {
+  font-size: var(--text-6xl);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+}
+
+.page-title { font-size: var(--text-4xl); }
+.entity-title { font-size: var(--text-2xl); }
+
+.wordmark,
+.wordmark-lg {
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.wordmark { font-size: var(--text-xl); }
+.wordmark-lg { font-size: var(--text-3xl); }
+.wordmark-cursor { color: var(--accent-purple-on-surface); }
+
+/* Secondary text. Sans-chrome for human prose ("@user · Last 30 days"),
+   mono for machine identifiers ("repo #123 · +12/-4", "page 2 of 5"). */
+.meta-text {
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.meta-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.empty-state {
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-8) 0;
+}
+
+/* Accent link sitting inside a run of text. */
+.inline-link {
+  color: var(--accent-purple-on-surface);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.inline-link:hover { text-decoration: underline; }
+
+/* Body copy inside cards and panels. */
+.body-text {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* SECTION LABEL */
+.section-label {
+  font-family: var(--font-chrome);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+/* The empty alt-text keeps this decorative glyph out of the accessibility
+   tree, so screen readers don't announce a stray "§" before every label. */
+.section-label::before { content: '§' / ''; color: var(--accent-purple-on-surface); }
+
+/* Fills the remaining space in a flex row and stays shrinkable, so long
+   content truncates or wraps instead of pushing siblings out of the row. */
+.flex-fill {
+  flex: 1;
+  min-width: 0;
+}
+
+/* STAT */
+.stat-card { padding: var(--space-4); }
+.stat-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.stat-card-icon { display: inline-flex; }
+.stat-value {
+  font-family: var(--font-chrome);
+  font-weight: 700;
+  font-size: var(--text-3xl);
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+.stat-label {
+  font-family: var(--font-chrome);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   SURFACES
+   One primitive: .nb-card. Accent colour is a modifier that sets
+   --card-accent, which drives border and shadow together. Every accent
+   surface therefore gets identical hover and press behaviour.
+   ========================================================================== */
 .nb-card {
   background: var(--bg-card);
   border: 2px solid var(--card-accent, var(--border));
   box-shadow: 5px 5px 0px var(--card-accent, var(--border));
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out);
 }
 .nb-card:hover {
   transform: translate(2px, 2px);
@@ -132,65 +472,101 @@ html[data-theme='dark'] body {
   box-shadow: none;
 }
 
+.nb-accent-purple { --card-accent: var(--accent-purple); }
+.nb-accent-pink   { --card-accent: var(--accent-pink); }
+.nb-accent-cyan   { --card-accent: var(--accent-cyan); }
+.nb-accent-green  { --card-accent: var(--accent-green); }
+.nb-accent-yellow { --card-accent: var(--accent-yellow); }
+.nb-accent-orange { --card-accent: var(--accent-orange); }
+.nb-accent-lime   { --card-accent: var(--accent-lime); }
+
 /* DARK CARD — inverted for contrast */
 .nb-card-dark {
   background: var(--bg-dark);
   border: 2px solid var(--border);
   box-shadow: var(--shadow);
   color: var(--text-on-dark);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out);
 }
 .nb-card-dark:hover {
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-hover);
 }
 
-/* ACCENT PANELS */
-.nb-panel-purple { background: var(--bg-card); border: 2px solid var(--accent-purple); box-shadow: 5px 5px 0px var(--accent-purple); transition: transform 0.1s ease, box-shadow 0.1s ease; }
-.nb-panel-purple:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--accent-purple); }
-
-.nb-panel-pink { background: var(--bg-card); border: 2px solid var(--accent-pink); box-shadow: 5px 5px 0px var(--accent-pink); transition: transform 0.1s ease, box-shadow 0.1s ease; }
-.nb-panel-pink:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--accent-pink); }
-
-.nb-panel-cyan { background: var(--bg-card); border: 2px solid var(--accent-cyan); box-shadow: 5px 5px 0px var(--accent-cyan); transition: transform 0.1s ease, box-shadow 0.1s ease; }
-.nb-panel-cyan:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--accent-cyan); }
-
-.nb-panel-lime { background: var(--bg-card); border: 2px solid var(--accent-lime); box-shadow: 5px 5px 0px var(--accent-lime); transition: transform 0.1s ease, box-shadow 0.1s ease; }
-.nb-panel-lime:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--accent-lime); }
-
-/* BUTTONS */
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
 .btn-nb {
   font-family: var(--font-chrome);
   font-size: 13px;
   font-weight: 400;
   padding: 8px 18px;
-  border: 2px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--btn-fill, var(--border));
+  background: var(--btn-fill, transparent);
+  color: var(--btn-fg, var(--text-primary));
+  box-shadow: 3px 3px 0px var(--btn-deep, var(--border));
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   letter-spacing: 0.02em;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out);
   text-transform: uppercase;
 }
-.btn-nb:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
-.btn-nb:active { transform: translate(3px, 3px); box-shadow: none; }
+.btn-nb:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--btn-deep, var(--border));
+}
+.btn-nb:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
 
-.btn-dark { background: var(--bg-dark); color: var(--text-on-dark); border-color: var(--bg-dark); box-shadow: 3px 3px 0px #000000; }
-.btn-dark:hover { box-shadow: 1px 1px 0px #000000; }
-.btn-purple { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 3px 3px 0px #4c1d95; }
-.btn-purple:hover { box-shadow: 1px 1px 0px #4c1d95; }
-.btn-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); box-shadow: 3px 3px 0px #9d0a38; }
-.btn-pink:hover { box-shadow: 1px 1px 0px #9d0a38; }
-.btn-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); box-shadow: 3px 3px 0px #7a8f00; }
-.btn-lime:hover { box-shadow: 1px 1px 0px #7a8f00; }
-.btn-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); box-shadow: 3px 3px 0px #164e63; }
-.btn-cyan:hover { box-shadow: 1px 1px 0px #164e63; }
-.btn-grey { background: #6b7280; color: #fff; border-color: #6b7280; box-shadow: 3px 3px 0px #374151; }
-.btn-grey:hover { box-shadow: 1px 1px 0px #374151; }
-.btn-ghost { background: transparent; color: var(--text-primary); border-color: var(--border-light); box-shadow: 3px 3px 0px var(--border-light); }
+.btn-dark   { --btn-fill: var(--bg-dark); --btn-deep: #000000; --btn-fg: var(--text-on-dark); }
+.btn-purple { --btn-fill: var(--accent-purple-fill); --btn-deep: var(--accent-purple-deep); --btn-fg: var(--on-accent); }
+.btn-pink   { --btn-fill: var(--accent-pink-fill); --btn-deep: var(--accent-pink-deep); --btn-fg: var(--on-accent); }
+.btn-cyan   { --btn-fill: var(--accent-cyan-fill); --btn-deep: var(--accent-cyan-deep); --btn-fg: var(--on-accent); }
+.btn-orange { --btn-fill: var(--accent-orange-fill); --btn-deep: var(--accent-orange-deep); --btn-fg: var(--on-accent); }
+.btn-lime   { --btn-fill: var(--accent-lime-fill); --btn-deep: var(--accent-lime-deep); --btn-fg: var(--on-accent-dark); }
+.btn-grey   { --btn-fill: var(--accent-neutral-fill); --btn-deep: var(--accent-neutral-deep); --btn-fg: var(--on-accent); }
+.btn-ghost  { --btn-fill: transparent; --btn-deep: var(--border-light); --btn-fg: var(--text-primary); border-color: var(--border-light); }
+
+/* SYNC BUTTON — card-coloured chrome rather than a filled accent, so it reads
+   as a utility control next to the circular icon buttons. */
+.btn-sync {
+  --btn-fill: var(--bg-card);
+  --btn-deep: var(--border);
+  --btn-fg: var(--text-primary);
+  border-color: var(--border);
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.sync-icon { flex-shrink: 0; }
+
+/* Size variants. Base .btn-nb is the default; these are the two exceptions —
+   compact for nav chrome and card headers, large for a hero call to action. */
+.btn-sm {
+  font-size: var(--text-sm);
+  padding: 5px var(--space-3);
+  white-space: nowrap;
+}
+.btn-lg {
+  font-size: var(--text-md);
+  padding: var(--space-4) var(--space-6);
+}
+
+.btn-nb:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.btn-nb:disabled:hover {
+  transform: none;
+  box-shadow: 3px 3px 0px var(--btn-deep, var(--border));
+}
 
 /* CIRCULAR ICON BUTTON — nav utility buttons (github, theme toggle) */
 .icon-btn-circle {
@@ -205,41 +581,90 @@ html[data-theme='dark'] body {
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out);
   flex-shrink: 0;
 }
 .icon-btn-circle:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
 .icon-btn-circle:active { transform: translate(3px, 3px); box-shadow: none; }
 
-/* SYNC BUTTON — matches icon-btn-circle theme (border + shadow), pill shape for text+icon */
-.btn-sync {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border-color: var(--border);
-  box-shadow: var(--shadow-sm);
-  font-family: var(--font-body);
-  font-weight: 400;
+/* ==========================================================================
+   COMPACT LABELS
+   Three roles, chosen by what the label MEANS:
+     .badge  ambient state — soft pill, 1px border, no shadow, never clickable
+     .tag    a value or attribute — brutalist stamp, 2px border + hard shadow
+     .chip   an interactive filter — the stamp plus press feedback, with
+             selection exposed via aria-pressed rather than colour alone
+   ========================================================================== */
+.badge {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  padding: 2px 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-block;
+  border: 1px solid var(--badge-fill, var(--accent-neutral-fill));
+  background: var(--badge-fill, var(--accent-neutral-fill));
+  color: var(--on-accent);
+}
+.badge-green { --badge-fill: var(--accent-green-fill); }
+.badge-pink  { --badge-fill: var(--accent-pink-fill); }
+
+.tag,
+.chip {
+  font-family: var(--font-chrome);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  padding: 4px 10px;
+  letter-spacing: 0.01em;
   text-transform: none;
-  letter-spacing: normal;
+  display: inline-block;
+  border: 2px solid var(--tag-border, var(--tag-fill, var(--border)));
+  background: var(--tag-fill, var(--bg-card));
+  color: var(--tag-fg, var(--text-primary));
+  box-shadow: 2px 2px 0px var(--tag-deep, var(--border));
 }
 
-/* TAGS — brutalist mono stamp: bordered, shadowed, quiet lowercase mono text */
-.tag { font-family: var(--font-chrome); font-weight: 700; font-size: var(--text-xs); padding: 4px 10px; letter-spacing: 0.01em; text-transform: none; display: inline-block; border: 2px solid var(--border); box-shadow: 2px 2px 0px var(--border); background: var(--bg-card); color: var(--text-primary); }
-.tag-purple { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 2px 2px 0px #4c1d95; }
-.tag-pink { background: var(--accent-pink); color: #fff; border-color: var(--accent-pink); box-shadow: 2px 2px 0px #9d0a38; }
-.tag-cyan { background: var(--accent-cyan); color: #fff; border-color: var(--accent-cyan); box-shadow: 2px 2px 0px #164e63; }
-.tag-green { background: var(--accent-green); color: #fff; border-color: var(--accent-green); box-shadow: 2px 2px 0px #065f46; }
-.tag-yellow { background: var(--accent-yellow); color: #fff; border-color: var(--accent-yellow); box-shadow: 2px 2px 0px #78350f; }
-.tag-lime { background: var(--accent-lime); color: #1a1a2e; border-color: var(--accent-lime); box-shadow: 2px 2px 0px #7a8f00; }
-.tag-outline { background: var(--bg-card); color: var(--text-secondary); border-color: var(--border-light); box-shadow: 2px 2px 0px var(--border-light); }
-.tag-dark { background: var(--bg-dark); color: var(--text-on-dark); border-color: var(--bg-dark); box-shadow: 2px 2px 0px #000000; }
+.tag-purple { --tag-fill: var(--accent-purple-fill); --tag-deep: var(--accent-purple-deep); --tag-fg: var(--on-accent); }
+.tag-pink   { --tag-fill: var(--accent-pink-fill);   --tag-deep: var(--accent-pink-deep);   --tag-fg: var(--on-accent); }
+.tag-cyan   { --tag-fill: var(--accent-cyan-fill);   --tag-deep: var(--accent-cyan-deep);   --tag-fg: var(--on-accent); }
+.tag-green  { --tag-fill: var(--accent-green-fill);  --tag-deep: var(--accent-green-deep);  --tag-fg: var(--on-accent); }
+.tag-yellow { --tag-fill: var(--accent-yellow-fill); --tag-deep: var(--accent-yellow-deep); --tag-fg: var(--on-accent); }
+.tag-orange { --tag-fill: var(--accent-orange-fill); --tag-deep: var(--accent-orange-deep); --tag-fg: var(--on-accent); }
+.tag-lime   { --tag-fill: var(--accent-lime-fill);   --tag-deep: var(--accent-lime-deep);   --tag-fg: var(--on-accent-dark); }
+.tag-dark   { --tag-fill: var(--bg-dark);            --tag-deep: #000000;                   --tag-fg: var(--text-on-dark); }
+.tag-outline {
+  --tag-fill: var(--bg-card);
+  --tag-border: var(--border-light);
+  --tag-deep: var(--border-light);
+  --tag-fg: var(--text-secondary);
+}
 
-/* STATUS BADGE — nav connection indicator only. Kept as the original soft
-   pill on purpose, separate from the .tag brutalist stamp treatment. */
-.badge-status { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 3px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--accent-green); background: var(--accent-green); color: #fff; }
-.badge-status-pink { font-family: var(--font-chrome); font-weight: 600; font-size: var(--text-xs); padding: 1px 9px; letter-spacing: 0.04em; text-transform: uppercase; display: inline-block; border: 1px solid var(--accent-pink); background: var(--accent-pink); color: #fff; }
+.chip {
+  cursor: pointer;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out);
+  --tag-fill: var(--bg-card);
+  --tag-border: var(--border-light);
+  --tag-deep: var(--border-light);
+  --tag-fg: var(--text-secondary);
+}
+.chip:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0px var(--tag-deep); }
+.chip:active { transform: translate(2px, 2px); box-shadow: none; }
+.chip[aria-pressed='true'] {
+  --tag-fill: var(--accent-purple-fill);
+  --tag-border: var(--accent-purple-fill);
+  --tag-deep: var(--accent-purple-deep);
+  --tag-fg: var(--on-accent);
+}
 
-/* NAV */
+/* ==========================================================================
+   NAV
+   ========================================================================== */
+/* The nav stays a SINGLE row at every width. It used to wrap, which pushed
+   the action buttons onto a second line on phones and — because the sticky
+   sidebar offsets itself by the nav's height — knocked the sidebar out of
+   alignment by ~40px. Instead of wrapping, the brand shrinks and the lowest
+   priority items are dropped at the narrow breakpoints below. */
 .nb-nav {
   border-bottom: 2px solid var(--border);
   background: var(--bg-card);
@@ -250,9 +675,8 @@ html[data-theme='dark'] body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  row-gap: var(--space-2);
-  column-gap: var(--space-3);
+  flex-wrap: nowrap;
+  gap: var(--space-3);
   max-width: 100vw;
 }
 
@@ -260,16 +684,34 @@ html[data-theme='dark'] body {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
-  row-gap: var(--space-2);
+  flex-shrink: 0;
 }
 
-/* APP SHELL — sidebar + content, sits below the sticky top nav */
+.nb-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  min-width: 0;
+  flex-shrink: 1;
+}
+/* The wordmark never shrinks — a truncated brand ("C...") is worse than
+   dropping a secondary action, so the narrow breakpoints below give up the
+   status badge and the repo link instead. */
+.nb-nav-brand .wordmark {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   APP SHELL — sidebar + content, sits below the sticky top nav
+   ========================================================================== */
 .app-shell {
   display: flex;
   align-items: stretch;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100dvh - var(--nav-h));
 }
 
 .app-sidebar {
@@ -278,7 +720,7 @@ html[data-theme='dark'] body {
   flex-shrink: 0;
   border-right: 2px solid var(--border);
   background: var(--bg-card);
-  transition: width 0.15s ease;
+  transition: width var(--dur-fast) var(--ease-standard);
 }
 .app-sidebar[data-expanded='true'] { --sidebar-w: 200px; }
 
@@ -292,8 +734,8 @@ html[data-theme='dark'] body {
    which was the "hanging in the middle" bug. */
 .app-sidebar-inner {
   position: sticky;
-  top: 60px;
-  height: calc(100vh - 60px);
+  top: var(--nav-h);
+  height: calc(100dvh - var(--nav-h));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -320,7 +762,7 @@ html[data-theme='dark'] body {
   font-weight: 600;
   white-space: nowrap;
   border: 2px solid transparent;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .app-sidebar-item:hover {
   border-color: var(--border);
@@ -338,7 +780,7 @@ html[data-theme='dark'] body {
   overflow: hidden;
   text-overflow: ellipsis;
   opacity: 0;
-  transition: opacity 0.1s ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 .app-sidebar[data-expanded='true'] .app-sidebar-label { opacity: 1; }
 
@@ -348,8 +790,11 @@ html[data-theme='dark'] body {
   gap: var(--space-2);
   padding: 0 var(--space-3);
 }
-.app-sidebar-logout { color: var(--accent-pink); }
-.app-sidebar-logout:hover { border-color: var(--accent-pink); box-shadow: 2px 2px 0px var(--accent-pink); }
+.app-sidebar-logout { color: var(--accent-pink-on-surface); }
+.app-sidebar-logout:hover {
+  border-color: var(--accent-pink);
+  box-shadow: 2px 2px 0px var(--accent-pink);
+}
 
 .app-sidebar-toggle {
   align-self: center;
@@ -364,7 +809,7 @@ html[data-theme='dark'] body {
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform var(--dur-instant) var(--ease-out), box-shadow var(--dur-instant) var(--ease-out);
   flex-shrink: 0;
 }
 .app-sidebar-toggle:hover { transform: translate(2px, 2px); box-shadow: var(--shadow-hover); }
@@ -374,77 +819,738 @@ html[data-theme='dark'] body {
   min-width: 0;
 }
 
-/* Below tablet width, the sidebar is always an icon-only rail — no
-   expand/collapse choice, so the toggle is hidden and labels stay off
-   regardless of the stored preference. */
-@media (max-width: 768px) {
-  .app-sidebar[data-expanded='true'] { --sidebar-w: 64px; }
-  .app-sidebar-label { display: none; }
-  .app-sidebar-toggle { display: none; }
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.page-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-9) var(--space-8);
+}
+.page-container[data-width='wide'] { max-width: var(--container-wide); }
+.page-container[data-width='narrow'] { max-width: var(--container-narrow); }
+.page-container[data-pad='hero'] { padding: var(--space-18) var(--space-8) var(--space-14); }
+.page-container[data-pad='roomy'] { padding: var(--space-14) var(--space-8); }
+
+/* Page heading block — section label, title, meta line, hard rule beneath. */
+.page-header {
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: 2px solid var(--border);
+}
+.page-header .page-title { margin-bottom: var(--space-1); }
+
+/* Card/panel heading row — section label on the left, a tag on the right. */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+.panel-header .section-label { margin-bottom: 0; }
+.panel-header-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
-/* SECTION LABEL */
-.section-label {
+/* PULL REQUEST ROW — shared by the full list and the stale-PR panel. */
+.pr-row-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  text-decoration: none;
+  border: 1px solid var(--border-light);
+}
+.pr-row[data-filled='true'] { background: var(--bg-card); }
+
+.pr-row-main {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1;
+}
+
+.pr-row-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.pr-row-title-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+}
+
+.pr-row-title {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pr-row-trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.pr-row-state {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* The `external` marker is the one tag deliberately smaller than the scale —
+   it rides inside a 12px title line and would otherwise crowd it. */
+.pr-row-flag {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* PR LIST FILTERS */
+.pr-filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pr-select {
   font-family: var(--font-chrome);
   font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  margin-bottom: var(--space-3);
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  padding: 5px var(--space-3);
+  cursor: pointer;
+}
+
+.chip-group {
+  display: flex;
+  gap: 2px;
+}
+
+.pr-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-light);
+}
+
+/* PR SIZE MIX — a single stacked bar plus a swatch legend. */
+.size-bar {
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: barWipe var(--dur-slow) var(--ease-out) forwards;
+  display: flex;
+  width: 100%;
+  height: 18px;
+  overflow: hidden;
+  background: var(--bg-panel);
+  border: 2px solid var(--accent-neutral);
+  box-shadow: var(--shadow-sm);
+}
+
+/* The whole bar wipes in once. Segment widths ARE the flex layout here, so
+   scaling a segment would not move its siblings — instead the segments size
+   instantly and the container reveals, which costs no per-frame layout. */
+.size-bar-segment { min-width: 0; }
+
+.size-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.size-legend-item {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
-.section-label::before { content: '§'; color: var(--accent-purple); }
 
-/* STAT */
-.stat-value { font-family: var(--font-chrome); font-weight: 700; font-size: var(--text-3xl); color: var(--text-primary); letter-spacing: -0.5px; }
-.stat-label { font-family: var(--font-chrome); font-size: var(--text-xs); font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+.size-legend-swatch {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  flex-shrink: 0;
+  border: 1px solid var(--accent-neutral);
+  box-shadow: var(--shadow-hover);
+}
+
+.size-legend-label {
+  font-family: var(--font-chrome);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+.size-legend-label strong { color: var(--text-primary); }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+/* dvh so mobile browser chrome doesn't push the page past the viewport;
+   the vh line stays as the fallback for browsers without dvh. */
+.app-root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.loading-message {
+  font-family: var(--font-chrome);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Full-viewport centred states — loading splash, "not found". */
+.centered-viewport {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  gap: var(--space-5);
+}
+
+/* ==========================================================================
+   LANDING
+   ========================================================================== */
+.landing-root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-main { flex: 1; }
+
+.landing-hero { text-align: center; }
+
+.landing-tags {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-bottom: var(--space-5);
+}
+
+.landing-headline { margin-bottom: var(--space-2); }
+.landing-headline-accent {
+  color: var(--accent-pink);
+  margin-bottom: var(--space-6);
+}
+
+.landing-subhead {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  max-width: 500px;
+  margin: 0 auto var(--space-8);
+}
+
+.landing-cta {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.landing-cli-card {
+  display: block;
+  text-decoration: none;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+}
+
+.landing-cli-title {
+  font-family: var(--font-chrome);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.landing-cli-meta {
+  font-family: var(--font-chrome);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.landing-install {
+  margin-top: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-light);
+}
+
+.landing-footer {
+  border-top: 2px solid var(--border);
+  padding: var(--space-4) var(--space-8);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  background: var(--bg-card);
+}
+
+/* ==========================================================================
+   DASHBOARD PANELS
+   These three panels are built but not currently wired into DashboardPage.
+   They are kept inside the design system so they can't drift out of step.
+   ========================================================================== */
+.panel-header-trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.spinning { animation: spin 1s linear infinite; }
+
+/* AI INSIGHT */
+.insight-body {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.insight-icon {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.insight-stats {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.insight-stat-label { margin-bottom: var(--space-1); }
+
+.insight-stat-value {
+  font-family: var(--font-chrome);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--accent-pink-on-surface);
+}
+
+/* LANGUAGE BREAKDOWN */
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: var(--space-6);
+}
+
+.lang-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lang-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.lang-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.lang-bar-name {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.lang-bar {
+  width: 100%;
+  height: 16px;
+  background: var(--bg);
+  border: 2px solid var(--border-light);
+  overflow: hidden;
+}
+
+.lang-bar-fill {
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  /* The component sets transform: scaleX(pct). Animating transform keeps this
+     on the compositor; the previous width transition forced layout each frame. */
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.lang-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.lang-card { padding: var(--space-3); }
+
+.lang-card-name {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+.lang-card-pct {
+  font-family: var(--font-chrome);
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.lang-card-bytes {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+/* CONTRIBUTION HEATMAP */
+.heatmap-scroll {
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.heatmap-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.heatmap-months {
+  display: flex;
+  margin-bottom: var(--space-1);
+}
+
+.heatmap-month-label,
+.heatmap-day-label,
+.heatmap-legend-text {
+  font-family: var(--font-chrome);
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+}
+
+.heatmap-body { display: flex; }
+
+.heatmap-daylabels {
+  display: flex;
+  flex-direction: column;
+  margin-right: var(--space-1);
+}
+
+.heatmap-day-label {
+  width: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+}
+
+.heatmap-cell {
+  border: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.heatmap-cell[data-empty='true'] {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+
+.heatmap-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--bg-card);
+  border: 2px solid var(--accent-purple);
+  box-shadow: 3px 3px 0px var(--accent-purple);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-chrome);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.heatmap-tooltip-date { font-weight: 700; }
+.heatmap-tooltip-count { color: var(--text-muted); }
+
+/* ==========================================================================
+   PROFILE
+   ========================================================================== */
+.profile-card { padding: var(--space-7); }
+
+.profile-header-row {
+  display: flex;
+  gap: var(--space-5);
+  align-items: flex-start;
+}
+
+.profile-avatar {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px var(--border);
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-name {
+  margin-bottom: var(--space-1);
+  word-break: break-word;
+}
+
+.profile-handle {
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  color: var(--accent-purple-on-surface);
+  margin-bottom: var(--space-3);
+}
+
+.profile-bio { margin-bottom: var(--space-4); }
+
+.profile-meta-row {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.profile-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* Standard padded panel — the body of a card that holds a PanelHeader plus
+   content, and the vertical rhythm between stacked panels on a page. */
+.panel {
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
+/* Available to screen readers, invisible on screen. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* DIVIDER */
-.nb-divider { border: none; border-top: 2px solid var(--border); margin: 32px 0; }
+.nb-divider {
+  border: none;
+  border-top: 2px solid var(--border);
+  margin: var(--space-8) 0;
+}
 
-/* BLINK */
+/* NOTEBOOK LINES on panels */
+.lined {
+  background-image: repeating-linear-gradient(transparent, transparent 27px, var(--border-light) 27px, var(--border-light) 28px);
+  background-size: 100% 28px;
+}
+
+/* ==========================================================================
+   SKELETON
+   Placeholders for first load. The sweep is a moving background-position on
+   a gradient rather than a translating overlay, so it needs no extra element
+   and cannot overflow its container.
+   ========================================================================== */
+.skeleton {
+  display: block;
+  min-height: var(--text-base);
+  background-color: var(--bg-panel);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--bg-card) 70%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skeletonSweep 1.4s var(--ease-standard) infinite;
+  border: 1px solid var(--border-light);
+}
+
+@keyframes skeletonSweep {
+  from { background-position: -100% 0; }
+  to { background-position: 100% 0; }
+}
+
+/* ==========================================================================
+   ANIMATION
+   ========================================================================== */
 .blink { animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* LOGO BLUR-IN — plays once on page load */
-.logo-blur-in {
-  display: inline-block;
-  filter: blur(6px);
-  opacity: 0;
-  animation: logoBlurIn 0.8s ease forwards;
-  animation-delay: 0.1s;
-}
-@keyframes logoBlurIn {
-  from { filter: blur(6px); opacity: 0; }
-  to { filter: blur(0); opacity: 1; }
-}
-
-/* BLUR FADE IN — same effect as .logo-blur-in but preserves the element's
-   own display type (flex/block), so it's safe on layout containers like
-   the navbar and footer, not just inline text */
-.blur-fade-in {
-  filter: blur(6px);
-  opacity: 0;
-  animation: logoBlurIn 0.8s ease forwards;
-}
-.blur-fade-in-delay {
-  filter: blur(6px);
-  opacity: 0;
-  animation: logoBlurIn 0.8s ease forwards;
-  animation-delay: 0.15s;
-}
-
-/* NOTEBOOK LINES on panels */
-.lined { background-image: repeating-linear-gradient(transparent, transparent 27px, var(--border-light) 27px, var(--border-light) 28px); background-size: 100% 28px; }
-
-@media (max-width: 520px) {
-  .nb-nav {
-    padding: var(--space-3) var(--space-5);
+/* RISE IN — the app's one entry gesture: a short lift into place.
+   This replaces an earlier blur fade. Animating filter: blur() forces a
+   repaint of the element on every frame and cannot be handed to the
+   compositor; transform and opacity can, so this does the same job without
+   the per-frame cost. */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in,
+.rise-in-delay,
+.stagger-in > * {
+  opacity: 0;
+  animation: riseIn var(--dur-base) var(--ease-out) forwards;
+}
+
+.rise-in-delay { animation-delay: var(--stagger-step); }
+
+/* STAGGERED REVEAL — one choreographed sequence per view, not one animation
+   per element. Children reveal in document order, --stagger-step apart.
+   Capped at eight: past that the last item waits long enough to read as a
+   delay rather than a sequence, and anything beyond simply reveals with the
+   eighth. Deliberately NOT used on list rows that re-render on filter or
+   pagination changes, where it would replay constantly. */
+.stagger-in > *:nth-child(1) { animation-delay: calc(var(--stagger-step) * 0); }
+.stagger-in > *:nth-child(2) { animation-delay: calc(var(--stagger-step) * 1); }
+.stagger-in > *:nth-child(3) { animation-delay: calc(var(--stagger-step) * 2); }
+.stagger-in > *:nth-child(4) { animation-delay: calc(var(--stagger-step) * 3); }
+.stagger-in > *:nth-child(5) { animation-delay: calc(var(--stagger-step) * 4); }
+.stagger-in > *:nth-child(6) { animation-delay: calc(var(--stagger-step) * 5); }
+.stagger-in > *:nth-child(7) { animation-delay: calc(var(--stagger-step) * 6); }
+.stagger-in > *:nth-child(n + 8) { animation-delay: calc(var(--stagger-step) * 7); }
+
+/* ROUTE TRANSITION — a plain cross-fade between views. Navigation here is
+   lateral (sidebar destinations are siblings, not a hierarchy), so there is
+   no direction to express; a slide would imply one that doesn't exist. */
+::view-transition-old(root) {
+  animation: fadeOut var(--dur-fast) var(--ease-in) forwards;
+}
+::view-transition-new(root) {
+  animation: riseIn var(--dur-slow) var(--ease-out) forwards;
+}
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+@keyframes barWipe {
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Land these on their finished state rather than just racing through the
+     keyframes, so nothing is left mid-transform or invisible. */
+  .rise-in,
+  .rise-in-delay,
+  .stagger-in > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  /* Bars land at full width; the skeleton stops pulsing but stays visible. */
+  .size-bar {
+    transform: none;
+    animation: none;
+  }
+  .skeleton { animation: none; }
+  /* Route changes cut instead of fading. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   Four tiers, in descending order:
+     768px  tablet — the sidebar becomes a permanent icon-only rail
+     640px  mobile — tighter gutters, compressed large spacing steps
+     480px  small  — the profile header stacks avatar above details
+     400px  tiny   — buttons drop to the smallest readable size
+   480px is kept separate from 640px on purpose: the profile header still fits
+   comfortably as a row at 640px and stacking it there would be premature.
+   ========================================================================== */
+@media (max-width: 768px) {
+  .app-sidebar[data-expanded='true'] { --sidebar-w: 64px; }
+  .app-sidebar-label { display: none; }
+  .app-sidebar-toggle { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -452,9 +1558,48 @@ html[data-theme='dark'] body {
     --space-18: var(--space-9);
     --space-14: var(--space-8);
   }
-  .page-container {
-    padding-left: var(--space-5) !important;
-    padding-right: var(--space-5) !important;
+  /* The [data-pad] selector is listed too so this ties the specificity of
+     .page-container[data-pad='hero'] above and wins on source order —
+     otherwise the hero padding would keep its wide desktop gutters here. */
+  .page-container,
+  .page-container[data-pad] {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+  .nb-nav {
+    padding: var(--space-3) var(--space-5);
+  }
+
+  /* One stat card per row. Two columns fit arithmetically at this width but
+     leave ~167px per card, which crams labels like "average time to merge". */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* The filter row is the panel header's second line here, so let it use the
+     full width rather than being squeezed against the section label. */
+  .panel-header { align-items: flex-start; }
+  .pr-filters { width: 100%; }
+  .pr-select { flex: 1; }
+}
+
+/* Below this width the nav cannot fit brand + status + action + two icon
+   buttons on one row. Drop the ambient status badge first: it is the lowest
+   priority item, and the primary action already communicates signed-in state. */
+@media (max-width: 520px) {
+  .nb-nav-status { display: none; }
+}
+
+/* PROFILE HEADER — stack avatar above info on narrow screens instead of
+   squeezing them into a cramped row */
+@media (max-width: 480px) {
+  .profile-header-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-header-row .profile-meta-row {
+    justify-content: center;
   }
 }
 
@@ -463,25 +1608,68 @@ html[data-theme='dark'] body {
     font-size: var(--text-xs);
     padding: var(--space-2) var(--space-3);
   }
+
+  /* Next item to go after the status badge. It links to the source repo
+     rather than driving the app, and the Landing footer still carries it. */
+  .nb-nav-github { display: none; }
 }
 
-/* PROFILE HEADER — stack avatar above info on narrow screens instead of
-   squeezing them into a cramped row */
-@media (max-width: 480px) {
-  .profile-header-row {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center;
+/* ==========================================================================
+   TOUCH INPUT
+   Keyed on pointer type rather than width: a small window on a laptop still
+   has a mouse, while a large tablet still has fingers. Controls sized for a
+   cursor (28-38px) are below the 44px minimum for a fingertip.
+   ========================================================================== */
+@media (pointer: coarse) {
+  .btn-nb,
+  .pr-select,
+  .chip {
+    min-height: var(--tap-min);
   }
-  .profile-header-row .profile-meta-row {
-    justify-content: center !important;
+
+  .icon-btn-circle,
+  .app-sidebar-toggle {
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+
+  .app-sidebar-item { min-height: var(--tap-min); }
+
+  /* iOS Safari zooms the page when a control smaller than 16px takes focus.
+     The select is the only focusable control in the app, but that is enough. */
+  .pr-select { font-size: var(--text-lg); }
+
+  /* Removes the 300ms tap delay without disabling pinch-zoom. */
+  .btn-nb,
+  .chip,
+  .icon-btn-circle,
+  .app-sidebar-item,
+  .pr-row {
+    touch-action: manipulation;
   }
 }
 
-
-/* DASHBOARD & PROFILE PAGES — quieter typography, no all-caps for section labels/tags/stats.
-   Scoped to .dashboard-content / .profile-content so Landing/Navbar/buttons are untouched. */
-.dashboard-content .section-label { text-transform: none; letter-spacing: 0.02em; font-weight: 500; gap: var(--space-3); }
-.profile-content .section-label { text-transform: none; letter-spacing: 0.02em; }
-.dashboard-content .stat-label { text-transform: none; letter-spacing: 0.02em; font-weight: 400; }
-.dashboard-content .btn-nb { text-transform: none; letter-spacing: 0.01em; }
+/* ==========================================================================
+   PAGE TONE OVERRIDES
+   Dashboard, Pulls and Profile use a quieter voice than the Landing page —
+   no all-caps section labels, stat labels or buttons. Scoped so the Landing
+   page and the nav keep the louder brutalist treatment.
+   ========================================================================== */
+.dashboard-content .section-label,
+.profile-content .section-label {
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.dashboard-content .section-label {
+  font-weight: 500;
+  gap: var(--space-3);
+}
+.dashboard-content .stat-label {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+.dashboard-content .btn-nb {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
