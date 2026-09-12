@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import PanelHeader from '../common/PanelHeader'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
 interface CommitActivityChartProps {
   chartData: { date: string; commits: number }[]
@@ -24,6 +25,10 @@ const TOOLTIP_STYLE = {
 } as const
 
 export default function CommitActivityChart({ chartData }: CommitActivityChartProps) {
+  // recharts animates from JS, so the stylesheet's reduced-motion block can't
+  // reach it. Without this the line draws itself regardless of the preference.
+  const prefersReducedMotion = usePrefersReducedMotion()
+
   return (
     <div className="nb-card nb-accent-purple panel">
       <PanelHeader
@@ -40,6 +45,9 @@ export default function CommitActivityChart({ chartData }: CommitActivityChartPr
               cursor={{ stroke: 'var(--accent-purple)', strokeWidth: 1, strokeDasharray: '4 4' }}
             />
             <Line
+              isAnimationActive={!prefersReducedMotion}
+              animationDuration={400}
+              animationEasing="ease-out"
               type="monotone"
               dataKey="commits"
               stroke="var(--accent-purple)"

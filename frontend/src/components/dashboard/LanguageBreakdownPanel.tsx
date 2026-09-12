@@ -45,7 +45,9 @@ export default function LanguageBreakdownPanel({ languages }: LanguageBreakdownP
                     <div
                       className="lang-bar-fill"
                       style={{
-                        width: `${detail.percentage}%`,
+                        // scaleX rather than width: the track is a fixed size,
+                        // so this composites instead of re-laying-out per frame.
+                        transform: `scaleX(${detail.percentage / 100})`,
                         background: `var(--accent-${accent})`,
                       }}
                     />

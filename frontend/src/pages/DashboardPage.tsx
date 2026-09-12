@@ -4,8 +4,8 @@ import { useSyncAction } from '../hooks/useSyncAction'
 import httpClient from '../api/httpClient'
 import AppLayout from '../components/layout/AppLayout'
 import PageContainer from '../components/layout/PageContainer'
-import LoadingScreen from '../components/common/LoadingScreen'
 import SyncButton from '../components/common/SyncButton'
+import { StatCardSkeleton, PanelSkeleton, SkeletonRegion } from '../components/common/Skeleton'
 import DashboardHeader from '../components/dashboard/DashboardHeader'
 import StatsGrid from '../components/dashboard/StatsGrid'
 import CommitActivityChart from '../components/dashboard/CommitActivityChart'
@@ -17,8 +17,10 @@ export default function DashboardPage() {
   const [streak, setStreak] = useState<StreakSummary | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // No setLoading(true) here on purpose. This runs on first load AND on
+  // every sync; flipping loading back on would swap the populated page out
+  // for the loading state and throw away the user's scroll position.
   const fetchDashboardData = async () => {
-    setLoading(true)
     try {
       const [activityRes, streakRes] = await Promise.all([
         httpClient.get('/github/activity?days=30'),
@@ -34,8 +36,6 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchDashboardData().then(markSynced) }, [markSynced])
 
-  if (loading) return <LoadingScreen message="Loading activity..." />
-
   const chartData = activity?.daily_activity
     ?.sort((a, b) => a.date.localeCompare(b.date))
     ?.slice(-14)
@@ -47,8 +47,20 @@ export default function DashboardPage() {
     }>
       <PageContainer width="wide" tone="dashboard">
         <DashboardHeader name={user?.name} username={user?.username} />
-        <StatsGrid streak={streak} />
-        <CommitActivityChart chartData={chartData} />
+        {loading ? (
+          <SkeletonRegion label="Loading activity">
+            <div className="stats-grid">
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </div>
+            <PanelSkeleton />
+          </SkeletonRegion>
+        ) : (
+          <div className="stagger-in">
+            <StatsGrid streak={streak} />
+            <CommitActivityChart chartData={chartData} />
+          </div>
+        )}
       </PageContainer>
     </AppLayout>
   )

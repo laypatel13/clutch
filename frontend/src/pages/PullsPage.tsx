@@ -5,8 +5,8 @@ import { useSyncAction } from '../hooks/useSyncAction'
 import AppLayout from '../components/layout/AppLayout'
 import PageContainer from '../components/layout/PageContainer'
 import PageHeader from '../components/layout/PageHeader'
-import LoadingScreen from '../components/common/LoadingScreen'
 import SyncButton from '../components/common/SyncButton'
+import { StatCardSkeleton, PanelSkeleton, SkeletonRegion } from '../components/common/Skeleton'
 import PRSummaryCards from '../components/pulls/PRSummaryCards'
 import StalePRPanel from '../components/pulls/StalePRPanel'
 import PRSizeBreakdown from '../components/pulls/PRSizeBreakdown'
@@ -19,8 +19,10 @@ export default function PullsPage() {
   const [summary, setSummary] = useState<PullRequestSummary | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // No setLoading(true) here on purpose. This runs on first load AND on
+  // every sync; flipping loading back on would swap the populated page out
+  // for the loading state and throw away the user's scroll position.
   const fetchData = async () => {
-    setLoading(true)
     try {
       const [pullsRes, summaryRes] = await Promise.all([
         httpClient.get('/github/pulls'),
@@ -38,8 +40,6 @@ export default function PullsPage() {
 
   const uniqueRepoCount = useMemo(() => new Set(pulls.map(p => p.repo)).size, [pulls])
 
-  if (loading) return <LoadingScreen message="Loading pull requests..." />
-
   return (
     <AppLayout rightContent={
       <SyncButton syncing={syncing} lastSynced={lastSynced} onSync={sync} />
@@ -55,10 +55,24 @@ export default function PullsPage() {
           }
         />
 
-        <PRSummaryCards summary={summary} />
-        {summary && <PRSizeBreakdown distribution={summary.size_distribution} />}
-        <PRList pulls={pulls} />
-        {summary && <StalePRPanel stalePrs={summary.stale_prs} />}
+        {loading ? (
+          <SkeletonRegion label="Loading pull requests">
+            <div className="stats-grid">
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </div>
+            <PanelSkeleton bodyHeight="60px" />
+            <PanelSkeleton bodyHeight="220px" />
+          </SkeletonRegion>
+        ) : (
+          <div className="stagger-in">
+            <PRSummaryCards summary={summary} />
+            {summary && <PRSizeBreakdown distribution={summary.size_distribution} />}
+            <PRList pulls={pulls} />
+            {summary && <StalePRPanel stalePrs={summary.stale_prs} />}
+          </div>
+        )}
       </PageContainer>
     </AppLayout>
   )

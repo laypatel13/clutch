@@ -19,7 +19,7 @@ export default function LandingPage() {
 
       <main className="landing-main">
         <PageContainer width="narrow" padding="hero">
-          <div className="landing-hero">
+          <div className="landing-hero stagger-in">
             <div className="landing-tags">
               <span className="tag tag-purple">Open Source</span>
               <span className="tag tag-outline">Free Forever</span>
@@ -55,7 +55,7 @@ export default function LandingPage() {
         </PageContainer>
       </main>
 
-      <footer className="landing-footer blur-fade-in-delay">
+      <footer className="landing-footer rise-in-delay">
         <span className="meta-text">© 2026 Clutch — MIT License</span>
         <a href={GITHUB_REPOSITORY_URL} target="_blank" rel="noopener noreferrer" className="inline-link">
           Star on GitHub <Star size={13} />

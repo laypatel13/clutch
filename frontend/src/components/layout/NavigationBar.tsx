@@ -40,8 +40,8 @@ export default function NavigationBar({ rightContent }: NavigationBarProps) {
   }, [])
 
   return (
-    <nav ref={navRef} className="nb-nav blur-fade-in">
-      <Link to="/" className="nb-nav-brand">
+    <nav ref={navRef} className="nb-nav rise-in">
+      <Link to="/" viewTransition className="nb-nav-brand">
         <span className="wordmark">Clutch</span>
         <span className="badge badge-green nb-nav-status">{user ? 'CONNECTED' : 'CONNECT'}</span>
       </Link>
