@@ -1,5 +1,5 @@
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -7,6 +7,7 @@ from app.services.github_service import GitHubService
 from app.services.pr_analytics import get_pr_summary
 from app.dependencies import get_current_user, get_github_client
 from app.services.activity_sync import GitHubUnavailable, sync_activity_events
+from app.services.timeline import InvalidCursor, load_timeline
 from app.models.user import User
 from app.models.pull_request import PullRequest
 
@@ -86,6 +87,25 @@ async def sync_events(
     except GitHubUnavailable as error:
         raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}")
     return {"message": "Activity sync complete", **result}
+
+
+@router.get("/timeline")
+def get_timeline(
+    cursor: str | None = None,
+    limit: int = Query(40, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """One page of the user's activity timeline, newest first, read from the database.
+
+    Pass the previous response's `next_cursor` to load older activity. Timestamps
+    are UTC; grouping into days is left to the client, which knows the viewer's
+    timezone.
+    """
+    try:
+        return load_timeline(db, current_user.id, cursor=cursor, limit=limit)
+    except InvalidCursor:
+        raise HTTPException(status_code=400, detail="Invalid timeline cursor")
 
 
 @router.post("/pulls/sync")

@@ -13,17 +13,12 @@ from datetime import timezone
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 
-import app.models  # noqa: F401 — registers every model on Base.metadata
-from app.database import Base, get_db
+from app.database import get_db
 from app.dependencies import get_current_user, get_github_client
 from app.main import app as fastapi_app
 from app.models.activity_event import ActivityEvent
 from app.models.pull_request import PullRequest
-from app.models.user import User
 from app.services.activity_sync import (
     GitHubUnavailable,
     build_title_query,
@@ -131,23 +126,6 @@ class FakeGitHub:
 
 def compare_body(*messages):
     return {"commits": [{"sha": f"s{i}", "commit": {"message": m}} for i, m in enumerate(messages)]}
-
-
-@pytest.fixture
-def db():
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
-    Base.metadata.create_all(engine)
-    session = sessionmaker(bind=engine)()
-    yield session
-    session.close()
-
-
-@pytest.fixture
-def user(db):
-    account = User(github_id=1, username="lay", github_access_token="token")
-    db.add(account)
-    db.commit()
-    return account
 
 
 def run_sync(user, db, github):
