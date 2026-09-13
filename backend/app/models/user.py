@@ -32,3 +32,4 @@ class User(Base):
     activities = relationship("DailyActivity", back_populates="user")
     weekly_insights = relationship("WeeklyInsight", back_populates="user")
     pull_requests = relationship("PullRequest", back_populates="user")
+    activity_events = relationship("ActivityEvent", back_populates="user")

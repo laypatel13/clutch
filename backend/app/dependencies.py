@@ -1,3 +1,4 @@
+import httpx
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -34,3 +35,19 @@ def get_current_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
+
+async def get_github_client(current_user: User = Depends(get_current_user)):
+    """An authenticated GitHub HTTP client for the request's user.
+
+    Provided as a dependency rather than built inside each route so tests can
+    override it with a mock transport and never reach the real API.
+    """
+    async with httpx.AsyncClient(
+        headers={
+            "Authorization": f"Bearer {current_user.github_access_token}",
+            "Accept": "application/vnd.github+json",
+        },
+        timeout=20,
+    ) as client:
+        yield client

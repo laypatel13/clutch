@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends
+import httpx
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.services.github_service import GitHubService
 from app.services.pr_analytics import get_pr_summary
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, get_github_client
+from app.services.activity_sync import GitHubUnavailable, sync_activity_events
 from app.models.user import User
 from app.models.pull_request import PullRequest
 
@@ -70,6 +72,20 @@ async def get_repos(
             headers={"Authorization": f"Bearer {current_user.github_access_token}"},
         )
         return response.json()
+
+
+@router.post("/events/sync")
+async def sync_events(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    client: httpx.AsyncClient = Depends(get_github_client),
+):
+    """Fetch the user's new GitHub events, store them, and enrich pending rows."""
+    try:
+        result = await sync_activity_events(current_user, db, client)
+    except GitHubUnavailable as error:
+        raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}")
+    return {"message": "Activity sync complete", **result}
 
 
 @router.post("/pulls/sync")
