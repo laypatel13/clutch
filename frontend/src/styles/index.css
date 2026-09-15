@@ -857,162 +857,6 @@ html[data-theme='dark'] body {
   min-width: 0;
 }
 
-/* PULL REQUEST ROW — shared by the full list and the stale-PR panel. */
-.pr-row-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.pr-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  text-decoration: none;
-  border: 1px solid var(--border-light);
-}
-.pr-row[data-filled='true'] { background: var(--bg-card); }
-
-.pr-row-main {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  min-width: 0;
-  flex: 1;
-}
-
-.pr-row-body {
-  min-width: 0;
-  flex: 1;
-}
-
-.pr-row-title-line {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: 2px;
-}
-
-.pr-row-title {
-  font-family: var(--font-body);
-  font-weight: 400;
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pr-row-trailing {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-shrink: 0;
-}
-
-.pr-row-state {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-/* The `external` marker is the one tag deliberately smaller than the scale —
-   it rides inside a 12px title line and would otherwise crowd it. */
-.pr-row-flag {
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
-/* PR LIST FILTERS */
-.pr-filters {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.pr-select {
-  font-family: var(--font-chrome);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  color: var(--text-primary);
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  padding: 5px var(--space-3);
-  cursor: pointer;
-}
-
-.chip-group {
-  display: flex;
-  gap: 2px;
-}
-
-.pr-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-4);
-  margin-top: var(--space-5);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--border-light);
-}
-
-/* PR SIZE MIX — a single stacked bar plus a swatch legend. */
-.size-bar {
-  transform: scaleX(0);
-  transform-origin: left center;
-  animation: barWipe var(--dur-slow) var(--ease-out) forwards;
-  display: flex;
-  width: 100%;
-  height: 18px;
-  overflow: hidden;
-  background: var(--bg-panel);
-  border: 2px solid var(--accent-neutral);
-  box-shadow: var(--shadow-sm);
-}
-
-/* The whole bar wipes in once. Segment widths ARE the flex layout here, so
-   scaling a segment would not move its siblings — instead the segments size
-   instantly and the container reveals, which costs no per-frame layout. */
-.size-bar-segment { min-width: 0; }
-
-.size-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
-  margin-top: var(--space-5);
-}
-
-.size-legend-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.size-legend-swatch {
-  width: 10px;
-  height: 10px;
-  display: inline-block;
-  flex-shrink: 0;
-  border: 1px solid var(--accent-neutral);
-  box-shadow: var(--shadow-hover);
-}
-
-.size-legend-label {
-  font-family: var(--font-chrome);
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-}
-.size-legend-label strong { color: var(--text-primary); }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr));
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-}
-
 /* dvh so mobile browser chrome doesn't push the page past the viewport;
    the vh line stays as the fallback for browsers without dvh. */
 .app-root {
@@ -1410,6 +1254,86 @@ html[data-theme='dark'] body {
 }
 
 /* ==========================================================================
+   WAITING
+   The Waiting page reuses the timeline's rail, day-card and disclosure styles
+   (the .timeline-* rules above are shared by both pages). Only what's
+   specific to this page lives here.
+   ========================================================================== */
+.waiting-section .panel-header { margin-bottom: var(--space-1); }
+
+/* Ages ("9d") are far shorter than Today's clock ranges ("3:17 AM–3:34 AM").
+   The timeline's 6.5rem column would leave a wide empty gutter, so narrow it
+   here. On small screens the column folds above the text either way. */
+@media (min-width: 481px) {
+  .waiting-section .timeline-item {
+    grid-template-columns: 3rem 1.5rem minmax(0, 1fr);
+  }
+}
+
+.waiting-hint {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--text-secondary);
+}
+
+/* A person has waited a week or more. The age is always written out, so the
+   colour and weight reinforce it rather than carry the meaning alone. */
+.timeline-time[data-overdue='true'] {
+  color: var(--accent-pink-on-surface);
+  font-weight: 700;
+}
+
+/* Checks that came back empty. Deliberately quieter than a full card: a thin
+   light border and no shadow, so they confirm the check ran without
+   competing with the sections that need attention. */
+.waiting-clear {
+  list-style: none;
+  padding: 0 var(--space-5);
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+}
+
+.waiting-clear-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--border-light);
+}
+.waiting-clear-row:last-child { border-bottom: 0; }
+
+.waiting-clear-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+.waiting-clear-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-chrome);
+  font-size: var(--text-sm);
+  color: var(--accent-green-on-surface);
+}
+
+.waiting-abandoned { margin-top: var(--space-3); }
+.waiting-abandoned > .timeline-list { margin-top: var(--space-2); }
+
+/* Shown above an all-clear StateMessage. */
+.timeline-state-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+  color: var(--accent-green-on-surface);
+}
+
+/* ==========================================================================
    DASHBOARD PANELS
    These three panels are built but not currently wired into DashboardPage.
    They are kept inside the design system so they can't drift out of step.
@@ -1803,11 +1727,7 @@ html[data-theme='dark'] body {
     transform: none;
     animation: none;
   }
-  /* Bars land at full width; the skeleton stops pulsing but stays visible. */
-  .size-bar {
-    transform: none;
-    animation: none;
-  }
+  /* The skeleton stops pulsing but stays visible. */
   .skeleton { animation: none; }
   /* Route changes cut instead of fading. */
   ::view-transition-old(root),
@@ -1849,17 +1769,8 @@ html[data-theme='dark'] body {
     padding: var(--space-3) var(--space-5);
   }
 
-  /* One stat card per row. Two columns fit arithmetically at this width but
-     leave ~167px per card, which crams labels like "average time to merge". */
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* The filter row is the panel header's second line here, so let it use the
-     full width rather than being squeezed against the section label. */
+  /* When a panel header wraps, keep its heading and tag top-aligned. */
   .panel-header { align-items: flex-start; }
-  .pr-filters { width: 100%; }
-  .pr-select { flex: 1; }
 }
 
 /* Below this width the nav cannot fit brand + status + action + two icon
@@ -1901,7 +1812,6 @@ html[data-theme='dark'] body {
    ========================================================================== */
 @media (pointer: coarse) {
   .btn-nb,
-  .pr-select,
   .chip {
     min-height: var(--tap-min);
   }
@@ -1915,23 +1825,18 @@ html[data-theme='dark'] body {
   .app-sidebar-item,
   .timeline-details > summary { min-height: var(--tap-min); }
 
-  /* iOS Safari zooms the page when a control smaller than 16px takes focus.
-     The select is the only focusable control in the app, but that is enough. */
-  .pr-select { font-size: var(--text-lg); }
-
   /* Removes the 300ms tap delay without disabling pinch-zoom. */
   .btn-nb,
   .chip,
   .icon-btn-circle,
-  .app-sidebar-item,
-  .pr-row {
+  .app-sidebar-item {
     touch-action: manipulation;
   }
 }
 
 /* ==========================================================================
    PAGE TONE OVERRIDES
-   Dashboard, Pulls and Profile use a quieter voice than the Landing page —
+   Today, Waiting and Profile use a quieter voice than the Landing page —
    no all-caps section labels, stat labels or buttons. Scoped so the Landing
    page and the nav keep the louder brutalist treatment.
    ========================================================================== */

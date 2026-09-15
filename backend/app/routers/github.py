@@ -4,12 +4,11 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.services.github_service import GitHubService
-from app.services.pr_analytics import get_pr_summary
 from app.dependencies import get_current_user, get_github_client
 from app.services.activity_sync import GitHubUnavailable, sync_activity_events
 from app.services.timeline import InvalidCursor, load_timeline
+from app.services.waiting import fetch_waiting
 from app.models.user import User
-from app.models.pull_request import PullRequest
 
 router = APIRouter()
 
@@ -108,6 +107,18 @@ def get_timeline(
         raise HTTPException(status_code=400, detail="Invalid timeline cursor")
 
 
+@router.get("/waiting")
+async def get_waiting(
+    current_user: User = Depends(get_current_user),
+    client: httpx.AsyncClient = Depends(get_github_client),
+):
+    """Open pull-request loops waiting on the user, checked live against GitHub."""
+    try:
+        return await fetch_waiting(client, current_user.username)
+    except GitHubUnavailable as error:
+        raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}")
+
+
 @router.post("/pulls/sync")
 async def sync_pull_requests(
     current_user: User = Depends(get_current_user),
@@ -117,45 +128,3 @@ async def sync_pull_requests(
     service = GitHubService(current_user.github_access_token)
     synced = await service.sync_pull_requests_to_db(current_user, db)
     return {"message": "PR sync complete", "synced_prs": synced}
-
-
-@router.get("/pulls")
-async def list_pull_requests(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Get the user's synced pull requests from the database (no live GitHub call)."""
-    prs = (
-        db.query(PullRequest)
-        .filter(PullRequest.user_id == current_user.id)
-        .order_by(PullRequest.pr_created_at.desc())
-        .all()
-    )
-    return [
-        {
-            "repo": p.repo,
-            "pr_number": p.pr_number,
-            "title": p.title,
-            "url": p.url,
-            "state": p.state,
-            "is_draft": p.is_draft,
-            "is_own_repo": p.is_own_repo,
-            "additions": p.additions,
-            "deletions": p.deletions,
-            "changed_files": p.changed_files,
-            "review_count": p.review_count,
-            "created_at": p.pr_created_at,
-            "merged_at": p.pr_merged_at,
-            "closed_at": p.pr_closed_at,
-        }
-        for p in prs
-    ]
-
-
-@router.get("/pulls/summary")
-async def pull_requests_summary(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Get derived PR-quality metrics: merge rate, time-to-merge, size mix, stale PRs."""
-    return get_pr_summary(current_user, db)

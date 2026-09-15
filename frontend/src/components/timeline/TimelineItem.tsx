@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import type { TimelineItem as TimelineItemData } from '../../types/timeline.types'
 import { formatTimeRange } from '../../utils/timeline'
+import RailItem from '../common/RailItem'
 
 interface Marker {
   Icon: LucideIcon
@@ -115,34 +116,27 @@ export default function TimelineItem({ item }: { item: TimelineItemData }) {
   const { Icon, color } = markerFor(item)
 
   return (
-    <li className="timeline-item" data-muted={MUTED_KINDS.has(item.kind) ? 'true' : undefined}>
-      <time className="timeline-time meta-mono" dateTime={item.started_at}>
-        {formatTimeRange(item.started_at, item.ended_at)}
-      </time>
-
-      <div className="timeline-rail">
-        {/* Decorative: the summary text already says what happened. */}
-        <span className="timeline-marker" style={{ color }} aria-hidden="true">
-          <Icon size={12} strokeWidth={2.5} />
-        </span>
-      </div>
-
-      <div className="timeline-body">
-        <a className="timeline-summary" href={item.url} target="_blank" rel="noopener noreferrer">
-          {item.summary}
-          <span className="visually-hidden"> (opens on GitHub)</span>
-        </a>
-        <div className="timeline-meta meta-mono">
+    <RailItem
+      dateTime={item.started_at}
+      time={formatTimeRange(item.started_at, item.ended_at)}
+      icon={Icon}
+      color={color}
+      muted={MUTED_KINDS.has(item.kind)}
+      href={item.url}
+      summary={item.summary}
+      meta={
+        <>
           <span>{item.repo}</span>
           {item.is_private && (
             <span className="timeline-private">
               <Lock size={10} aria-hidden="true" /> private
             </span>
           )}
-        </div>
-        {item.kind === 'branch' && <CommitList item={item} />}
-        {item.kind === 'star' && <StarredList item={item} />}
-      </div>
-    </li>
+        </>
+      }
+    >
+      {item.kind === 'branch' && <CommitList item={item} />}
+      {item.kind === 'star' && <StarredList item={item} />}
+    </RailItem>
   )
 }

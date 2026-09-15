@@ -1,50 +1,10 @@
 import { useMemo } from 'react'
-import { History, RefreshCw, TriangleAlert } from 'lucide-react'
+import { History, TriangleAlert } from 'lucide-react'
 import type { TimelineState } from '../../hooks/useTimeline'
 import { groupByLocalDay, localDayKey, type TimelineDayGroup } from '../../utils/timeline'
-import { Skeleton, SkeletonRegion } from '../common/Skeleton'
+import { RailSkeleton, SkeletonRegion } from '../common/Skeleton'
+import StateMessage from '../common/StateMessage'
 import TimelineDay from './TimelineDay'
-
-function TimelineSkeleton() {
-  return (
-    <div className="nb-card panel">
-      <div className="panel-header">
-        <Skeleton width="96px" height="var(--text-xl)" />
-        <Skeleton width="64px" height="var(--text-lg)" />
-      </div>
-      <div className="timeline-skeleton-rows">
-        {[72, 58, 84, 64].map(width => (
-          <div key={width} className="timeline-skeleton-row">
-            <Skeleton width="3.5rem" height="var(--text-xs)" />
-            <Skeleton width="1.5rem" height="1.5rem" />
-            <Skeleton width={`${width}%`} height="var(--text-base)" />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-interface StateMessageProps {
-  title: string
-  text: string
-  action?: { label: string; onClick: () => void }
-  alert?: boolean
-}
-
-function StateMessage({ title, text, action, alert }: StateMessageProps) {
-  return (
-    <div className="nb-card panel timeline-state" role={alert ? 'alert' : undefined}>
-      <h2 className="timeline-state-title">{title}</h2>
-      <p className="timeline-state-text">{text}</p>
-      {action && (
-        <button type="button" className="btn-nb btn-purple" onClick={action.onClick}>
-          <RefreshCw size={14} aria-hidden="true" /> {action.label}
-        </button>
-      )}
-    </div>
-  )
-}
 
 export default function Timeline({ timeline }: { timeline: TimelineState }) {
   const {
@@ -69,7 +29,7 @@ export default function Timeline({ timeline }: { timeline: TimelineState }) {
   if (status === 'loading') {
     body = (
       <SkeletonRegion label="Loading your activity">
-        <TimelineSkeleton />
+        <RailSkeleton />
       </SkeletonRegion>
     )
   } else if (items.length === 0 && syncing) {
@@ -78,7 +38,7 @@ export default function Timeline({ timeline }: { timeline: TimelineState }) {
         <p className="timeline-first-sync meta-text">
           Pulling in your recent GitHub activity. The first sync can take a few seconds.
         </p>
-        <TimelineSkeleton />
+        <RailSkeleton />
       </SkeletonRegion>
     )
   } else if (items.length === 0 && (status === 'error' || syncFailed)) {

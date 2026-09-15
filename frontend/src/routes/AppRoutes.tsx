@@ -4,7 +4,7 @@ import { useAuthentication } from '../hooks/useAuthentication'
 import LandingPage from '../pages/LandingPage'
 import DashboardPage from '../pages/DashboardPage'
 import UserProfilePage from '../pages/UserProfilePage'
-import PullsPage from '../pages/PullsPage'
+import WaitingPage from '../pages/WaitingPage'
 import AuthenticationCallbackPage from '../pages/AuthenticationCallbackPage'
 import LoadingScreen from '../components/common/LoadingScreen'
 
@@ -25,11 +25,13 @@ export default function AppRoutes() {
             <DashboardPage />
           </PrivateRoute>
         } />
-        <Route path="/pulls" element={
+        <Route path="/waiting" element={
           <PrivateRoute>
-            <PullsPage />
+            <WaitingPage />
           </PrivateRoute>
         } />
+        {/* The page used to live here as "Pull Requests"; keep old links working. */}
+        <Route path="/pulls" element={<Navigate to="/waiting" replace />} />
         <Route path="/u/:username" element={<UserProfilePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
