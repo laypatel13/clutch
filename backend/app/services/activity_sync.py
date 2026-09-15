@@ -19,6 +19,7 @@ import json
 from datetime import datetime, timezone
 
 import httpx
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.activity_event import ActivityEvent
@@ -284,10 +285,26 @@ async def fetch_titles(client: httpx.AsyncClient, keys: list[tuple[str, int]]) -
 # ---------------------------------------------------------------------------
 
 def _store_new_events(db: Session, user, raw_events: list[dict]) -> int:
-    for raw in raw_events:
-        db.add(ActivityEvent(user_id=user.id, **normalize_event(raw)))
-    db.commit()
-    return len(raw_events)
+    db.add_all(ActivityEvent(user_id=user.id, **normalize_event(raw)) for raw in raw_events)
+    try:
+        db.commit()
+        return len(raw_events)
+    except IntegrityError:
+        # Another sync stored some of these between our read of known IDs and
+        # this write — two open tabs, or React running the page's mount effect
+        # twice in development. Keep only the events still missing.
+        db.rollback()
+        ids = [str(raw["id"]) for raw in raw_events]
+        stored = {
+            event_id
+            for (event_id,) in db.query(ActivityEvent.github_event_id).filter(
+                ActivityEvent.user_id == user.id, ActivityEvent.github_event_id.in_(ids)
+            )
+        }
+        missing = [raw for raw in raw_events if str(raw["id"]) not in stored]
+        db.add_all(ActivityEvent(user_id=user.id, **normalize_event(raw)) for raw in missing)
+        db.commit()
+        return len(missing)
 
 
 async def _enrich_pending(db: Session, user, client: httpx.AsyncClient) -> int:

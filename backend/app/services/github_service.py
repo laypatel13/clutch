@@ -54,6 +54,9 @@ class GitHubService:
                 if day["contributionCount"] > 0:
                     daily.append({
                         "date": day["date"],
+                        # Not only commits: contributionCount also includes PRs,
+                        # issues and reviews. The key is kept because the streak
+                        # calculation reads it; the timeline is the detailed view.
                         "commits": day["contributionCount"],
                         "prs": 0,
                         "issues": 0,

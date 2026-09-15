@@ -360,3 +360,16 @@ def test_sync_endpoint_turns_a_github_outage_into_a_502(api):
 
     assert response.status_code == 502
     assert "Couldn't reach GitHub" in response.json()["detail"]
+
+
+def test_a_concurrent_sync_that_stored_events_first_does_not_fail(db, user):
+    """Two syncs racing — e.g. a second tab — both try to insert the same events."""
+    from app.services.activity_sync import _store_new_events
+
+    events = [issue_comment_event(1, 9, "A"), issue_comment_event(2, 10, "B")]
+    _store_new_events(db, user, events[:1])  # the other sync got event 1 in first
+
+    stored = _store_new_events(db, user, events)
+
+    assert stored == 1
+    assert set(rows(db)) == {"1", "2"}

@@ -1,4 +1,4 @@
-import { LayoutDashboard, GitPullRequest, CircleUserRound } from 'lucide-react'
+import { CalendarDays, GitPullRequest, CircleUserRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface NavItem {
@@ -10,7 +10,7 @@ export interface NavItem {
 // Sidebar items, top to bottom. To add a new section later (e.g. LeetCode),
 // just append an entry here — AppSidebar renders whatever's in this array.
 export const getNavItems = (username?: string): NavItem[] => [
-  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { label: 'Today', path: '/dashboard', icon: CalendarDays },
   { label: 'Pull Requests', path: '/pulls', icon: GitPullRequest },
   { label: 'Profile', path: `/u/${username || ''}`, icon: CircleUserRound },
 ]
