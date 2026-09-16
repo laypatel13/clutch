@@ -56,8 +56,19 @@ def theirs(number, *, repo="org/api", updated=0, author="alice", requests=(), dr
     }
 
 
-def run(authored=(), requested=()):
-    return classify(list(authored), list(requested), "lay", NOW)
+def landed(number, *, repo="lay/clutch", merged=1, merged_by="lay", title="A pull request"):
+    return {
+        "number": number,
+        "title": title,
+        "url": f"https://github.com/{repo}/pull/{number}",
+        "mergedAt": ago(merged),
+        "mergedBy": {"login": merged_by} if merged_by else None,
+        "repository": {"nameWithOwner": repo},
+    }
+
+
+def run(authored=(), requested=(), merged=()):
+    return classify(list(authored), list(requested), "lay", NOW, merged=list(merged))
 
 
 def where(sections, repo_number):
@@ -191,8 +202,48 @@ def test_long_titles_are_truncated_and_missing_titles_read_cleanly():
 
 
 def test_null_and_non_pull_request_search_nodes_are_skipped():
-    sections = run(authored=[None, {}, mine(1, updated=9)], requested=[None, {}])
+    sections = run(authored=[None, {}, mine(1, updated=9)], requested=[None, {}], merged=[None, {}])
     assert [item["number"] for item in sections["gone_quiet"]] == [1]
+    assert sections["recently_merged"] == []
+
+
+# ---------------------------------------------------------------------------
+# Recently merged
+# ---------------------------------------------------------------------------
+
+def test_merged_pull_requests_are_listed_most_recent_first():
+    sections = run(merged=[landed(1, merged=12), landed(2, merged=2), landed(3, merged=25)])
+    items = sections["recently_merged"]
+    assert [item["number"] for item in items] == [2, 1, 3]
+    assert items[0]["summary"] == "Merged PR #2 — A pull request"
+    assert items[0]["since"] == ago(2).replace("Z", "+00:00")
+
+
+@pytest.mark.parametrize("merged_by, detail", [
+    ("bob", "merged by bob"),
+    ("lay", None),
+    ("LAY", None),
+    (None, None),
+])
+def test_merged_names_the_merger_only_when_it_was_someone_else(merged_by, detail):
+    [item] = run(merged=[landed(1, merged_by=merged_by)])["recently_merged"]
+    assert item["detail"] == detail
+
+
+@pytest.mark.parametrize("days, hours, listed", [
+    (29, 23, True),
+    (30, 0, True),
+    (30, 1, False),
+])
+def test_merged_window_is_exact_even_though_search_is_by_date(days, hours, listed):
+    pr = landed(1)
+    pr["mergedAt"] = ago(days, hours)
+    assert (run(merged=[pr])["recently_merged"] != []) == listed
+
+
+def test_merged_pull_requests_never_count_as_open_loops():
+    sections = run(merged=[landed(1)])
+    assert where(sections, "lay/clutch#1") == ["recently_merged"]
 
 
 # ---------------------------------------------------------------------------
@@ -214,16 +265,28 @@ def fetch(client):
     return asyncio.run(go())
 
 
-def test_fetch_asks_for_direct_review_requests_in_one_request():
+def test_fetch_asks_for_direct_review_requests_and_recent_merges_in_one_request():
     calls = []
-    body = {"data": {"authored": {"nodes": [mine(1, updated=9)]}, "requested": {"nodes": []}}}
+    body = {"data": {
+        "authored": {"nodes": [mine(1, updated=9)]},
+        "requested": {"nodes": []},
+        "merged": {"nodes": [landed(2, merged=3)]},
+    }}
 
     result = fetch(graphql(body=body, calls=calls))
 
     assert len(calls) == 1
-    assert "user-review-requested:lay" in calls[0]["variables"]["requested"]
+    variables = calls[0]["variables"]
+    assert "user-review-requested:lay" in variables["requested"]
+    assert "is:merged author:lay merged:>=2026-08-16" in variables["merged"]
     assert result["checked_at"] == NOW.isoformat()
     assert [item["number"] for item in result["sections"]["gone_quiet"]] == [1]
+    assert [item["number"] for item in result["sections"]["recently_merged"]] == [2]
+
+
+def test_fetch_tolerates_a_response_without_merges():
+    body = {"data": {"authored": {"nodes": []}, "requested": {"nodes": []}}}
+    assert fetch(graphql(body=body))["sections"]["recently_merged"] == []
 
 
 @pytest.mark.parametrize("status, body", [
@@ -262,7 +325,7 @@ def test_waiting_endpoint_returns_every_section(api):
     assert response.status_code == 200
     assert set(response.json()["sections"]) == {
         "review_requested", "ready_to_merge", "changes_requested",
-        "gone_quiet", "probably_abandoned", "awaiting_maintainer",
+        "gone_quiet", "probably_abandoned", "awaiting_maintainer", "recently_merged",
     }
 
 

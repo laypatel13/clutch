@@ -5,6 +5,7 @@ export type WaitingSectionKey =
   | 'gone_quiet'
   | 'probably_abandoned'
   | 'awaiting_maintainer'
+  | 'recently_merged'
 
 export interface WaitingItem {
   /** "owner/repo#number" — unique across sections. */
@@ -17,7 +18,7 @@ export interface WaitingItem {
   summary: string
   /** "approved by bob", "opened by alice"; null when there's no one to name. */
   detail: string | null
-  /** UTC ISO timestamp the loop started waiting. */
+  /** UTC ISO timestamp the loop started waiting, or when it was merged. */
   since: string
 }
 

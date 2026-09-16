@@ -15,10 +15,11 @@ export default function WaitingPage() {
     meta = status === 'error' ? "Couldn't check GitHub" : 'Checking GitHub…'
   } else {
     const count = countWaiting(data)
-    const { awaiting_maintainer: awaiting, probably_abandoned: abandoned } = data.sections
+    const { awaiting_maintainer: awaiting, probably_abandoned: abandoned, recently_merged: merged } = data.sections
     meta = count === 0 ? 'All clear' : `${count} open ${count === 1 ? 'loop' : 'loops'}`
     if (awaiting.length > 0) meta += ` · ${awaiting.length} awaiting a maintainer`
     if (abandoned.length > 0) meta += ` · ${abandoned.length} probably abandoned`
+    if (merged.length > 0) meta += ` · ${merged.length} merged in 30 days`
   }
 
   return (

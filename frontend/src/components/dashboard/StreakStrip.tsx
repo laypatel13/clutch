@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Flame, Trophy } from 'lucide-react'
+import { Flame, Trophy, type LucideIcon } from 'lucide-react'
 import httpClient from '../../api/httpClient'
 import type { StreakSummary } from '../../types/dashboard.types'
 
@@ -18,16 +18,48 @@ export default function StreakStrip() {
 
   if (!streak) return null
 
+  const { current_streak: current, longest_streak: best, active_today: activeToday } = streak
+  const live = current > 0
+  const days = (count: number) => (count === 1 ? 'day' : 'days')
+
+  let currentLabel = 'start one today'
+  let currentSpoken = 'No active streak. Contribute today to start one.'
+  if (live && activeToday) {
+    currentLabel = 'day streak'
+    currentSpoken = `${current}-day streak, including today.`
+  } else if (live) {
+    currentLabel = 'day streak · commit today to keep it'
+    currentSpoken = `${current}-day streak. Contribute today to keep it going.`
+  }
+
   return (
     <ul className="streak-strip" aria-label="Contribution streak">
-      <li className="tag tag-outline">
-        <Flame size={12} aria-hidden="true" />
-        {streak.current_streak > 0 ? `${streak.current_streak}-day streak` : 'No active streak'}
-      </li>
-      <li className="tag tag-outline">
-        <Trophy size={12} aria-hidden="true" />
-        Best: {streak.longest_streak} {streak.longest_streak === 1 ? 'day' : 'days'}
-      </li>
+      <StreakStat icon={Flame} value={current} label={currentLabel} spoken={currentSpoken} live={live} />
+      <StreakStat icon={Trophy} value={best} label="best" spoken={`Longest streak: ${best} ${days(best)}.`} />
     </ul>
+  )
+}
+
+interface StreakStatProps {
+  icon: LucideIcon
+  value: number
+  label: string
+  /** The whole stat as one sentence, since the number and label are split visually. */
+  spoken: string
+  live?: boolean
+}
+
+function StreakStat({ icon: Icon, value, label, spoken, live }: StreakStatProps) {
+  return (
+    <li className={`streak-stat${live ? ' is-live' : ''}`}>
+      <span className="timeline-marker streak-stat-marker" aria-hidden="true">
+        <Icon size={12} strokeWidth={2.5} />
+      </span>
+      <span className="streak-stat-text" aria-hidden="true">
+        <span className="streak-stat-number">{value}</span>
+        <span className="streak-stat-label">{label}</span>
+      </span>
+      <span className="visually-hidden">{spoken}</span>
+    </li>
   )
 }

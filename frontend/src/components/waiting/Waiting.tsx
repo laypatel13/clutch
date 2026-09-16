@@ -4,7 +4,7 @@ import type { WaitingItem as WaitingItemData, WaitingResponse, WaitingSectionKey
 import { countWaiting } from '../../utils/waiting'
 import { RailSkeleton, SkeletonRegion } from '../common/Skeleton'
 import StateMessage from '../common/StateMessage'
-import WaitingItem from './WaitingItem'
+import WaitingItem, { type AgeVerb } from './WaitingItem'
 import WaitingSection from './WaitingSection'
 
 const tone = (accent: string) => `var(--accent-${accent}-on-surface)`
@@ -12,14 +12,18 @@ const tone = (accent: string) => `var(--accent-${accent}-on-surface)`
 interface SectionConfig {
   key: Exclude<WaitingSectionKey, 'probably_abandoned'>
   title: string
+  /** The title in a few words, for the all-clear line's chips. */
+  shortTitle: string
   hint: string
-  accent?: 'pink' | 'green' | 'orange'
+  accent?: 'pink' | 'green' | 'orange' | 'purple'
   icon: LucideIcon
   color: string
-  /** How the age reads aloud: "waiting 6 days" or "quiet for 38 days". */
-  ageVerb: 'waiting' | 'quiet for'
+  /** How the age reads aloud: "waiting 6 days", "quiet for 38 days", "merged 3 days ago". */
+  ageVerb: AgeVerb
   /** Someone is blocked on you, so a long wait turns urgent rather than just old. */
   canBeOverdue: boolean
+  /** A record rather than a check, so an empty one says nothing rather than "all clear". */
+  hideWhenEmpty?: boolean
 }
 
 // In order of urgency — the same order the server classifies in.
@@ -27,32 +31,46 @@ const SECTIONS: SectionConfig[] = [
   {
     key: 'review_requested',
     title: 'Reviews requested from you',
+    shortTitle: 'Reviews',
     hint: 'Someone is waiting on your review before they can move on.',
     accent: 'pink', icon: Eye, color: tone('pink'), ageVerb: 'waiting', canBeOverdue: true,
   },
   {
     key: 'ready_to_merge',
     title: 'Approved, ready to merge',
+    shortTitle: 'Ready to merge',
     hint: 'Approved and yours to merge — one click from done.',
     accent: 'green', icon: GitMerge, color: tone('green'), ageVerb: 'waiting', canBeOverdue: true,
   },
   {
     key: 'changes_requested',
     title: 'Changes requested',
+    shortTitle: 'Changes requested',
     hint: "A reviewer asked for changes you haven't pushed yet.",
     accent: 'orange', icon: RotateCcw, color: tone('orange'), ageVerb: 'waiting', canBeOverdue: true,
   },
   {
     key: 'gone_quiet',
     title: 'Gone quiet',
+    shortTitle: 'Gone quiet',
     hint: 'No activity for over a week — worth a nudge, or closing.',
     icon: Hourglass, color: 'var(--text-muted)', ageVerb: 'quiet for', canBeOverdue: false,
   },
   {
     key: 'awaiting_maintainer',
     title: 'Approved, waiting on a maintainer',
+    shortTitle: 'Waiting on a maintainer',
     hint: "Approved, but only the repository's maintainers can merge. Ping them if it sits.",
     icon: Clock, color: 'var(--text-muted)', ageVerb: 'waiting', canBeOverdue: false,
+  },
+  {
+    // 30 days mirrors MERGED_WITHIN in backend/app/services/waiting.py.
+    key: 'recently_merged',
+    title: 'Merged in the last 30 days',
+    shortTitle: 'Merged',
+    hint: 'Loops you closed: your pull requests that landed recently.',
+    accent: 'purple', icon: GitMerge, color: tone('purple'), ageVerb: 'merged', canBeOverdue: false,
+    hideWhenEmpty: true,
   },
 ]
 
@@ -82,19 +100,23 @@ function WaitingRail({ items, checkedAt, config, muted }: WaitingRailProps) {
   )
 }
 
-/** Sections with nothing in them stay visible as one compact line each. */
+/** Checks that came back empty share one line: a single "all clear" and a chip per check. */
 function ClearGroup({ sections }: { sections: SectionConfig[] }) {
   return (
-    <ul className="waiting-clear">
-      {sections.map(config => (
-        <li key={config.key} className="waiting-clear-row">
-          <h2 className="waiting-clear-title">{config.title}</h2>
-          <span className="waiting-clear-status">
-            <CircleCheck size={14} aria-hidden="true" /> none right now
-          </span>
-        </li>
-      ))}
-    </ul>
+    <section className="waiting-clear">
+      <h2 className="waiting-clear-label">
+        <CircleCheck size={16} strokeWidth={2.5} aria-hidden="true" /> All clear
+      </h2>
+      <ul className="waiting-clear-chips">
+        {sections.map(({ key, title, shortTitle, icon: Icon, color }) => (
+          <li key={key} className="waiting-clear-chip">
+            <Icon size={13} strokeWidth={2.5} style={{ color }} aria-hidden="true" />
+            <span aria-hidden="true">{shortTitle}</span>
+            <span className="visually-hidden">{title}: none right now</span>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
@@ -117,6 +139,7 @@ function layOut(data: WaitingResponse): Block[] {
       (config.key === 'gone_quiet' && data.sections.probably_abandoned.length > 0)
 
     const last = blocks[blocks.length - 1]
+    if (!hasContent && config.hideWhenEmpty) continue
     if (hasContent) blocks.push({ type: 'section', config })
     else if (last?.type === 'clear') last.sections.push(config)
     else blocks.push({ type: 'clear', sections: [config] })

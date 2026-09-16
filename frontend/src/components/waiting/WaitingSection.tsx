@@ -5,7 +5,7 @@ interface WaitingSectionProps {
   title: string
   /** One line on why this section matters — the concept is new, so say it. */
   hint: string
-  accent?: 'pink' | 'green' | 'orange'
+  accent?: 'pink' | 'green' | 'orange' | 'purple'
   count: number
   children: ReactNode
 }

@@ -3,14 +3,16 @@ import type { WaitingItem as WaitingItemData } from '../../types/waiting.types'
 import { ageBetween, formatShortDate, OVERDUE_AFTER_DAYS } from '../../utils/waiting'
 import RailItem from '../common/RailItem'
 
+export type AgeVerb = 'waiting' | 'quiet for' | 'merged'
+
 interface WaitingItemProps {
   item: WaitingItemData
   /** When GitHub was checked; every age on the page is measured from it. */
   checkedAt: string
   icon: LucideIcon
   color: string
-  /** How to read the age aloud: "waiting 6 days" vs "quiet for 38 days". */
-  ageVerb: 'waiting' | 'quiet for'
+  /** How to read the age aloud: "waiting 6 days", "quiet for 38 days", "merged 3 days ago". */
+  ageVerb: AgeVerb
   /** Only where a person is waiting does a long wait turn urgent. */
   canBeOverdue?: boolean
   muted?: boolean
@@ -25,7 +27,7 @@ export default function WaitingItem({ item, checkedAt, icon, color, ageVerb, can
       time={
         <>
           <span aria-hidden="true">{age.short}</span>
-          <span className="visually-hidden">{ageVerb} {age.long}</span>
+          <span className="visually-hidden">{ageVerb} {age.long}{ageVerb === 'merged' ? ' ago' : ''}</span>
         </>
       }
       overdue={canBeOverdue && age.days >= OVERDUE_AFTER_DAYS}
@@ -37,7 +39,9 @@ export default function WaitingItem({ item, checkedAt, icon, color, ageVerb, can
       meta={
         <>
           <span>{item.repo}</span>
-          <span>{item.detail ?? `last activity ${formatShortDate(item.since, checkedAt)}`}</span>
+          <span>
+            {item.detail ?? `${ageVerb === 'merged' ? 'merged' : 'last activity'} ${formatShortDate(item.since, checkedAt)}`}
+          </span>
         </>
       }
     />

@@ -1230,11 +1230,46 @@ html[data-theme='dark'] body {
   gap: var(--space-2);
   margin-top: var(--space-3);
 }
-.streak-strip .tag {
+
+/* A stat chip: marker, big number, small label. Neutral by default; the
+   current streak takes the orange accent while it's live. */
+.streak-stat {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
+.streak-stat-marker { color: var(--text-secondary); }
+
+.streak-stat-text {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 var(--space-2);
+}
+.streak-stat-number {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.streak-stat-label {
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.streak-stat.is-live {
+  border-color: var(--accent-orange);
+  box-shadow: 3px 3px 0px var(--accent-orange);
+}
+.streak-stat.is-live .streak-stat-marker { color: var(--accent-orange-on-surface); }
 
 /* On narrow screens the time moves above the summary, next to the marker. */
 @media (max-width: 480px) {
@@ -1285,41 +1320,49 @@ html[data-theme='dark'] body {
   font-weight: 700;
 }
 
-/* Checks that came back empty. Deliberately quieter than a full card: a thin
-   light border and no shadow, so they confirm the check ran without
-   competing with the sections that need attention. */
+/* Checks that came back empty, as one line: "All clear" and a chip per check.
+   A real card (ink border, small shadow) so it doesn't read as disabled, but
+   one line tall with quiet chips so it never competes with sections that
+   need attention. */
 .waiting-clear {
-  list-style: none;
-  padding: 0 var(--space-5);
-  background: var(--bg-card);
-  border: 2px solid var(--border-light);
-}
-
-.waiting-clear-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-1) var(--space-3);
-  padding-block: var(--space-3);
-  border-bottom: 1px solid var(--border-light);
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
-.waiting-clear-row:last-child { border-bottom: 0; }
 
-.waiting-clear-title {
+.waiting-clear-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: var(--text-base);
-  color: var(--text-secondary);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+.waiting-clear-label svg { color: var(--accent-green-on-surface); }
+
+.waiting-clear-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
-.waiting-clear-status {
+.waiting-clear-chip {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  padding: 3px 10px;
+  border: 2px solid var(--border-light);
   font-family: var(--font-chrome);
-  font-size: var(--text-sm);
-  color: var(--accent-green-on-surface);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .waiting-abandoned { margin-top: var(--space-3); }

@@ -18,6 +18,9 @@ Every open PR lands in at most one section, checked in order of urgency:
 The last is informational rather than a loop you close yourself, so it's
 checked before the quiet rules (an approval is more useful to know about than
 the silence that follows it) but isn't counted as waiting on you.
+
+recently_merged lists your PRs merged within MERGED_WITHIN: loops already
+closed, shown for the record and never counted as waiting on you.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -28,6 +31,7 @@ from app.services.activity_sync import GRAPHQL_URL, GitHubUnavailable
 
 QUIET_AFTER = timedelta(days=7)
 ABANDONED_AFTER = timedelta(days=60)
+MERGED_WITHIN = timedelta(days=30)
 SEARCH_LIMIT = 50
 SUMMARY_TITLE_LENGTH = 72
 
@@ -37,11 +41,11 @@ MERGE_PERMISSIONS = {"ADMIN", "MAINTAIN", "WRITE"}
 
 SECTIONS = (
     "review_requested", "ready_to_merge", "changes_requested",
-    "gone_quiet", "probably_abandoned", "awaiting_maintainer",
+    "gone_quiet", "probably_abandoned", "awaiting_maintainer", "recently_merged",
 )
 
 QUERY = """
-query($authored: String!, $requested: String!, $limit: Int!) {
+query($authored: String!, $requested: String!, $merged: String!, $limit: Int!) {
   authored: search(query: $authored, type: ISSUE, first: $limit) {
     nodes {
       ... on PullRequest {
@@ -78,17 +82,32 @@ query($authored: String!, $requested: String!, $limit: Int!) {
       }
     }
   }
+  merged: search(query: $merged, type: ISSUE, first: $limit) {
+    nodes {
+      ... on PullRequest {
+        number
+        title
+        url
+        mergedAt
+        mergedBy { login }
+        repository { nameWithOwner }
+      }
+    }
+  }
 }
 """
 
 
-def search_queries(username: str) -> dict:
+def search_queries(username: str, now: datetime) -> dict:
     return {
         "authored": f"is:pr is:open author:{username} archived:false",
         # user-review-requested matches requests made to you personally. The
         # broader review-requested also includes every team you belong to,
         # which floods the list in large organisations.
         "requested": f"is:pr is:open user-review-requested:{username} archived:false",
+        # archived:false is left off: a merged PR still counts after its
+        # repository is archived.
+        "merged": f"is:pr is:merged author:{username} merged:>={(now - MERGED_WITHIN).date().isoformat()}",
         "limit": SEARCH_LIMIT,
     }
 
@@ -176,8 +195,23 @@ def _item(pr: dict, since: datetime, verb: str, detail: str | None) -> dict:
     }
 
 
-def classify(authored: list, requested: list, username: str, now: datetime) -> dict[str, list[dict]]:
+def classify(
+    authored: list, requested: list, username: str, now: datetime, merged: list = (),
+) -> dict[str, list[dict]]:
     sections: dict[str, list[dict]] = {name: [] for name in SECTIONS}
+
+    for pr in merged:
+        if not _is_pull_request(pr):
+            continue
+        merged_at = _parse(pr.get("mergedAt"))
+        # The search's merged:>= filter is date-granular, so trim to the exact window.
+        if not merged_at or now - merged_at > MERGED_WITHIN:
+            continue
+        merger = (pr.get("mergedBy") or {}).get("login")
+        by_someone_else = merger and merger.lower() != username.lower()
+        sections["recently_merged"].append(
+            _item(pr, merged_at, "Merged", f"merged by {merger}" if by_someone_else else None)
+        )
 
     for pr in requested:
         if not _is_pull_request(pr) or pr.get("isDraft"):
@@ -232,8 +266,9 @@ def classify(authored: list, requested: list, username: str, now: datetime) -> d
         elif quiet_for >= QUIET_AFTER:
             sections["gone_quiet"].append(_item(pr, updated_at, "Follow up on", None))
 
-    for items in sections.values():
-        items.sort(key=lambda item: item["since"])  # oldest waiting first
+    for name, items in sections.items():
+        # Open loops: oldest waiting first. Merged: most recent first.
+        items.sort(key=lambda item: item["since"], reverse=name == "recently_merged")
     return sections
 
 
@@ -242,9 +277,10 @@ def classify(authored: list, requested: list, username: str, now: datetime) -> d
 # ---------------------------------------------------------------------------
 
 async def fetch_waiting(client: httpx.AsyncClient, username: str, now: datetime | None = None) -> dict:
-    """One GraphQL request covering both your PRs and review requests to you."""
+    """One GraphQL request covering your open PRs, review requests to you, and your recent merges."""
+    now = now or datetime.now(timezone.utc)
     try:
-        response = await client.post(GRAPHQL_URL, json={"query": QUERY, "variables": search_queries(username)})
+        response = await client.post(GRAPHQL_URL, json={"query": QUERY, "variables": search_queries(username, now)})
     except httpx.HTTPError as error:
         raise GitHubUnavailable(str(error)) from error
     if response.status_code != 200:
@@ -256,11 +292,11 @@ async def fetch_waiting(client: httpx.AsyncClient, username: str, now: datetime 
         errors = body.get("errors") or [{}]
         raise GitHubUnavailable(errors[0].get("message", "GitHub returned no data"))
 
-    now = now or datetime.now(timezone.utc)
     sections = classify(
         (data.get("authored") or {}).get("nodes") or [],
         (data.get("requested") or {}).get("nodes") or [],
         username,
         now,
+        merged=(data.get("merged") or {}).get("nodes") or [],
     )
     return {"checked_at": now.isoformat(), "sections": sections}
