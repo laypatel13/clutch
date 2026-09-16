@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or bug report
+    url: https://github.com/laypatel13/clutch/discussions/new?category=q-a
+    about: Start a Discussion. If it's a confirmed bug, a maintainer turns it into an issue.
+  - name: Feature idea
+    url: https://github.com/laypatel13/clutch/discussions/new?category=ideas
+    about: Propose it in Discussions first, so it can be shaped before anyone writes code.
+  - name: Security vulnerability
+    url: https://github.com/laypatel13/clutch/security/advisories/new
+    about: Report it privately. Please don't post vulnerabilities in public threads.

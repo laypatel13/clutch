@@ -1,423 +1,344 @@
 <div align="center">
 
-# ⚙️ Clutch
-
-### *AI-Powered Developer Activity & Productivity Dashboard*
-
-[![GitHub](https://img.shields.io/badge/Track-Developer_Stats-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/laypatel/clutch)
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit-4285F4?style=for-the-badge)](https://clutch-woad.vercel.app)
+<a href="https://clutch-woad.vercel.app">
+  <img src="docs/readme/hero.svg" alt="Clutch: your GitHub day in one place. A timeline of what you shipped, the pull requests waiting on you, and your streak." width="100%">
+</a>
 
 <br/>
-
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.103-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Groq](https://img.shields.io/badge/AI-Groq_Llama_3.1-f55036?style=flat-square)](https://groq.com)
-
 <br/>
 
-**Clutch** — *the ultimate developer companion* — is an open-source dashboard that connects directly to your GitHub to visualize your coding journey. It tracks commit streaks, identifies activity patterns, and provides AI-powered weekly insights to help you understand your productivity better than ever before.
+[![Open the app](https://img.shields.io/badge/open_the_app-clutch--woad.vercel.app-7c3aed?style=for-the-badge&labelColor=1a1a2e)](https://clutch-woad.vercel.app)
+[![PyPI](https://img.shields.io/pypi/v/myclutch?style=for-the-badge&label=pip%20install%20myclutch&labelColor=1a1a2e&color=7c3aed)](https://pypi.org/project/myclutch/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-f5f0e8?style=for-the-badge&labelColor=1a1a2e)](./LICENSE)
 
-<br/>
-
-[🌐 Live Demo](https://clutch-woad.vercel.app) · [📖 API Docs](https://clutch-api.onrender.com) · [💻 CLI Tool](#-cli-setup) · [🐛 Report Bug](https://github.com/laypatel/clutch/issues) · [✨ Request Feature](https://github.com/laypatel/clutch/issues)
+**[Live app](https://clutch-woad.vercel.app)** &nbsp;·&nbsp;
+**[CLI on PyPI](https://pypi.org/project/myclutch/)** &nbsp;·&nbsp;
+**[API docs](https://clutch-api.onrender.com/docs)** &nbsp;·&nbsp;
+**[Discussions](https://github.com/laypatel13/clutch/discussions)** &nbsp;·&nbsp;
+**[Contribute](./CONTRIBUTING.md)**
 
 </div>
 
----
+<br/>
 
-## 📋 Table of Contents
+## GitHub tracks your work. Clutch tracks you.
 
-- [🎯 The Mission](#-the-mission)
-- [✨ Key Features](#-key-features)
-- [🔬 How It Works](#-how-it-works)
-- [🏗️ System Architecture](#️-system-architecture)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🚀 Quick Start](#-quick-start)
-- [📊 API Reference](#-api-reference)
-- [🗂️ Project Structure](#️-project-structure)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
-
----
-
-## 🎯 The Mission
+GitHub is great at storing everything you did and terrible at telling you what it means for *today*. Clutch connects to your GitHub account and answers the three questions you actually open it for:
 
 <table>
 <tr>
-<td width="60%">
+<td width="33%" valign="top">
 
-### GitHub tracks your work. Clutch tracks you.
+### What did I do?
+**Today** turns your GitHub events into a readable daily timeline: pushes, pull requests, reviews and merges, grouped by day in your own timezone.
 
--  **Visualize** your contribution streaks and longest active periods.
--  **Understand** your coding patterns with AI-powered weekly summaries.
--  **Identify** your most productive days and top-performing repositories.
--  **Access** your stats instantly via the terminal with a dedicated CLI.
--  **Showcase** your developer identity with a professional public profile.
+</td>
+<td width="33%" valign="top">
 
-> *"Clutch isn't just a dashboard; it's a mirror for your developer journey, helping you stay consistent and focused."*
+### What's waiting on me?
+**Waiting** checks GitHub live for review requests, approved PRs you can merge, changes you still owe, and PRs that have gone quiet, then lists what you merged in the last 30 days.
+
+</td>
+<td width="33%" valign="top">
+
+### Am I consistent?
+**Streaks** show your current run and your best. A streak stays alive until the day is over, so it doesn't reset just because you haven't committed *yet*.
 
 </td>
 </tr>
 </table>
 
----
+<br/>
 
-## ✨ Key Features
+## Features
 
 <table>
-<tr>
-<td align="center" width="33%">
-<h3>📊 Activity Charts</h3>
-<p>Beautiful, high-fidelity visualizations of your GitHub contributions over the last 30 days using the GraphQL API.</p>
-</td>
-<td align="center" width="33%">
-<h3>🧠 AI Summaries</h3>
-<p>Weekly insights generated by Llama 3.1 (via Groq) that analyze your commits to provide actionable feedback.</p>
-</td>
-<td align="center" width="33%">
-<h3>⚡ CLI First</h3>
-<p>A powerful terminal companion (<code>myclutch</code>) for instant access to streaks, stats, and insights.</p>
-</td>
-</tr>
-<tr>
-<td align="center" width="33%">
-<h3>🔥 Streak Tracking</h3>
-<p>Keep the fire alive with precise tracking of your current and all-time longest commit streaks.</p>
-</td>
-<td align="center" width="33%">
-<h3>🌍 Public Profiles</h3>
-<p>A dedicated, minimalist profile page at <code>/u/username</code> to share your achievements with the world.</p>
-</td>
-<td align="center" width="33%">
-<h3>🔐 Secure Auth</h3>
-<p>Seamless GitHub OAuth 2.0 integration with JWT-based session management for the web and CLI.</p>
-</td>
-</tr>
+<tr><td width="24%"><b>Daily timeline</b></td><td>Events synced from GitHub and collapsed into one line per thing you did, newest first, paging back through your history.</td></tr>
+<tr><td><b>Waiting on you</b></td><td>Every open loop sorted by urgency. Overdue reviews are flagged, and approved PRs you can't merge are kept apart from the ones you can.</td></tr>
+<tr><td><b>Recently merged</b></td><td>Your pull requests merged in the last 30 days, so closed loops don't vanish.</td></tr>
+<tr><td><b>Streaks and heatmap</b></td><td>Current and longest contribution streak, plus a 12-month heatmap in the terminal.</td></tr>
+<tr><td><b>AI weekly insight</b></td><td>A short read on your week and your coding patterns, generated with Llama 3.1 on Groq.</td></tr>
+<tr><td><b>Public profile</b></td><td>A shareable page at <code>/u/&lt;username&gt;</code>.</td></tr>
+<tr><td><b>Terminal first</b></td><td>Streaks, stats, heatmap, patterns and insights from your shell with <code>pip install myclutch</code>.</td></tr>
+<tr><td><b>Light and dark</b></td><td>A hand-built neo-brutalist design system with hard shadows and paper texture, built with keyboard and screen-reader users in mind.</td></tr>
 </table>
 
----
+<br/>
 
-## 🔬 How It Works
+## In your terminal
 
-```mermaid
-flowchart LR
-    A["User Login"] --> B["GitHub OAuth"]
-    B --> C["Data Sync"]
-    C --> D["Analytics Engine"]
-    D --> E["Visual Dashboard"]
-    
-    C --> C1["GraphQL API"]
-    C --> C2["REST API"]
-    
-    D --> D1["Streak Calculator"]
-    D --> D2["Language Parser"]
-    D --> D3["AI Insights (Groq)"]
-    
-    E --> E1["Web UI"]
-    E --> E2["CLI Tool"]
-    
-    style A fill:#000,color:#fff
-    style B fill:#000,color:#fff
-    style C fill:#000,color:#fff
-    style C1 fill:#000,color:#fff
-    style C2 fill:#000,color:#fff
-    style D fill:#000,color:#fff
-    style D1 fill:#000,color:#fff
-    style D2 fill:#000,color:#fff
-    style D3 fill:#000,color:#fff
-    style E fill:#000,color:#fff
-    style D3 fill:#000,color:#fff
-    style E1 fill:#000,color:#fff
-    style E2 fill:#000,color:#fff
-```
+<div align="center">
+  <img src="docs/readme/cli.svg" alt="The clutch CLI showing a 12-day current streak, a 31-day longest streak and 148 active days, with a progress bar." width="88%">
+</div>
 
----
+<br/>
 
-## 🏗️ System Architecture
-
-Clutch uses a modern, decoupled architecture designed for speed and reliability.
-
-![Architecture Diagram](./ArchitectureDiagram.png)
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-| Technology | Purpose |
-|:---|:---|
-| ![React](https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black) | UI Framework with modern hooks |
-| ![Vite](https://img.shields.io/badge/Vite_5-646CFF?style=flat-square&logo=vite&logoColor=white) | Lightning-fast build tool |
-| ![Tailwind](https://img.shields.io/badge/Tailwind_3.4-06B6D4?style=flat-square&logo=tailwind-css&logoColor=white) | Utility-first styling |
-| ![Recharts](https://img.shields.io/badge/Recharts-FF6384?style=flat-square&logo=chart.js&logoColor=white) | Data visualization |
-
-### Backend
-| Technology | Purpose |
-|:---|:---|
-| ![Python](https://img.shields.io/badge/Python_3.11-3776AB?style=flat-square&logo=python&logoColor=white) | Runtime environment |
-| ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) | High-performance API framework |
-| ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white) | SQL Toolkit and ORM |
-| ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white) | Local data persistence |
-
-### External Services
-| Technology | Purpose |
-|:---|:---|
-| ![GitHub](https://img.shields.io/badge/GitHub_API-181717?style=flat-square&logo=github&logoColor=white) | Data source (GraphQL & REST) |
-| ![Groq](https://img.shields.io/badge/Groq_AI-f55036?style=flat-square) | AI insight generation |
-| ![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=json-web-tokens&logoColor=white) | Secure session management |
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.11 or higher
-- Node.js 20 or higher
-- A GitHub OAuth app
-- A Groq API key
-
-### 1️⃣ Create a GitHub OAuth App
-
-Navigate to [GitHub Developer Settings](https://github.com/settings/developers) and create a new OAuth app:
-
-- **Homepage URL**: `http://localhost:5173`
-- **Authorization callback**: `http://localhost:8000/auth/github/callback`
-
-Copy the **Client ID** and **Client Secret**.
-
-### 2️⃣ Backend Setup
-
-```bash
-cd backend
-```
-```bash
-python -m venv venv
-```
-```bash
-source venv/bin/activate        # Windows: venv\Scripts\activate
-```
-```bash
-pip install -r requirements.txt
-```
-```bash
-cp .env.example .env
-```
-
-**Configure `.env`**:
-```text
-DATABASE_URL = sqlite:///./clutch.db
-
-SECRET_KEY = your-secret-key
-
-ALGORITHM = HS256
-
-ACCESS_TOKEN_EXPIRE_MINUTES = 10080
-
-GITHUB_CLIENT_ID = your_client_id
-
-GITHUB_CLIENT_SECRET = your_client_secret
-
-GITHUB_REDIRECT_URI = http://localhost:8000/auth/github/callback
-
-GROQ_API_KEY = your_groq_key
-
-FRONTEND_URL = http://localhost:5173
-
-ENVIRONMENT = development
-```
-
-**Start the Backend**:
-```bash
-uvicorn app.main:app --reload
-```
-The backend will run at `http://localhost:8000`. Documentation is available at `http://localhost:8000/docs`.
-
-### 3️⃣ Frontend Setup
-
-```bash
-cd frontend
-```
-```bash
-npm install
-```
-```bash
-cp .env.example .env
-```
-
-**Configure `.env`**:
-```text
-VITE_API_URL=http://localhost:8000
-```
-
-**Start the Frontend**:
-```bash
-npm run dev
-```
-The frontend will run at `http://localhost:5173`.
-
-### 4️⃣ CLI Setup
+Install the CLI:
 
 ```bash
 pip install myclutch
 ```
 
-Or install locally from source:
-
-```bash
-cd cli
-pip install -e .
-```
-
-**Login** (fully automatic — no token copy-pasting):
+Sign in. This opens GitHub in your browser, then hands the token back to the terminal:
 
 ```bash
 clutch login
 ```
 
-Your browser opens, you authorize on GitHub, and the terminal automatically captures the token. Done.
-
-To point the CLI at a local backend instead of the hosted API:
+Check your streak:
 
 ```bash
-export CLUTCH_API_URL=http://localhost:8000
-clutch login
+clutch streak
 ```
 
-**Available Commands**:
-
-| Command | Description |
-|---|---|
-| `clutch login` | Login via GitHub OAuth (automatic) |
-| `clutch logout` | Logout and clear credentials |
-| `clutch whoami` | Show logged-in user |
-| `clutch streak` | Current and longest commit streak |
-| `clutch stats [--days N]` | Activity stats for last N days |
-| `clutch heatmap [--weeks N]` | Contribution heatmap for last N weeks |
-| `clutch repos` | Most recently active repositories |
+| Command | What it does |
+|:--|:--|
+| `clutch login` / `logout` / `whoami` | Sign in with GitHub, sign out, show who's signed in |
+| `clutch streak` | Current and longest streak, with progress toward your best |
+| `clutch stats --days 30` | Activity totals for the last N days |
+| `clutch heatmap --weeks 12` | Contribution heatmap for the last N weeks |
+| `clutch patterns` | Your most productive days and habits |
 | `clutch insight` | AI-generated weekly insight |
-| `clutch patterns` | Coding patterns and habits |
-| `clutch status` | Login status and API health |
-| `clutch --version` | Show CLI version |
+| `clutch repos` / `clutch lang` | Recently active repositories and language breakdown |
+| `clutch status` | Sign-in status and API health |
 
----
+To point the CLI at a local backend, set `CLUTCH_API_URL=http://localhost:8000` before `clutch login`.
 
-## 📊 API Reference
+<br/>
+
+## How it works
+
+```mermaid
+flowchart LR
+    GH[("GitHub<br/>GraphQL + REST")]
+    API["FastAPI backend"]
+    DB[("SQLite")]
+    AI["Groq<br/>Llama 3.1"]
+    WEB["Web app<br/>React + Vite"]
+    CLI["CLI<br/>myclutch"]
+
+    GH -- "events sync → timeline" --> API
+    GH -- "live PR search → waiting" --> API
+    API <--> DB
+    API -- "weekly insight" --> AI
+    WEB -- "JWT" --> API
+    CLI -- "JWT" --> API
+
+    classDef ink fill:#1a1a2e,stroke:#1a1a2e,color:#f5f0e8
+    classDef paper fill:#faf7f2,stroke:#1a1a2e,stroke-width:2px,color:#1a1a2e
+    classDef accent fill:#7c3aed,stroke:#4c1d95,stroke-width:2px,color:#ffffff
+    class API accent
+    class WEB,CLI paper
+    class GH,DB,AI ink
+```
+
+- **Timeline:** GitHub events are synced into the database and collapsed into readable entries, so Today reads from local data and can load earlier days on demand.
+- **Waiting:** asked live from GitHub on every request in one GraphQL query, because a stale "waiting on you" list is worse than none.
+- **Auth:** GitHub OAuth 2.0 issues a JWT that the web app and the CLI share.
+
+![Architecture diagram](./ArchitectureDiagram.png)
+
+<br/>
+
+## Built with
+
+<p>
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-7c3aed?style=flat-square&logo=react&logoColor=white&labelColor=1a1a2e">
+  <img alt="Vite 8" src="https://img.shields.io/badge/Vite-8-7c3aed?style=flat-square&logo=vite&logoColor=white&labelColor=1a1a2e">
+  <img alt="TypeScript 6" src="https://img.shields.io/badge/TypeScript-6-7c3aed?style=flat-square&logo=typescript&logoColor=white&labelColor=1a1a2e">
+  <img alt="React Router 7" src="https://img.shields.io/badge/React_Router-7-7c3aed?style=flat-square&logo=reactrouter&logoColor=white&labelColor=1a1a2e">
+  <img alt="FastAPI 0.115" src="https://img.shields.io/badge/FastAPI-0.115-7c3aed?style=flat-square&logo=fastapi&logoColor=white&labelColor=1a1a2e">
+  <img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-7c3aed?style=flat-square&logo=python&logoColor=white&labelColor=1a1a2e">
+  <img alt="SQLAlchemy 2" src="https://img.shields.io/badge/SQLAlchemy-2-7c3aed?style=flat-square&logo=sqlalchemy&logoColor=white&labelColor=1a1a2e">
+  <img alt="Groq" src="https://img.shields.io/badge/Groq-Llama_3.1-7c3aed?style=flat-square&labelColor=1a1a2e">
+  <img alt="Typer and Rich" src="https://img.shields.io/badge/CLI-Typer_+_Rich-7c3aed?style=flat-square&labelColor=1a1a2e">
+</p>
+
+No CSS framework: the web app runs on its own token-based design system (`frontend/src/styles/index.css`), with League Spartan, Poppins and JetBrains Mono.
+
+<br/>
+
+## Run it locally
+
+**You'll need** Python 3.11+, Node.js 20.19+, a [GitHub OAuth app](https://github.com/settings/developers), and optionally a [Groq API key](https://console.groq.com) for AI insights.
+
+### 1. Create a GitHub OAuth app
+
+| Field | Value |
+|:--|:--|
+| Homepage URL | `http://localhost:5173` |
+| Authorization callback URL | `http://localhost:8000/auth/github/callback` |
+
+Keep the **Client ID** and generate a **Client Secret**.
+
+### 2. Start the backend
+
+From the repository root, go to the backend:
+
+```bash
+cd backend
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate it on macOS or Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Or on Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create your environment file:
+
+```bash
+cp .env.example .env
+```
+
+Then fill in these values in `backend/.env`:
+
+| Variable | Example |
+|:--|:--|
+| `DATABASE_URL` | `sqlite:///./clutch.db` |
+| `SECRET_KEY` | any long random string |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | from your OAuth app |
+| `GITHUB_REDIRECT_URI` | `http://localhost:8000/auth/github/callback` |
+| `FRONTEND_URL` | `http://localhost:5173` |
+| `GROQ_API_KEY` | optional; add it to enable AI insights |
+
+Start the API:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+The API runs at `http://localhost:8000`, with interactive docs at [`/docs`](http://localhost:8000/docs).
+
+### 3. Start the frontend
+
+In a new terminal, from the repository root, go to the frontend:
+
+```bash
+cd frontend
+```
+
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Point the app at your local API:
+
+```bash
+echo "VITE_API_URL=http://localhost:8000" > .env
+```
+
+Start the dev server:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` and sign in with GitHub.
+
+### 4. Run the tests
+
+Backend tests, from `backend/` with the virtual environment active:
+
+```bash
+pytest
+```
+
+Frontend build and lint, from `frontend/`:
+
+```bash
+npm run build
+```
+
+```bash
+npm run lint
+```
+
+<br/>
+
+## API endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/auth/github` | Start GitHub OAuth flow |
-| `GET` | `/auth/github/callback` | Handle OAuth callback |
-| `GET` | `/users/me` | Get authenticated user profile |
-| `GET` | `/users/{username}` | Get public user profile |
-| `GET` | `/github/activity` | Fetch activity for last N days |
-| `GET` | `/github/streak` | Calculate current and longest streaks |
-| `GET` | `/github/languages` | Retrieve language breakdown |
-| `POST` | `/github/sync` | Sync activity data to database |
-| `GET` | `/insights/weekly` | Generate AI weekly insights |
-| `GET` | `/insights/patterns` | Detect coding patterns |
+|:--|:--|:--|
+| `GET` | `/auth/github` | Start the GitHub OAuth flow |
+| `GET` | `/auth/github/callback` | Finish OAuth and issue a JWT |
+| `GET` | `/users/me` | The signed-in user |
+| `GET` | `/users/{username}` | A public profile |
+| `GET` | `/github/timeline` | One page of the activity timeline (`cursor`, `limit`) |
+| `POST` | `/github/events/sync` | Fetch new GitHub events into the timeline |
+| `GET` | `/github/waiting` | Open PR loops and recent merges, checked live |
+| `GET` | `/github/streak` | Current and longest streak, and whether today counts yet |
+| `GET` | `/github/heatmap` | 12-month contribution heatmap |
+| `GET` | `/github/activity` | Daily activity for the last N days |
+| `GET` | `/github/languages` | Language breakdown across repositories |
+| `GET` | `/github/repos` | Recently updated repositories |
+| `POST` | `/github/sync` | Sync daily activity to the database |
+| `POST` | `/github/pulls/sync` | Sync pull requests to the database |
+| `GET` | `/insights/weekly` | AI weekly insight |
+| `GET` | `/insights/summary` | One-line AI summary |
+| `GET` | `/insights/patterns` | Detected coding patterns |
+| `GET` | `/health`, `/ready` | Liveness and database readiness |
 
----
+<br/>
 
-## 🗂️ Project Structure
+## Project structure
 
 ```text
 clutch/
-│
-├── backend/                        # FastAPI backend service
+├── backend/                  FastAPI service
 │   ├── app/
-│   │   ├── main.py                 # App entry point, registers all routers
-│   │   ├── settings.py             # Environment variables and configuration
-│   │   ├── database.py             # SQLAlchemy database connection and session
-│   │   ├── dependencies.py         # JWT authentication middleware
-│   │   │
-│   │   ├── models/                 # Database Schemas
-│   │   │   ├── user.py             # User model — stores GitHub profile and tokens
-│   │   │   ├── activity.py         # DailyActivity model — stores synced GitHub stats
-│   │   │   └── insight.py          # WeeklyInsight model — stores AI generated insights
-│   │   │
-│   │   ├── routers/                # API Endpoints
-│   │   │   ├── auth.py             # GitHub OAuth flow and JWT creation
-│   │   │   ├── github.py           # Activity, streak, language and sync endpoints
-│   │   │   ├── users.py            # User profile endpoints
-│   │   │   └── insights.py         # AI insight and pattern detection endpoints
-│   │   │
-│   │   └── services/               # Core Logic
-│   │       ├── github_service.py   # GitHub GraphQL API calls and data processing
-│   │       └── insights_service.py # AI integration and pattern detection
-│   │
-│   ├── requirements.txt
-│   └── .env.example
-│
-├── frontend/                       # React + TypeScript frontend
-│   ├── src/
-│   │   ├── main.tsx                # React entry point
-│   │   ├── App.tsx                 # Router setup and protected routes
-│   │   ├── index.css               # Global styles and design tokens
-│   │   │
-│   │   ├── context/
-│   │   │   └── AuthContext.tsx     # Auth state management and JWT handling
-│   │   │
-│   │   ├── utils/
-│   │   │   └── api.ts              # Axios instance with auth interceptors
-│   │   │
-│   │   └── pages/                  # Application Views
-│   │       ├── Landing.tsx         # Landing page with sign in
-│   │       ├── Dashboard.tsx       # Main dashboard with stats and charts
-│   │       ├── Profile.tsx         # Public user profile page
-│   │       └── AuthCallback.tsx    # Handles GitHub OAuth redirect and token storage
-│   │
-│   ├── public/
-│   │   └── _redirects              # SPA routing config
-│   ├── package.json
-│   └── .env.example
-│
-└── cli/                              # Command Line Tool (published as myclutch)
-    ├── clutch_cli/
-    │   ├── __init__.py
-    │   ├── main.py                   # CLI entry point using Typer
-    │   ├── api.py
-    │   ├── config.py                 # Config and token storage
-    │   ├── theme.py
-    │   │
-    │   ├── activity/                 # Activity related commands
-    │   │   ├── __init__.py
-    │   │   ├── patterns.py
-    │   │   ├── stats.py
-    │   │   └── streak.py
-    │   │
-    │   ├── authentication/           # Authentication commands
-    │   │   ├── __init__.py
-    │   │   ├── login.py
-    │   │   ├── logout.py
-    │   │   └── whoami.py
-    │   │
-    │   ├── insights/                 # AI Insights
-    │   │   ├── __init__.py
-    │   │   └── weekly.py
-    │   │
-    │   ├── repositories/             # Repository commands
-    │   │   ├── __init__.py
-    │   │   └── list.py
-    │   │
-    │   └── system/                   # System commands
-    │       ├── __init__.py
-    │       └── status.py
-    ├── README.md                   # PyPI package description
-    └── pyproject.toml              # Modern build config
+│   │   ├── main.py           app, CORS, routers, health checks
+│   │   ├── configuration.py  settings from .env
+│   │   ├── dependencies.py   JWT auth and the GitHub client
+│   │   ├── models/           users, activity, events, pull requests, insights
+│   │   ├── routers/          auth, github, users, insights
+│   │   └── services/         activity sync, timeline, waiting, GitHub, AI insights
+│   └── tests/
+├── frontend/                 React + TypeScript web app
+│   ├── public/               favicon, icons, paper textures
+│   └── src/
+│       ├── pages/            Landing, Today, Waiting, public profile
+│       ├── components/       timeline, waiting, layout, shared UI
+│       ├── hooks/ contexts/  data fetching and auth state
+│       └── styles/index.css  the design system
+├── cli/                      the myclutch package (Typer + Rich)
+│   └── clutch_cli/           auth, activity, repositories, insights, system
+└── docs/readme/              illustrations for this README
 ```
 
----
+<br/>
 
-## 🤝 Contributing
+## Contributing
 
-We love contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions.
+Start with a **[Discussion](https://github.com/laypatel13/clutch/discussions)** for questions, bugs or ideas. Accepted ones become issues, and pull requests are welcome for issues you've been assigned. See **[CONTRIBUTING.md](./CONTRIBUTING.md)**.
 
----
+<br/>
 
-## 📜 License
+<div align="center">
 
-This project is licensed under the **MIT License**.
+<img src="frontend/public/favicon.svg" alt="" width="40">
+
+**Clutch** is open source under the [MIT License](./LICENSE).<br/>
+Made by [Lay Patel](https://github.com/laypatel13).
+
+</div>

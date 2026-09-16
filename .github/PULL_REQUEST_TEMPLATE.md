@@ -1,10 +1,16 @@
-## Description
-
-<!-- What does this PR do? Why is it needed? -->
+<!--
+  Clutch accepts pull requests only for an existing issue that you've been assigned to.
+  Ideas and bug reports start in Discussions: https://github.com/laypatel13/clutch/discussions
+  PRs without an assigned issue are closed, even if the code is good.
+-->
 
 ## Related Issue
 
 Closes #
+
+## Description
+
+<!-- What does this PR do? Why is it needed? -->
 
 ## Type of Change
 
@@ -28,7 +34,7 @@ Closes #
 
 ## Checklist
 
-- [ ] I read `CONTRIBUTING.md` and followed the assignment rules for this issue's label
+- [ ] This PR closes an issue that a maintainer assigned to me
 - [ ] My branch is up to date with `develop`
 - [ ] I tested my changes locally
 - [ ] I followed the existing code style and commit convention

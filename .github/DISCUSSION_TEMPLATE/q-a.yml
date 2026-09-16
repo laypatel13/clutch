@@ -1,0 +1,58 @@
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in Clutch!
+
+        Use this for questions **and bug reports**. If a maintainer confirms a bug, they'll create an
+        issue for it, so there's no need to open one yourself.
+
+        Please fill in the details below: a clear, reproducible report gets answered much faster.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: First check
+      description: Please confirm and check all of the following.
+      options:
+        - label: I searched existing Discussions and didn't find an answer.
+          required: true
+        - label: I read the README and CONTRIBUTING.md.
+          required: true
+        - label: This isn't a security vulnerability (those are reported privately via Security → Report a vulnerability).
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of Clutch?
+      multiple: true
+      options:
+        - Web app
+        - API (backend)
+        - CLI (myclutch)
+        - Docs
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What are you trying to do, and what happened instead?
+      placeholder: |
+        1. Open the Waiting page
+        2. Click Sync
+        3. See: ...
+        Expected: ...
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Screenshots, logs or terminal output
+      description: For the CLI, paste the output in a code block. For the web app, a screenshot helps.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser (web app), and `clutch --version` (CLI).
+      placeholder: macOS 15, Chrome 140, clutch 0.4.0
