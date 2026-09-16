@@ -54,6 +54,9 @@ class GitHubService:
                 if day["contributionCount"] > 0:
                     daily.append({
                         "date": day["date"],
+                        # Not only commits: contributionCount also includes PRs,
+                        # issues and reviews. The key is kept because the streak
+                        # calculation reads it; the timeline is the detailed view.
                         "commits": day["contributionCount"],
                         "prs": 0,
                         "issues": 0,
@@ -124,25 +127,27 @@ class GitHubService:
             "days": days,
         }
 
-    async def get_streak(self, username: str) -> dict:
+    async def get_streak(self, username: str, today=None) -> dict:
         """Calculate current and longest commit streak."""
+        today = today or datetime.utcnow().date()
         activity = await self.get_activity(username, days=365)
         active_dates = set(
             d["date"] for d in activity["daily_activity"] if d["commits"] > 0
         )
+        active_today = str(today) in active_dates
 
-        # Calculate current streak
+        # Today isn't over, so a streak that reaches yesterday is still alive
+        # until midnight — counting only from today reset it every morning.
         current_streak = 0
-        check_date = datetime.utcnow().date()
+        check_date = today if active_today else today - timedelta(days=1)
         while str(check_date) in active_dates:
             current_streak += 1
             check_date -= timedelta(days=1)
 
-        # Calculate longest streak
         longest_streak = 0
         temp_streak = 0
         for i in range(365):
-            date = str((datetime.utcnow() - timedelta(days=i)).date())
+            date = str(today - timedelta(days=i))
             if date in active_dates:
                 temp_streak += 1
                 longest_streak = max(longest_streak, temp_streak)
@@ -153,6 +158,7 @@ class GitHubService:
             "current_streak": current_streak,
             "longest_streak": longest_streak,
             "total_active_days": len(active_dates),
+            "active_today": active_today,
         }
 
     async def get_language_breakdown(self, username: str) -> dict:

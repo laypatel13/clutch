@@ -13,25 +13,22 @@ export function Skeleton({ width, height }: SkeletonProps) {
  * shifts when data arrives. They render inside the normal page shell — the
  * nav, sidebar and page header stay put rather than being replaced wholesale.
  */
-export function StatCardSkeleton() {
-  return (
-    <div className="nb-card stat-card">
-      <div className="stat-card-head">
-        <Skeleton width="60%" height="var(--text-xs)" />
-      </div>
-      <Skeleton width="40%" height="var(--text-3xl)" />
-    </div>
-  )
-}
-
-export function PanelSkeleton({ bodyHeight = '130px' }: { bodyHeight?: string }) {
+export function RailSkeleton() {
   return (
     <div className="nb-card panel">
       <div className="panel-header">
-        <Skeleton width="140px" height="var(--text-xs)" />
-        <Skeleton width="72px" height="var(--text-lg)" />
+        <Skeleton width="96px" height="var(--text-xl)" />
+        <Skeleton width="64px" height="var(--text-lg)" />
       </div>
-      <Skeleton height={bodyHeight} />
+      <div className="timeline-skeleton-rows">
+        {[72, 58, 84, 64].map(width => (
+          <div key={width} className="timeline-skeleton-row">
+            <Skeleton width="3.5rem" height="var(--text-xs)" />
+            <Skeleton width="1.5rem" height="1.5rem" />
+            <Skeleton width={`${width}%`} height="var(--text-base)" />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
