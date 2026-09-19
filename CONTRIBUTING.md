@@ -38,7 +38,7 @@ git checkout -b fix/short-description origin/develop
 - Match the existing style: typed Python, functional React components, the CSS variables in `frontend/src/styles/index.css`, and the monochrome Rich output in the CLI.
 - Add tests for backend changes, and include screenshots or terminal output for anything visible.
 
-Setup steps are in the [README](./README.md#run-it-locally).
+Setup steps are in [docs/development.md](./docs/development.md).
 
 ## After you open a pull request
 
