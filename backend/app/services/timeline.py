@@ -20,7 +20,7 @@ UTC; the client groups items into days in the viewer's own timezone.
 
 import base64
 import binascii
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import BigInteger, and_, cast, or_
 from sqlalchemy.orm import Session
@@ -41,7 +41,11 @@ THREAD_EVENTS = {
     "IssueCommentEvent",
     "IssuesEvent",
 }
-PULL_REQUEST_ONLY_EVENTS = {"PullRequestEvent", "PullRequestReviewEvent", "PullRequestReviewCommentEvent"}
+PULL_REQUEST_ONLY_EVENTS = {
+    "PullRequestEvent",
+    "PullRequestReviewEvent",
+    "PullRequestReviewCommentEvent",
+}
 
 # Event types the timeline knows how to describe. Anything else is stored by the
 # sync but left out here, so an unfamiliar type neither renders as noise nor
@@ -64,9 +68,10 @@ class InvalidCursor(ValueError):
 # Ordering and cursors
 # ---------------------------------------------------------------------------
 
+
 def as_utc(value: datetime) -> datetime:
     """SQLite hands timezone-aware columns back naive; every stored value is UTC."""
-    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
 
 
 def chronological_key(event) -> tuple[datetime, int]:
@@ -93,6 +98,7 @@ def decode_cursor(cursor: str) -> tuple[datetime, int]:
 # ---------------------------------------------------------------------------
 # Collapsing — pure functions over anything shaped like an ActivityEvent
 # ---------------------------------------------------------------------------
+
 
 def _payload(event) -> dict:
     return event.raw_payload or {}
@@ -176,7 +182,9 @@ def _thread_action(events) -> str:
         for e in events
         if e.event_type == "PullRequestReviewEvent"
     }
-    was_reviewed = any(e.event_type in ("PullRequestReviewEvent", "PullRequestReviewCommentEvent") for e in events)
+    was_reviewed = any(
+        e.event_type in ("PullRequestReviewEvent", "PullRequestReviewCommentEvent") for e in events
+    )
 
     if "merged" in lifecycle:
         return "opened_and_merged" if "opened" in lifecycle else "merged"
@@ -206,7 +214,9 @@ def _thread_item(events) -> dict:
     title = next((e.title for e in events if e.title), None)
     action = _thread_action(events)
 
-    comments = sum(e.event_type in ("PullRequestReviewCommentEvent", "IssueCommentEvent") for e in events)
+    comments = sum(
+        e.event_type in ("PullRequestReviewCommentEvent", "IssueCommentEvent") for e in events
+    )
     reviews = sum(e.event_type == "PullRequestReviewEvent" for e in events)
 
     summary = f"{_THREAD_VERBS[action]} {noun} #{number}"
@@ -219,7 +229,11 @@ def _thread_item(events) -> dict:
 
     # A single event links to exactly where it happened (a specific comment);
     # a session links to the conversation as a whole.
-    url = first.url if len(events) == 1 else f"{WEB_URL}/{first.repo}/{'pull' if is_pull_request else 'issues'}/{number}"
+    url = (
+        first.url
+        if len(events) == 1
+        else f"{WEB_URL}/{first.repo}/{'pull' if is_pull_request else 'issues'}/{number}"
+    )
 
     return {
         "kind": "pull_request" if is_pull_request else "issue",
@@ -319,17 +333,34 @@ def _stars_item(events) -> dict:
 
 def _single_item(event) -> dict | None:
     payload = _payload(event)
-    base = {"title": event.title, "subject_number": None, "ref": event.ref, "url": event.url, "counts": {}, "commits": []}
+    base = {
+        "title": event.title,
+        "subject_number": None,
+        "ref": event.ref,
+        "url": event.url,
+        "counts": {},
+        "commits": [],
+    }
 
     if event.event_type == "CreateEvent":
         ref_type = payload.get("ref_type")
         if ref_type == "repository":
-            return {**base, "kind": "repository", "action": "created", "summary": f"Created repository {event.repo}"}
+            return {
+                **base,
+                "kind": "repository",
+                "action": "created",
+                "summary": f"Created repository {event.repo}",
+            }
         return {**base, "kind": "tag", "action": "created", "summary": f"Created tag {event.ref}"}
 
     if event.event_type == "DeleteEvent":
         ref_type = payload.get("ref_type") or "branch"
-        return {**base, "kind": "delete", "action": "deleted", "summary": f"Deleted {ref_type} {event.ref}"}
+        return {
+            **base,
+            "kind": "delete",
+            "action": "deleted",
+            "summary": f"Deleted {ref_type} {event.ref}",
+        }
 
     if event.event_type == "ForkEvent":
         return {**base, "kind": "fork", "action": "forked", "summary": f"Forked {event.repo}"}
@@ -337,7 +368,12 @@ def _single_item(event) -> dict | None:
     if event.event_type == "ReleaseEvent":
         verb = (event.action or "published").replace("_", " ").capitalize()
         name = f" {event.title}" if event.title else ""
-        return {**base, "kind": "release", "action": event.action or "published", "summary": f"{verb} release{name}"}
+        return {
+            **base,
+            "kind": "release",
+            "action": event.action or "published",
+            "summary": f"{verb} release{name}",
+        }
 
     return None
 
@@ -373,11 +409,14 @@ def build_item(events: list) -> dict | None:
 # Reading a page
 # ---------------------------------------------------------------------------
 
+
 def _visible_events(db: Session, user_id: int):
     return (
         db.query(ActivityEvent)
         .filter(ActivityEvent.user_id == user_id, ActivityEvent.event_type.in_(VISIBLE_EVENTS))
-        .order_by(ActivityEvent.occurred_at.desc(), cast(ActivityEvent.github_event_id, BigInteger).desc())
+        .order_by(
+            ActivityEvent.occurred_at.desc(), cast(ActivityEvent.github_event_id, BigInteger).desc()
+        )
     )
 
 
@@ -411,7 +450,11 @@ def load_timeline(db: Session, user_id: int, cursor: str | None = None, limit: i
     has_older = False
     while True:
         oldest = page[-1]
-        batch = _older_than(_visible_events(db, user_id), *chronological_key(oldest)).limit(BOUNDARY_LOOKBACK_BATCH).all()
+        batch = (
+            _older_than(_visible_events(db, user_id), *chronological_key(oldest))
+            .limit(BOUNDARY_LOOKBACK_BATCH)
+            .all()
+        )
         if not batch:
             break
         for candidate in batch:

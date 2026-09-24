@@ -1,0 +1,29 @@
+# Tool configuration for the Clutch API. Dependencies stay in requirements*.txt
+# because Render installs from there; this file only configures tooling.
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes: unused imports, undefined names
+    "I",    # import sorting
+    "B",    # bugbear: likely bugs and design problems
+    "UP",   # pyupgrade: modern syntax for the target Python
+    "DTZ",  # naive datetimes, which break against timezone-aware columns
+]
+# The formatter owns line length; the linter arguing about it too is just noise.
+ignore = ["E501"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI declares dependencies as default arguments by design. Marking these
+# calls immutable keeps B008 on for real mistakes like `def f(items=[])`.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Security"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

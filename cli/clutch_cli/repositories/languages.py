@@ -10,14 +10,14 @@ def languages():
     try:
         with console.status("[bold green]Fetching language metrics..."):
             data = get_language_breakdown()
-        
+
         if not data:
             console.print("[yellow]No language data found.[/yellow]")
             return
 
         # Standardize the data format automatically
         items_list = []
-        
+
         if isinstance(data, list):
             items_list = data
         elif isinstance(data, dict):
@@ -56,13 +56,13 @@ def languages():
         for item in items_list:
             if isinstance(item, dict):
                 language = item.get("language", "Unknown")
-                
+
                 raw_bytes = item.get("bytes", 0)
                 bytes_used = f"{raw_bytes:,}" if isinstance(raw_bytes, (int, float)) else str(raw_bytes)
-                
+
                 raw_percentage = item.get("percentage", 0.0)
                 percentage = f"{raw_percentage:.1f}%" if isinstance(raw_percentage, (int, float)) else str(raw_percentage)
-                
+
                 table.add_row(language, bytes_used, percentage)
 
         console.print(table)

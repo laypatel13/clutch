@@ -104,9 +104,33 @@ npm run dev
 
 Vite is pinned to port 5180 in `vite.config.ts`, so this always serves on `http://localhost:5180`. Open it and sign in with GitHub.
 
-## 4. Run the tests
+## 4. Run the checks and tests
 
-Backend tests, from `backend/` with the virtual environment active:
+Install the development tools (pytest, ruff and pre-commit), from `backend/` with the virtual environment active:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Install the Git hooks once per clone, so lint and formatting run on every commit:
+
+```bash
+pre-commit install
+```
+
+Run all the hooks across the repository without committing:
+
+```bash
+pre-commit run --all-files
+```
+
+Lint the backend, from `backend/`:
+
+```bash
+ruff check .
+```
+
+Backend tests, from `backend/`:
 
 ```bash
 pytest

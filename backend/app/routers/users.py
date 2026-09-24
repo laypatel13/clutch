@@ -31,11 +31,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 @router.get("/{username}")
 def get_user_profile(username: str, db: Session = Depends(get_db)):
     """Get a public user profile by username."""
-    user = (
-        db.query(User)
-        .filter(User.username == username, User.is_public == True)
-        .first()
-    )
+    user = db.query(User).filter(User.username == username, User.is_public.is_(True)).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {

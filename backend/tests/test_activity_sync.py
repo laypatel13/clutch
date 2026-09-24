@@ -8,7 +8,7 @@ PR/review events carry a number but no title.
 import asyncio
 import json
 import re
-from datetime import timezone
+from datetime import UTC
 
 import httpx
 import pytest
@@ -34,7 +34,16 @@ ZERO_SHA = "0" * 40
 # Fixtures
 # ---------------------------------------------------------------------------
 
-def make_event(event_id, event_type, payload, *, repo="lay/clutch", created_at="2026-09-12T21:07:00Z", public=True):
+
+def make_event(
+    event_id,
+    event_type,
+    payload,
+    *,
+    repo="lay/clutch",
+    created_at="2026-09-12T21:07:00Z",
+    public=True,
+):
     return {
         "id": str(event_id),
         "type": event_type,
@@ -46,32 +55,55 @@ def make_event(event_id, event_type, payload, *, repo="lay/clutch", created_at="
 
 
 def push(event_id, before="b" * 40, head="h" * 40, ref="refs/heads/develop", **kwargs):
-    return make_event(event_id, "PushEvent", {"before": before, "head": head, "ref": ref, "push_id": 1}, **kwargs)
+    return make_event(
+        event_id, "PushEvent", {"before": before, "head": head, "ref": ref, "push_id": 1}, **kwargs
+    )
 
 
 def trimmed_pr_event(event_id, number, action, **kwargs):
     # The real API currently sends pull_request with no title.
-    return make_event(event_id, "PullRequestEvent", {
-        "action": action,
-        "number": number,
-        "pull_request": {"id": 99, "number": number, "url": "https://api.github.com/x"},
-    }, **kwargs)
+    return make_event(
+        event_id,
+        "PullRequestEvent",
+        {
+            "action": action,
+            "number": number,
+            "pull_request": {"id": 99, "number": number, "url": "https://api.github.com/x"},
+        },
+        **kwargs,
+    )
 
 
 def review_event(event_id, number, **kwargs):
-    return make_event(event_id, "PullRequestReviewEvent", {
-        "action": "created",
-        "review": {"state": "commented"},
-        "pull_request": {"number": number},
-    }, **kwargs)
+    return make_event(
+        event_id,
+        "PullRequestReviewEvent",
+        {
+            "action": "created",
+            "review": {"state": "commented"},
+            "pull_request": {"number": number},
+        },
+        **kwargs,
+    )
 
 
 def issue_comment_event(event_id, number, title, **kwargs):
-    return make_event(event_id, "IssueCommentEvent", {
-        "action": "created",
-        "issue": {"number": number, "title": title, "html_url": f"https://github.com/lay/clutch/issues/{number}"},
-        "comment": {"html_url": f"https://github.com/lay/clutch/issues/{number}#issuecomment-1"},
-    }, **kwargs)
+    return make_event(
+        event_id,
+        "IssueCommentEvent",
+        {
+            "action": "created",
+            "issue": {
+                "number": number,
+                "title": title,
+                "html_url": f"https://github.com/lay/clutch/issues/{number}",
+            },
+            "comment": {
+                "html_url": f"https://github.com/lay/clutch/issues/{number}#issuecomment-1"
+            },
+        },
+        **kwargs,
+    )
 
 
 class FakeGitHub:
@@ -132,6 +164,7 @@ def run_sync(user, db, github):
     async def go():
         async with github.client() as client:
             return await sync_activity_events(user, db, client)
+
     return asyncio.run(go())
 
 
@@ -142,6 +175,7 @@ def rows(db):
 # ---------------------------------------------------------------------------
 # normalize_event
 # ---------------------------------------------------------------------------
+
 
 def test_push_links_to_the_compare_view_and_strips_the_ref():
     row = normalize_event(push(1, before="a" * 40, head="c" * 40, ref="refs/heads/feat/timeline"))
@@ -161,20 +195,31 @@ def test_trimmed_pull_request_event_has_no_title_and_builds_its_link():
 
 
 def test_legacy_closed_and_merged_payload_reads_as_merged():
-    raw = make_event(1, "PullRequestEvent", {
-        "action": "closed", "number": 5,
-        "pull_request": {"number": 5, "merged": True, "title": "Ship it"},
-    })
+    raw = make_event(
+        1,
+        "PullRequestEvent",
+        {
+            "action": "closed",
+            "number": 5,
+            "pull_request": {"number": 5, "merged": True, "title": "Ship it"},
+        },
+    )
     row = normalize_event(raw)
     assert (row["action"], row["title"]) == ("merged", "Ship it")
 
 
 def test_review_and_review_comment_events():
     assert normalize_event(review_event(1, 40))["action"] == "reviewed"
-    comment = normalize_event(make_event(2, "PullRequestReviewCommentEvent", {
-        "pull_request": {"number": 40},
-        "comment": {"html_url": "https://github.com/lay/clutch/pull/40#discussion_r1"},
-    }))
+    comment = normalize_event(
+        make_event(
+            2,
+            "PullRequestReviewCommentEvent",
+            {
+                "pull_request": {"number": 40},
+                "comment": {"html_url": "https://github.com/lay/clutch/pull/40#discussion_r1"},
+            },
+        )
+    )
     assert comment["action"] == "commented"
     assert comment["url"].endswith("#discussion_r1")
 
@@ -186,7 +231,9 @@ def test_issue_comment_carries_its_own_title():
 
 
 def test_create_event_for_a_branch_and_for_a_repository():
-    branch = normalize_event(make_event(1, "CreateEvent", {"ref": "feat/timeline", "ref_type": "branch"}))
+    branch = normalize_event(
+        make_event(1, "CreateEvent", {"ref": "feat/timeline", "ref_type": "branch"})
+    )
     repo = normalize_event(make_event(2, "CreateEvent", {"ref": None, "ref_type": "repository"}))
     assert branch["url"] == "https://github.com/lay/clutch/tree/feat/timeline"
     assert repo["url"] == "https://github.com/lay/clutch"
@@ -194,14 +241,18 @@ def test_create_event_for_a_branch_and_for_a_repository():
 
 def test_unknown_event_types_are_kept_not_rejected():
     row = normalize_event(make_event(1, "SponsorshipEvent", {"anything": True}))
-    assert (row["event_type"], row["action"], row["url"]) == ("SponsorshipEvent", None, "https://github.com/lay/clutch")
+    assert (row["event_type"], row["action"], row["url"]) == (
+        "SponsorshipEvent",
+        None,
+        "https://github.com/lay/clutch",
+    )
 
 
 def test_privacy_and_timestamps():
     row = normalize_event(push(1, public=False, created_at="2026-09-12T22:04:01Z"))
     assert row["is_private"] is True
     assert row["occurred_at"] == parse_github_time("2026-09-12T22:04:01Z")
-    assert row["occurred_at"].tzinfo == timezone.utc
+    assert row["occurred_at"].tzinfo == UTC
 
 
 def test_title_query_quotes_repository_names():
@@ -214,6 +265,7 @@ def test_title_query_quotes_repository_names():
 # sync_activity_events
 # ---------------------------------------------------------------------------
 
+
 def test_sync_stores_events_and_fills_in_what_payloads_leave_out(db, user):
     github = FakeGitHub()
     github.event_pages[1] = [
@@ -222,7 +274,10 @@ def test_sync_stores_events_and_fills_in_what_payloads_leave_out(db, user):
         review_event(2, 40, repo="org/api"),
         push(1, before="a" * 40, head="c" * 40),
     ]
-    github.compare[f"{'a' * 40}...{'c' * 40}"] = (200, compare_body("fix(frontend): stop sync wiping the page\n\nlong body", "chore: tidy"))
+    github.compare[f"{'a' * 40}...{'c' * 40}"] = (
+        200,
+        compare_body("fix(frontend): stop sync wiping the page\n\nlong body", "chore: tidy"),
+    )
     github.titles[("lay/clutch", 83)] = "release: merge develop into main"
     github.titles[("org/api", 40)] = "Convert jQuery-UI popups to Bootstrap modals"
 
@@ -233,16 +288,25 @@ def test_sync_stores_events_and_fills_in_what_payloads_leave_out(db, user):
     assert stored["4"].title == "release: merge develop into main"
     assert stored["2"].title == "Convert jQuery-UI popups to Bootstrap modals"
     assert stored["3"].title == "Convert popups to modals"  # from the payload, no lookup
-    assert [c["message"] for c in stored["1"].commits] == ["fix(frontend): stop sync wiping the page", "chore: tidy"]
+    assert [c["message"] for c in stored["1"].commits] == [
+        "fix(frontend): stop sync wiping the page",
+        "chore: tidy",
+    ]
     assert all(row.enriched_at is not None for row in stored.values())
     assert github.count("/graphql") == 1  # both titles resolved in one batched request
 
 
 def test_titles_already_synced_as_pull_requests_skip_the_api(db, user):
-    db.add(PullRequest(
-        user_id=user.id, repo="lay/clutch", pr_number=83, title="From the PR table",
-        state="MERGED", pr_created_at=parse_github_time("2026-09-12T21:00:00Z"),
-    ))
+    db.add(
+        PullRequest(
+            user_id=user.id,
+            repo="lay/clutch",
+            pr_number=83,
+            title="From the PR table",
+            state="MERGED",
+            pr_created_at=parse_github_time("2026-09-12T21:00:00Z"),
+        )
+    )
     db.commit()
     github = FakeGitHub()
     github.event_pages[1] = [trimmed_pr_event(1, 83, "opened")]
@@ -326,6 +390,7 @@ def test_github_refusing_the_first_page_raises(db, user):
 # ---------------------------------------------------------------------------
 # Endpoint wiring
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def api(db, user):

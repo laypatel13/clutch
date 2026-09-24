@@ -23,7 +23,7 @@ def _version_callback(value: bool):
             f"clutch {__version__}\n"
             "GitHub: https://github.com/laypatel13/clutch/releases\n"
             "PyPI: https://pypi.org/project/myclutch"
-        )      
+        )
         raise typer.Exit()
 
 

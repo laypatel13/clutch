@@ -1,11 +1,11 @@
 from sqlalchemy import (
+    JSON,
     Boolean,
     Column,
     DateTime,
     ForeignKey,
     Index,
     Integer,
-    JSON,
     String,
     UniqueConstraint,
 )
@@ -35,14 +35,14 @@ class ActivityEvent(Base):
     # GitHub event IDs are strings in the API response.
     github_event_id = Column(String(40), nullable=False)
     event_type = Column(String(50), nullable=False)  # PushEvent, PullRequestEvent, …
-    action = Column(String(30), nullable=True)       # opened / merged / closed / created …
+    action = Column(String(30), nullable=True)  # opened / merged / closed / created …
 
-    repo = Column(String(300), nullable=False)       # "owner/name"
+    repo = Column(String(300), nullable=False)  # "owner/name"
     subject_number = Column(Integer, nullable=True)  # PR or issue number
-    ref = Column(String(300), nullable=True)         # branch or tag name
+    ref = Column(String(300), nullable=True)  # branch or tag name
 
-    title = Column(String(500), nullable=True)       # PR / issue title (enriched)
-    commits = Column(JSON, nullable=True)            # [{"sha", "message"}] for pushes (enriched)
+    title = Column(String(500), nullable=True)  # PR / issue title (enriched)
+    commits = Column(JSON, nullable=True)  # [{"sha", "message"}] for pushes (enriched)
 
     url = Column(String(500), nullable=False)
     is_private = Column(Boolean, default=False)
