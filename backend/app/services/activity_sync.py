@@ -16,7 +16,7 @@ leaves it pending and the next sync retries it.
 
 import asyncio
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 from sqlalchemy.exc import IntegrityError
@@ -38,7 +38,11 @@ TITLE_LOOKUP_BATCH = 50
 PUSH_LOOKUP_CONCURRENCY = 5
 
 # Events about a pull request whose payload may lack the PR title.
-PULL_REQUEST_EVENTS = {"PullRequestEvent", "PullRequestReviewEvent", "PullRequestReviewCommentEvent"}
+PULL_REQUEST_EVENTS = {
+    "PullRequestEvent",
+    "PullRequestReviewEvent",
+    "PullRequestReviewCommentEvent",
+}
 
 
 class GitHubUnavailable(Exception):
@@ -53,8 +57,9 @@ class _RetryLater(Exception):
 # Normalizing — pure functions, no I/O
 # ---------------------------------------------------------------------------
 
+
 def parse_github_time(value: str) -> datetime:
-    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
 
 
 def is_null_sha(sha: str | None) -> bool:
@@ -165,7 +170,11 @@ def normalize_event(raw: dict) -> dict:
 
 
 def needs_title_lookup(row: ActivityEvent) -> bool:
-    return row.event_type in PULL_REQUEST_EVENTS and row.title is None and row.subject_number is not None
+    return (
+        row.event_type in PULL_REQUEST_EVENTS
+        and row.title is None
+        and row.subject_number is not None
+    )
 
 
 def needs_commit_lookup(row: ActivityEvent) -> bool:
@@ -189,13 +198,16 @@ def build_title_query(keys: list[tuple[str, int]]) -> str:
 # GitHub I/O
 # ---------------------------------------------------------------------------
 
+
 def _raise_if_transient(response: httpx.Response) -> None:
     # 403 and 429 are how GitHub reports rate limiting.
     if response.status_code in (403, 429) or response.status_code >= 500:
         raise _RetryLater(f"GitHub returned {response.status_code}")
 
 
-async def fetch_new_events(client: httpx.AsyncClient, username: str, known_ids: set[str]) -> list[dict]:
+async def fetch_new_events(
+    client: httpx.AsyncClient, username: str, known_ids: set[str]
+) -> list[dict]:
     """Fetch events newer than anything already stored, newest first.
 
     Events arrive newest first, so the first page that contains a known ID is
@@ -231,7 +243,9 @@ async def fetch_new_events(client: httpx.AsyncClient, username: str, known_ids: 
     return new_events
 
 
-async def fetch_push_commits(client: httpx.AsyncClient, repo: str, before: str | None, head: str) -> list[dict] | None:
+async def fetch_push_commits(
+    client: httpx.AsyncClient, repo: str, before: str | None, head: str
+) -> list[dict] | None:
     """Resolve the commits a push introduced.
 
     Returns None when the commits are permanently unavailable (deleted branch,
@@ -244,7 +258,10 @@ async def fetch_push_commits(client: httpx.AsyncClient, repo: str, before: str |
             _raise_if_transient(response)
             if response.status_code == 200:
                 commits = response.json().get("commits", [])[-MAX_COMMITS_PER_PUSH:]
-                return [{"sha": c["sha"], "message": first_line(c["commit"]["message"])} for c in commits]
+                return [
+                    {"sha": c["sha"], "message": first_line(c["commit"]["message"])}
+                    for c in commits
+                ]
 
         # A brand-new branch has nothing to compare against, and a failed compare
         # (e.g. after a force push) can still resolve the head commit on its own.
@@ -258,7 +275,9 @@ async def fetch_push_commits(client: httpx.AsyncClient, repo: str, before: str |
         raise _RetryLater(str(error)) from error
 
 
-async def fetch_titles(client: httpx.AsyncClient, keys: list[tuple[str, int]]) -> dict[tuple[str, int], str | None]:
+async def fetch_titles(
+    client: httpx.AsyncClient, keys: list[tuple[str, int]]
+) -> dict[tuple[str, int], str | None]:
     """Resolve PR/issue titles in batches. A key missing from the result is still pending.
 
     A key mapped to None was looked up successfully but has no title to show —
@@ -266,7 +285,7 @@ async def fetch_titles(client: httpx.AsyncClient, keys: list[tuple[str, int]]) -
     """
     resolved: dict[tuple[str, int], str | None] = {}
     for start in range(0, len(keys), TITLE_LOOKUP_BATCH):
-        batch = keys[start:start + TITLE_LOOKUP_BATCH]
+        batch = keys[start : start + TITLE_LOOKUP_BATCH]
         try:
             response = await client.post(GRAPHQL_URL, json={"query": build_title_query(batch)})
         except httpx.HTTPError:
@@ -283,6 +302,7 @@ async def fetch_titles(client: httpx.AsyncClient, keys: list[tuple[str, int]]) -
 # ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
+
 
 def _store_new_events(db: Session, user, raw_events: list[dict]) -> int:
     db.add_all(ActivityEvent(user_id=user.id, **normalize_event(raw)) for raw in raw_events)
@@ -313,7 +333,7 @@ async def _enrich_pending(db: Session, user, client: httpx.AsyncClient) -> int:
         .filter(ActivityEvent.user_id == user.id, ActivityEvent.enriched_at.is_(None))
         .all()
     )
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     enriched = 0
 
     # Nothing to look up: the payload already carried everything worth showing.
@@ -350,7 +370,9 @@ async def _enrich_pending(db: Session, user, client: httpx.AsyncClient) -> int:
         async with semaphore:
             payload = row.raw_payload or {}
             try:
-                commits = await fetch_push_commits(client, row.repo, payload.get("before"), payload.get("head"))
+                commits = await fetch_push_commits(
+                    client, row.repo, payload.get("before"), payload.get("head")
+                )
             except _RetryLater:
                 return False
             # None here means permanently unavailable; setting enriched_at is

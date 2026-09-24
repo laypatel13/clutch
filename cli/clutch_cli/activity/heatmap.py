@@ -58,7 +58,7 @@ def print_heatmap(
     """Print the final ASCII heatmap."""
     header_row = f"{'Week':<8} {'Mon':^3} {'Tue':^3} {'Wed':^3} {'Thu':^3} {'Fri':^3} {'Sat':^3} {'Sun':^3}"
     console.print(header_row, style="bold " + ACCENT)
-    
+
 
     for index, week in enumerate(weeks_data, start=1):
         symbols = []

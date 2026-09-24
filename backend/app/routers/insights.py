@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.services.insights_service import InsightsService
 from app.dependencies import get_current_user
 from app.models.user import User
+from app.services.insights_service import InsightsService
 
 router = APIRouter()
 

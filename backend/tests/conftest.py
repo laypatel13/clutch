@@ -12,7 +12,9 @@ from app.models.user import User
 def db():
     # One in-memory database per test; StaticPool keeps every session on the
     # same connection so they all see the same tables.
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    engine = create_engine(
+        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+    )
     Base.metadata.create_all(engine)
     session = sessionmaker(bind=engine)()
     yield session
