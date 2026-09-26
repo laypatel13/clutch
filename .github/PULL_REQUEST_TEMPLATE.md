@@ -35,7 +35,8 @@ Closes #
 ## Checklist
 
 - [ ] This PR closes an issue that a maintainer assigned to me
-- [ ] My branch is up to date with `develop`
+- [ ] My branch is up to date with `main`
+- [ ] My pull request title follows the commit convention (it becomes the commit on `main`)
 - [ ] I tested my changes locally
 - [ ] I followed the existing code style and commit convention
 - [ ] I added tests where applicable (backend changes)
