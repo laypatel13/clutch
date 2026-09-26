@@ -1,0 +1,28 @@
+# Labels added to pull requests from the files they change. Label names must
+# exist in .github/labels.yml.
+
+"area: backend":
+  - changed-files:
+      - any-glob-to-any-file: backend/**
+
+"area: frontend":
+  - changed-files:
+      - any-glob-to-any-file: frontend/**
+
+"area: cli":
+  - changed-files:
+      - any-glob-to-any-file: cli/**
+
+"area: ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
+          - .pre-commit-config.yaml
+
+# Only when every changed file is documentation, so a feature that also
+# updates the README isn't labeled as docs.
+"type: docs":
+  - changed-files:
+      - all-globs-to-all-files:
+          - "**/*.md"
+          - docs/**
