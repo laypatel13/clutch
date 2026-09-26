@@ -1,0 +1,71 @@
+# Every label in the repository. The labels workflow makes GitHub match this file:
+# labels listed here are created or updated, labels missing from it are deleted.
+# `from_name` renames an existing label, so the issues carrying it keep it.
+
+# What kind of work? Mirrors the commit types.
+- name: "type: bug"
+  from_name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+- name: "type: feature"
+  from_name: "enhancement"
+  color: "a2eeef"
+  description: "New functionality"
+- name: "type: docs"
+  from_name: "documentation"
+  color: "0075ca"
+  description: "Documentation only"
+- name: "type: refactor"
+  color: "c5def5"
+  description: "Restructures code without changing behavior"
+- name: "type: chore"
+  color: "ededed"
+  description: "Tooling, CI, dependencies and repository upkeep"
+
+# Which part of Clutch? Added to pull requests automatically from the files they change.
+- name: "area: backend"
+  color: "5319e7"
+  description: "FastAPI backend in backend/"
+- name: "area: frontend"
+  color: "5319e7"
+  description: "React web app in frontend/"
+- name: "area: cli"
+  color: "5319e7"
+  description: "The myclutch command line in cli/"
+- name: "area: ci"
+  color: "5319e7"
+  description: "GitHub Actions and repository configuration in .github/"
+
+# How hard is it? Every issue is assigned by a maintainer before work starts.
+- name: "good first issue"
+  from_name: "good-first-issue"
+  color: "7057ff"
+  description: "Good for newcomers. Comment to ask for it and wait to be assigned."
+- name: "intermediate"
+  color: "fbbf24"
+  description: "Intermediate difficulty. Comment to ask for it and wait to be assigned."
+- name: "advanced"
+  color: "ef4444"
+  description: "Advanced difficulty. Comment to ask for it and wait to be assigned."
+- name: "help wanted"
+  color: "008672"
+  description: "Open for a contributor to pick up"
+
+# Why was it closed without work?
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+# Applied by the Discussion templates.
+- name: "question"
+  color: "d876e3"
+  description: "A question or bug report in Discussions"
+- name: "idea"
+  color: "1d76db"
+  description: "A feature idea in Discussions"
