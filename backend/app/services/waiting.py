@@ -23,7 +23,7 @@ recently_merged lists your PRs merged within MERGED_WITHIN: loops already
 closed, shown for the record and never counted as waiting on you.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import httpx
 
@@ -40,8 +40,13 @@ SUMMARY_TITLE_LENGTH = 72
 MERGE_PERMISSIONS = {"ADMIN", "MAINTAIN", "WRITE"}
 
 SECTIONS = (
-    "review_requested", "ready_to_merge", "changes_requested",
-    "gone_quiet", "probably_abandoned", "awaiting_maintainer", "recently_merged",
+    "review_requested",
+    "ready_to_merge",
+    "changes_requested",
+    "gone_quiet",
+    "probably_abandoned",
+    "awaiting_maintainer",
+    "recently_merged",
 )
 
 QUERY = """
@@ -116,14 +121,19 @@ def search_queries(username: str, now: datetime) -> dict:
 # Classifying — pure functions over GraphQL nodes
 # ---------------------------------------------------------------------------
 
+
 def _parse(value: str | None) -> datetime | None:
     if not value:
         return None
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
 
 
 def _truncate(text: str) -> str:
-    return text if len(text) <= SUMMARY_TITLE_LENGTH else text[: SUMMARY_TITLE_LENGTH - 1].rstrip() + "…"
+    return (
+        text
+        if len(text) <= SUMMARY_TITLE_LENGTH
+        else text[: SUMMARY_TITLE_LENGTH - 1].rstrip() + "…"
+    )
 
 
 def _is_pull_request(node) -> bool:
@@ -135,7 +145,11 @@ def _is_pull_request(node) -> bool:
 def _reviews(pr: dict) -> list[dict]:
     nodes = (pr.get("latestOpinionatedReviews") or {}).get("nodes") or []
     return [
-        {"state": r.get("state"), "at": _parse(r.get("submittedAt")), "by": (r.get("author") or {}).get("login")}
+        {
+            "state": r.get("state"),
+            "at": _parse(r.get("submittedAt")),
+            "by": (r.get("author") or {}).get("login"),
+        }
         for r in nodes
         if r
     ]
@@ -171,7 +185,8 @@ def _latest_request_for(pr: dict, username: str) -> datetime | None:
     times = [
         _parse(node.get("createdAt"))
         for node in nodes
-        if node and ((node.get("requestedReviewer") or {}).get("login") or "").lower() == username.lower()
+        if node
+        and ((node.get("requestedReviewer") or {}).get("login") or "").lower() == username.lower()
     ]
     times = [t for t in times if t]
     return max(times) if times else None
@@ -196,7 +211,11 @@ def _item(pr: dict, since: datetime, verb: str, detail: str | None) -> dict:
 
 
 def classify(
-    authored: list, requested: list, username: str, now: datetime, merged: list = (),
+    authored: list,
+    requested: list,
+    username: str,
+    now: datetime,
+    merged: list = (),
 ) -> dict[str, list[dict]]:
     sections: dict[str, list[dict]] = {name: [] for name in SECTIONS}
 
@@ -248,14 +267,18 @@ def classify(
         if decision == "CHANGES_REQUESTED":
             request = _latest_review(reviews, "CHANGES_REQUESTED")
             last_commit = _last_commit_at(pr)
-            addressed = request is not None and last_commit is not None and last_commit > request["at"]
+            addressed = (
+                request is not None and last_commit is not None and last_commit > request["at"]
+            )
             if not addressed:
-                sections["changes_requested"].append(_item(
-                    pr,
-                    request["at"] if request else updated_at,
-                    "Address changes on",
-                    f"requested by {request['by']}" if request and request["by"] else None,
-                ))
+                sections["changes_requested"].append(
+                    _item(
+                        pr,
+                        request["at"] if request else updated_at,
+                        "Address changes on",
+                        f"requested by {request['by']}" if request and request["by"] else None,
+                    )
+                )
                 continue
             # Pushed since the request, so the reviewer has the next move. It
             # only resurfaces below if it stalls.
@@ -276,11 +299,16 @@ def classify(
 # GitHub I/O
 # ---------------------------------------------------------------------------
 
-async def fetch_waiting(client: httpx.AsyncClient, username: str, now: datetime | None = None) -> dict:
+
+async def fetch_waiting(
+    client: httpx.AsyncClient, username: str, now: datetime | None = None
+) -> dict:
     """One GraphQL request covering your open PRs, review requests to you, and your recent merges."""
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     try:
-        response = await client.post(GRAPHQL_URL, json={"query": QUERY, "variables": search_queries(username, now)})
+        response = await client.post(
+            GRAPHQL_URL, json={"query": QUERY, "variables": search_queries(username, now)}
+        )
     except httpx.HTTPError as error:
         raise GitHubUnavailable(str(error)) from error
     if response.status_code != 200:

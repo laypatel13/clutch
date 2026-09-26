@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.services.github_service import GitHubService
 from app.dependencies import get_current_user, get_github_client
+from app.models.user import User
 from app.services.activity_sync import GitHubUnavailable, sync_activity_events
+from app.services.github_service import GitHubService
 from app.services.timeline import InvalidCursor, load_timeline
 from app.services.waiting import fetch_waiting
-from app.models.user import User
 
 router = APIRouter()
 
@@ -60,13 +60,13 @@ async def sync_activity(
     synced = await service.sync_to_db(current_user, db)
     return {"message": "Sync complete", "synced_days": synced}
 
+
 @router.get("/repos")
 async def get_repos(
     current_user: User = Depends(get_current_user),
 ):
     """Get user's repositories sorted by last updated."""
-    import httpx as _httpx
-    async with _httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(
             "https://api.github.com/user/repos?sort=updated&per_page=20",
             headers={"Authorization": f"Bearer {current_user.github_access_token}"},
@@ -84,7 +84,7 @@ async def sync_events(
     try:
         result = await sync_activity_events(current_user, db, client)
     except GitHubUnavailable as error:
-        raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}")
+        raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}") from error
     return {"message": "Activity sync complete", **result}
 
 
@@ -104,7 +104,7 @@ def get_timeline(
     try:
         return load_timeline(db, current_user.id, cursor=cursor, limit=limit)
     except InvalidCursor:
-        raise HTTPException(status_code=400, detail="Invalid timeline cursor")
+        raise HTTPException(status_code=400, detail="Invalid timeline cursor") from None
 
 
 @router.get("/waiting")
@@ -116,7 +116,7 @@ async def get_waiting(
     try:
         return await fetch_waiting(client, current_user.username)
     except GitHubUnavailable as error:
-        raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}")
+        raise HTTPException(status_code=502, detail=f"Couldn't reach GitHub: {error}") from error
 
 
 @router.post("/pulls/sync")

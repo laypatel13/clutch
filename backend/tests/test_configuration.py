@@ -18,7 +18,7 @@ def test_default_settings(monkeypatch):
     defaults = Settings(_env_file=None)
 
     assert defaults.DATABASE_URL.startswith("sqlite:///")
-    assert defaults.FRONTEND_URL == "http://localhost:5173"
+    assert defaults.FRONTEND_URL == "http://localhost:5180"
     assert defaults.ENVIRONMENT == "development"
 
 

@@ -1,0 +1,30 @@
+# Runs on every `git commit`. Install once with `pre-commit install`.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.2
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  - repo: local
+    hooks:
+      # .gitignore already skips these, but `git add -f` gets past it. A database
+      # holds users' GitHub tokens, so it must never reach the repository.
+      - id: forbid-database-files
+        name: forbid database files
+        entry: database files must not be committed
+        language: fail
+        files: \.(db|sqlite3?)$

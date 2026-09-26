@@ -1,5 +1,8 @@
+from datetime import UTC, date, datetime, timedelta
+
 import httpx
-from datetime import datetime, timedelta
+
+from app.services.activity_sync import parse_github_time
 
 
 class GitHubService:
@@ -14,8 +17,9 @@ class GitHubService:
 
     async def get_activity(self, username: str, days: int = 30) -> dict:
         """Fetch user's GitHub contributions using GraphQL API."""
-        from datetime import datetime, timedelta, timezone
-        since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        from datetime import datetime, timedelta
+
+        since = (datetime.now(UTC) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         query = """
         query($username: String!, $from: DateTime!) {
@@ -52,17 +56,19 @@ class GitHubService:
         for week in calendar["weeks"]:
             for day in week["contributionDays"]:
                 if day["contributionCount"] > 0:
-                    daily.append({
-                        "date": day["date"],
-                        # Not only commits: contributionCount also includes PRs,
-                        # issues and reviews. The key is kept because the streak
-                        # calculation reads it; the timeline is the detailed view.
-                        "commits": day["contributionCount"],
-                        "prs": 0,
-                        "issues": 0,
-                        "reviews": 0,
-                        "repos": [],
-                    })
+                    daily.append(
+                        {
+                            "date": day["date"],
+                            # Not only commits: contributionCount also includes PRs,
+                            # issues and reviews. The key is kept because the streak
+                            # calculation reads it; the timeline is the detailed view.
+                            "commits": day["contributionCount"],
+                            "prs": 0,
+                            "issues": 0,
+                            "reviews": 0,
+                            "repos": [],
+                        }
+                    )
 
         return {
             "username": username,
@@ -80,8 +86,9 @@ class GitHubService:
         Unlike get_activity(), this keeps every day including zero-activity
         days, since a GitHub-style heatmap needs to render empty squares too.
         """
-        from datetime import datetime, timedelta, timezone
-        since = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        from datetime import datetime, timedelta
+
+        since = (datetime.now(UTC) - timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         query = """
         query($username: String!, $from: DateTime!) {
@@ -129,11 +136,9 @@ class GitHubService:
 
     async def get_streak(self, username: str, today=None) -> dict:
         """Calculate current and longest commit streak."""
-        today = today or datetime.utcnow().date()
+        today = today or datetime.now(UTC).date()
         activity = await self.get_activity(username, days=365)
-        active_dates = set(
-            d["date"] for d in activity["daily_activity"] if d["commits"] > 0
-        )
+        active_dates = set(d["date"] for d in activity["daily_activity"] if d["commits"] > 0)
         active_today = str(today) in active_dates
 
         # Today isn't over, so a streak that reaches yesterday is still alive
@@ -187,9 +192,7 @@ class GitHubService:
                 "bytes": bytes_count,
                 "percentage": round((bytes_count / total) * 100, 2),
             }
-            for lang, bytes_count in sorted(
-                languages.items(), key=lambda x: x[1], reverse=True
-            )
+            for lang, bytes_count in sorted(languages.items(), key=lambda x: x[1], reverse=True)
         }
 
     async def get_pull_requests(self, username: str, max_results: int = 200) -> list[dict]:
@@ -235,7 +238,10 @@ class GitHubService:
                 response = await client.post(
                     "https://api.github.com/graphql",
                     headers=self.headers,
-                    json={"query": query, "variables": {"searchQuery": search_query, "cursor": cursor}},
+                    json={
+                        "query": query,
+                        "variables": {"searchQuery": search_query, "cursor": cursor},
+                    },
                 )
                 data = response.json()
                 search = data.get("data", {}).get("search")
@@ -246,22 +252,24 @@ class GitHubService:
                     if not node:  # deleted/inaccessible PRs come back null
                         continue
                     repo = node["repository"]
-                    pull_requests.append({
-                        "repo": repo["nameWithOwner"],
-                        "is_own_repo": repo["owner"]["login"].lower() == username.lower(),
-                        "pr_number": node["number"],
-                        "title": node["title"],
-                        "url": node["url"],
-                        "state": node["state"],
-                        "is_draft": node["isDraft"],
-                        "additions": node["additions"],
-                        "deletions": node["deletions"],
-                        "changed_files": node["changedFiles"],
-                        "review_count": node["reviews"]["totalCount"],
-                        "created_at": node["createdAt"],
-                        "merged_at": node["mergedAt"],
-                        "closed_at": node["closedAt"],
-                    })
+                    pull_requests.append(
+                        {
+                            "repo": repo["nameWithOwner"],
+                            "is_own_repo": repo["owner"]["login"].lower() == username.lower(),
+                            "pr_number": node["number"],
+                            "title": node["title"],
+                            "url": node["url"],
+                            "state": node["state"],
+                            "is_draft": node["isDraft"],
+                            "additions": node["additions"],
+                            "deletions": node["deletions"],
+                            "changed_files": node["changedFiles"],
+                            "review_count": node["reviews"]["totalCount"],
+                            "created_at": node["createdAt"],
+                            "merged_at": node["mergedAt"],
+                            "closed_at": node["closedAt"],
+                        }
+                    )
 
                 page_info = search["pageInfo"]
                 if not page_info["hasNextPage"] or len(pull_requests) >= max_results:
@@ -297,15 +305,19 @@ class GitHubService:
                 "deletions": pr["deletions"],
                 "changed_files": pr["changed_files"],
                 "review_count": pr["review_count"],
-                "pr_created_at": datetime.strptime(pr["created_at"], "%Y-%m-%dT%H:%M:%SZ"),
-                "pr_merged_at": datetime.strptime(pr["merged_at"], "%Y-%m-%dT%H:%M:%SZ") if pr["merged_at"] else None,
-                "pr_closed_at": datetime.strptime(pr["closed_at"], "%Y-%m-%dT%H:%M:%SZ") if pr["closed_at"] else None,
+                "pr_created_at": parse_github_time(pr["created_at"]),
+                "pr_merged_at": parse_github_time(pr["merged_at"]) if pr["merged_at"] else None,
+                "pr_closed_at": parse_github_time(pr["closed_at"]) if pr["closed_at"] else None,
             }
             if existing:
                 for key, value in fields.items():
                     setattr(existing, key, value)
             else:
-                db.add(PullRequest(user_id=user.id, repo=pr["repo"], pr_number=pr["pr_number"], **fields))
+                db.add(
+                    PullRequest(
+                        user_id=user.id, repo=pr["repo"], pr_number=pr["pr_number"], **fields
+                    )
+                )
             synced += 1
 
         db.commit()
@@ -319,7 +331,7 @@ class GitHubService:
 
         synced = 0
         for day_data in activity["daily_activity"]:
-            day_date = datetime.strptime(day_data["date"], "%Y-%m-%d").date()
+            day_date = date.fromisoformat(day_data["date"])
             existing = (
                 db.query(DailyActivity)
                 .filter(
@@ -347,6 +359,6 @@ class GitHubService:
                 db.add(new_activity)
             synced += 1
 
-        user.last_synced_at = datetime.utcnow()
+        user.last_synced_at = datetime.now(UTC)
         db.commit()
         return synced

@@ -1,13 +1,14 @@
+import secrets
+from datetime import UTC, datetime, timedelta
+
+import httpx
+import jwt
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-import httpx
-import jwt
-import secrets
-from datetime import datetime, timedelta
 
-from app.database import get_db
 from app.configuration import settings
+from app.database import get_db
 from app.models.user import User
 
 router = APIRouter()
@@ -17,7 +18,7 @@ OAUTH_STATE_COOKIE = "oauth_state"
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
@@ -37,7 +38,11 @@ def github_login(cli: bool = False, local_nonce: str | None = None):
     """
     purpose = "cli" if cli else "web"
     nonce = secrets.token_urlsafe(32)
-    state = f"{purpose}:{nonce}:{local_nonce}" if (purpose == "cli" and local_nonce) else f"{purpose}:{nonce}"
+    state = (
+        f"{purpose}:{nonce}:{local_nonce}"
+        if (purpose == "cli" and local_nonce)
+        else f"{purpose}:{nonce}"
+    )
     github_auth_url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={settings.GITHUB_CLIENT_ID}"
@@ -58,7 +63,9 @@ def github_login(cli: bool = False, local_nonce: str | None = None):
 
 
 @router.get("/github/callback")
-async def github_callback(code: str, request: Request, state: str = "web", db: Session = Depends(get_db)):
+async def github_callback(
+    code: str, request: Request, state: str = "web", db: Session = Depends(get_db)
+):
     """Handle GitHub OAuth callback and return JWT.
 
     If state == 'cli', redirects to the local CLI callback listener.
@@ -139,9 +146,7 @@ async def github_callback(code: str, request: Request, state: str = "web", db: S
             callback_url += f"&local_nonce={local_nonce}"
         response = RedirectResponse(url=callback_url)
     else:
-        response = RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/auth/callback?token={jwt_token}"
-        )
+        response = RedirectResponse(url=f"{settings.FRONTEND_URL}/auth/callback?token={jwt_token}")
 
     response.delete_cookie(OAUTH_STATE_COOKIE)
     return response

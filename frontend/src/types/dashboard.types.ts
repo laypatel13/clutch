@@ -53,4 +53,3 @@ export interface LanguageDetail {
 }
 
 export type LanguageBreakdown = Record<string, LanguageDetail>
-

@@ -1,7 +1,7 @@
 """Tests for collapsing stored events into timeline items and paging through them."""
 
 import itertools
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -20,7 +20,7 @@ from app.services.timeline import (
     load_timeline,
 )
 
-T0 = datetime(2026, 9, 12, 21, 7, tzinfo=timezone.utc)
+T0 = datetime(2026, 9, 12, 21, 7, tzinfo=UTC)
 _event_ids = itertools.count(20955000000)
 
 
@@ -29,8 +29,22 @@ _event_ids = itertools.count(20955000000)
 # events in the order they happened.
 # ---------------------------------------------------------------------------
 
-def event(event_type, minute, *, repo="lay/clutch", number=None, action=None, ref=None,
-          title=None, commits=None, payload=None, url=None, private=False, seconds=0):
+
+def event(
+    event_type,
+    minute,
+    *,
+    repo="lay/clutch",
+    number=None,
+    action=None,
+    ref=None,
+    title=None,
+    commits=None,
+    payload=None,
+    url=None,
+    private=False,
+    seconds=0,
+):
     return ActivityEvent(
         github_event_id=str(next(_event_ids)),
         event_type=event_type,
@@ -48,18 +62,42 @@ def event(event_type, minute, *, repo="lay/clutch", number=None, action=None, re
 
 
 def pr(minute, number, action, title=None, repo="lay/clutch", **kwargs):
-    return event("PullRequestEvent", minute, repo=repo, number=number, action=action, title=title,
-                 url=f"https://github.com/{repo}/pull/{number}", **kwargs)
+    return event(
+        "PullRequestEvent",
+        minute,
+        repo=repo,
+        number=number,
+        action=action,
+        title=title,
+        url=f"https://github.com/{repo}/pull/{number}",
+        **kwargs,
+    )
 
 
 def review(minute, number, state="commented", repo="org/api", title=None, **kwargs):
-    return event("PullRequestReviewEvent", minute, repo=repo, number=number, action="reviewed", title=title,
-                 payload={"review": {"state": state}}, url=f"https://github.com/{repo}/pull/{number}", **kwargs)
+    return event(
+        "PullRequestReviewEvent",
+        minute,
+        repo=repo,
+        number=number,
+        action="reviewed",
+        title=title,
+        payload={"review": {"state": state}},
+        url=f"https://github.com/{repo}/pull/{number}",
+        **kwargs,
+    )
 
 
 def review_comment(minute, number, repo="org/api", **kwargs):
-    return event("PullRequestReviewCommentEvent", minute, repo=repo, number=number, action="commented",
-                 url=f"https://github.com/{repo}/pull/{number}#discussion_r1", **kwargs)
+    return event(
+        "PullRequestReviewCommentEvent",
+        minute,
+        repo=repo,
+        number=number,
+        action="commented",
+        url=f"https://github.com/{repo}/pull/{number}#discussion_r1",
+        **kwargs,
+    )
 
 
 def comment(minute, number, title, repo="org/api", on_pull_request=True, **kwargs):
@@ -67,22 +105,50 @@ def comment(minute, number, title, repo="org/api", on_pull_request=True, **kwarg
     issue = {"number": number, "title": title}
     if on_pull_request:
         issue["pull_request"] = {"url": "https://api.github.com/x"}
-    return event("IssueCommentEvent", minute, repo=repo, number=number, action="commented", title=title,
-                 payload={"issue": issue}, url=f"https://github.com/{repo}/{kind}/{number}#issuecomment-1", **kwargs)
+    return event(
+        "IssueCommentEvent",
+        minute,
+        repo=repo,
+        number=number,
+        action="commented",
+        title=title,
+        payload={"issue": issue},
+        url=f"https://github.com/{repo}/{kind}/{number}#issuecomment-1",
+        **kwargs,
+    )
 
 
 def push(minute, *messages, ref="develop", before=None, head=None, repo="lay/clutch", **kwargs):
-    commits = [{"sha": f"{ref}-{minute}-{i}", "message": m} for i, m in enumerate(messages)] if messages else None
+    commits = (
+        [{"sha": f"{ref}-{minute}-{i}", "message": m} for i, m in enumerate(messages)]
+        if messages
+        else None
+    )
     before = before or f"before{minute}".ljust(40, "0")[:39] + "a"
     head = head or f"head{minute}".ljust(40, "0")[:39] + "b"
-    return event("PushEvent", minute, repo=repo, ref=ref, commits=commits,
-                 payload={"before": before, "head": head},
-                 url=f"https://github.com/{repo}/compare/{before}...{head}", **kwargs)
+    return event(
+        "PushEvent",
+        minute,
+        repo=repo,
+        ref=ref,
+        commits=commits,
+        payload={"before": before, "head": head},
+        url=f"https://github.com/{repo}/compare/{before}...{head}",
+        **kwargs,
+    )
 
 
 def create(minute, ref, ref_type="branch", repo="lay/clutch", **kwargs):
-    return event("CreateEvent", minute, repo=repo, ref=ref, action="created",
-                 payload={"ref_type": ref_type}, url=f"https://github.com/{repo}/tree/{ref}", **kwargs)
+    return event(
+        "CreateEvent",
+        minute,
+        repo=repo,
+        ref=ref,
+        action="created",
+        payload={"ref_type": ref_type},
+        url=f"https://github.com/{repo}/tree/{ref}",
+        **kwargs,
+    )
 
 
 def star(minute, repo, **kwargs):
@@ -103,13 +169,19 @@ def summaries(events):
 # The night from the real capture
 # ---------------------------------------------------------------------------
 
+
 def test_the_real_night_reads_as_four_lines():
     """Fourteen events captured on a real night, reduced to what actually happened."""
     night = [
         push(0, "refactor(frontend): consolidate ad-hoc styling into one design system"),
-        review_comment(17, 6028), review(17, 6028), review_comment(17, 6028), review(17, 6028),
-        review_comment(18, 6028), review(18, 6028),
-        review_comment(21, 6028), review(21, 6028),
+        review_comment(17, 6028),
+        review(17, 6028),
+        review_comment(17, 6028),
+        review(17, 6028),
+        review_comment(18, 6028),
+        review(18, 6028),
+        review_comment(21, 6028),
+        review(21, 6028),
         comment(31, 6028, "Convert jQuery-UI popups to Bootstrap modals"),
         push(40, "fix(frontend): make layout responsive and stop the nav wrapping on mobile"),
         push(57, "fix(frontend): stop sync wiping the page and build a real motion layer"),
@@ -133,6 +205,7 @@ def test_the_real_night_reads_as_four_lines():
 # Session rules
 # ---------------------------------------------------------------------------
 
+
 def test_a_gap_of_exactly_thirty_minutes_still_joins():
     assert len(items_for([comment(0, 9, "T"), comment(30, 9, "T")])) == 1
 
@@ -143,11 +216,18 @@ def test_a_gap_over_thirty_minutes_starts_a_new_item():
 
 def test_a_different_subject_in_between_splits_rather_than_reorders():
     events = [review(0, 40), push(1, "wip"), review(2, 40)]
-    assert [item["kind"] for item in items_for(events)] == ["pull_request", "branch", "pull_request"]
+    assert [item["kind"] for item in items_for(events)] == [
+        "pull_request",
+        "branch",
+        "pull_request",
+    ]
 
 
 def test_same_number_in_different_repositories_never_joins():
-    assert len(items_for([comment(0, 9, "A", repo="org/one"), comment(1, 9, "B", repo="org/two")])) == 2
+    assert (
+        len(items_for([comment(0, 9, "A", repo="org/one"), comment(1, 9, "B", repo="org/two")]))
+        == 2
+    )
 
 
 def test_long_uninterrupted_sessions_stay_one_item():
@@ -161,20 +241,31 @@ def test_long_uninterrupted_sessions_stay_one_item():
 # Pull requests and issues
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("events, expected", [
-    ([pr(0, 5, "merged", title="Ship it")], "Merged PR #5 — Ship it"),
-    ([pr(0, 5, "opened"), pr(1, 5, "closed")], "Opened and closed PR #5"),
-    ([pr(0, 5, "reopened", title="Back")], "Reopened PR #5 — Back"),
-    ([review(0, 40, state="APPROVED", title="Add cache")], "Approved PR #40 — Add cache"),
-    ([review(0, 40, state="changes_requested", title="Add cache")], "Requested changes on PR #40 — Add cache"),
-    ([review(0, 40), review(1, 40, state="approved")], "Approved PR #40"),
-])
+
+@pytest.mark.parametrize(
+    "events, expected",
+    [
+        ([pr(0, 5, "merged", title="Ship it")], "Merged PR #5 — Ship it"),
+        ([pr(0, 5, "opened"), pr(1, 5, "closed")], "Opened and closed PR #5"),
+        ([pr(0, 5, "reopened", title="Back")], "Reopened PR #5 — Back"),
+        ([review(0, 40, state="APPROVED", title="Add cache")], "Approved PR #40 — Add cache"),
+        (
+            [review(0, 40, state="changes_requested", title="Add cache")],
+            "Requested changes on PR #40 — Add cache",
+        ),
+        ([review(0, 40), review(1, 40, state="approved")], "Approved PR #40"),
+    ],
+)
 def test_pull_request_headlines(events, expected):
     assert summaries(events) == [expected]
 
 
 def test_a_merge_outranks_the_review_before_it():
-    events = [review(0, 7, repo="lay/clutch"), review_comment(1, 7, repo="lay/clutch"), pr(2, 7, "merged", title="T")]
+    events = [
+        review(0, 7, repo="lay/clutch"),
+        review_comment(1, 7, repo="lay/clutch"),
+        pr(2, 7, "merged", title="T"),
+    ]
     assert summaries(events) == ["Merged PR #7 — T (1 comment)"]
 
 
@@ -186,13 +277,20 @@ def test_a_single_comment_links_to_the_comment_itself():
 
 
 def test_several_comments_link_to_the_conversation_and_are_counted():
-    [item] = items_for([comment(0, 9, "Crash", on_pull_request=False), comment(5, 9, "Crash", on_pull_request=False)])
+    [item] = items_for(
+        [
+            comment(0, 9, "Crash", on_pull_request=False),
+            comment(5, 9, "Crash", on_pull_request=False),
+        ]
+    )
     assert item["summary"] == "Commented on issue #9 — Crash (2 comments)"
     assert item["url"] == "https://github.com/org/api/issues/9"
 
 
 def test_a_comment_on_a_pull_request_is_labelled_as_one():
-    assert summaries([comment(0, 6028, "Convert popups")]) == ["Commented on PR #6028 — Convert popups"]
+    assert summaries([comment(0, 6028, "Convert popups")]) == [
+        "Commented on PR #6028 — Convert popups"
+    ]
 
 
 def test_an_opened_issue_and_a_non_comment_change():
@@ -214,6 +312,7 @@ def test_long_titles_are_truncated():
 # ---------------------------------------------------------------------------
 # Pushes and branches
 # ---------------------------------------------------------------------------
+
 
 def test_pushes_merge_commits_newest_first_and_link_the_whole_range():
     first = push(0, "one", "two", before="a" * 40, head="b" * 40)
@@ -241,7 +340,10 @@ def test_commit_list_is_capped_but_the_count_is_not():
 
 
 def test_creating_a_branch_and_pushing_to_it_is_one_act():
-    events = [create(0, "feat/timeline"), push(0, "feat: add timeline", ref="feat/timeline", seconds=5)]
+    events = [
+        create(0, "feat/timeline"),
+        push(0, "feat: add timeline", ref="feat/timeline", seconds=5),
+    ]
     assert summaries(events) == ["Pushed 1 commit to new branch feat/timeline — feat: add timeline"]
 
 
@@ -263,11 +365,15 @@ def test_pushes_to_different_branches_stay_separate():
 # Everything else
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("stars, expected", [
-    (["scummvm/scummvm"], "Starred scummvm/scummvm"),
-    (["a/one", "b/two"], "Starred b/two and a/one"),
-    (["a/one", "b/two", "c/three"], "Starred c/three and 2 others"),
-])
+
+@pytest.mark.parametrize(
+    "stars, expected",
+    [
+        (["scummvm/scummvm"], "Starred scummvm/scummvm"),
+        (["a/one", "b/two"], "Starred b/two and a/one"),
+        (["a/one", "b/two", "c/three"], "Starred c/three and 2 others"),
+    ],
+)
 def test_consecutive_stars_collapse(stars, expected):
     events = [star(i, repo) for i, repo in enumerate(stars)]
     [item] = items_for(events)
@@ -317,6 +423,7 @@ def test_a_malformed_cursor_is_rejected():
 # Paging through the database
 # ---------------------------------------------------------------------------
 
+
 def store(db, user, events):
     for item in events:
         item.user_id = user.id
@@ -353,7 +460,12 @@ def test_a_session_on_a_page_boundary_is_never_split(db, user):
 
     first = load_timeline(db, user.id, limit=5)  # 3 pushes + only 2 of the 10 reviews
 
-    assert [item["kind"] for item in first["items"]] == ["branch", "branch", "branch", "pull_request"]
+    assert [item["kind"] for item in first["items"]] == [
+        "branch",
+        "branch",
+        "branch",
+        "pull_request",
+    ]
     assert first["items"][-1]["event_count"] == 10
     assert first["next_cursor"] is None  # nothing older remains
 
@@ -365,7 +477,10 @@ def test_events_sharing_a_timestamp_are_not_skipped_between_pages(db, user):
     pages = walk_pages(db, user, limit=1)
 
     assert [item["summary"] for page in pages for item in page] == [
-        "Created tag v2", "Created tag v1", "Created tag v0", "Created tag v-old",
+        "Created tag v2",
+        "Created tag v1",
+        "Created tag v0",
+        "Created tag v-old",
     ]
 
 
@@ -399,6 +514,7 @@ def test_an_empty_timeline(db, user):
 # Endpoint
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def api(db, user):
     fastapi_app.dependency_overrides[get_db] = lambda: db
@@ -413,7 +529,10 @@ def test_timeline_endpoint_pages_with_the_cursor(api, db, user):
     first = api.get("/github/timeline", params={"limit": 2}).json()
     second = api.get("/github/timeline", params={"limit": 2, "cursor": first["next_cursor"]}).json()
 
-    assert [i["summary"] for i in first["items"]] == ["Pushed 1 commit to branch-2 — c2", "Pushed 1 commit to branch-1 — c1"]
+    assert [i["summary"] for i in first["items"]] == [
+        "Pushed 1 commit to branch-2 — c2",
+        "Pushed 1 commit to branch-1 — c1",
+    ]
     assert [i["summary"] for i in second["items"]] == ["Pushed 1 commit to branch-0 — c0"]
     assert second["next_cursor"] is None
 

@@ -1,0 +1,34 @@
+name: Privileged
+description: For maintainers only. Everyone else, please start a Discussion instead.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in Clutch!
+
+        **Issues are created by maintainers only.** Questions, bug reports and feature ideas start in
+        [GitHub Discussions](https://github.com/laypatel13/clutch/discussions). Once a discussion is
+        accepted, a maintainer creates the issue and it becomes available to pick up.
+
+        Issues opened without going through a discussion are closed.
+  - type: checkboxes
+    id: privileged
+    attributes:
+      label: Privileged issue
+      description: Confirm that you're allowed to create an issue here.
+      options:
+        - label: I'm a Clutch maintainer, or a maintainer asked me directly to create this issue.
+          required: true
+  - type: input
+    id: discussion
+    attributes:
+      label: Discussion
+      description: Link to the discussion this issue came from, if there is one.
+      placeholder: https://github.com/laypatel13/clutch/discussions/123
+  - type: textarea
+    id: content
+    attributes:
+      label: Issue content
+      description: What needs to change, what's in and out of scope, and how we'll know it's done.
+    validations:
+      required: true

@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.database import Base, engine, get_db
-from app.routers import auth, github, users, insights
 from app.configuration import settings
+from app.database import Base, engine, get_db
+from app.routers import auth, github, insights, users
 
 Base.metadata.create_all(bind=engine)
 

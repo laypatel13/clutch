@@ -15,9 +15,11 @@ def streak(*days_ago: int) -> dict:
     service = GitHubService("token")
 
     async def fake_activity(username, days=30):
-        return {"daily_activity": [
-            {"date": str(TODAY - timedelta(days=n)), "commits": 1} for n in days_ago
-        ]}
+        return {
+            "daily_activity": [
+                {"date": str(TODAY - timedelta(days=n)), "commits": 1} for n in days_ago
+            ]
+        }
 
     service.get_activity = fake_activity
     return asyncio.run(service.get_streak("lay", today=TODAY))
