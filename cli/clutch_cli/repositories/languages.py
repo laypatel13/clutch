@@ -1,9 +1,20 @@
 import typer
 from rich.console import Console
 from rich.table import Table
-from clutch_cli.api import get_language_breakdown
+from clutch_cli.api import get_client
 
 console = Console()
+
+
+def get_language_breakdown():
+    """Fetches the user's programming language breakdown from the backend."""
+    client = get_client()
+    response = client.get("/github/languages")
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception(f"Failed to fetch language data: {response.text}")
 
 def languages():
     """Display a clean breakdown of your most used programming languages."""

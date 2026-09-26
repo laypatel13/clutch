@@ -26,8 +26,7 @@ from sqlalchemy import BigInteger, and_, cast, or_
 from sqlalchemy.orm import Session
 
 from app.models.activity_event import ActivityEvent
-
-WEB_URL = "https://github.com"
+from app.services.github import WEB_URL
 
 SESSION_GAP = timedelta(minutes=30)
 MAX_COMMITS_PER_ITEM = 5

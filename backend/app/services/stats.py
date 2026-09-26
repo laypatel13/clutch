@@ -2,12 +2,12 @@ from datetime import UTC, date, datetime, timedelta
 
 import httpx
 
-from app.services.activity_sync import parse_github_time
+from app.models.daily_activity import DailyActivity
+from app.models.pull_request import PullRequest
+from app.services.github import API_URL, GRAPHQL_URL, parse_github_time
 
 
-class GitHubService:
-    BASE_URL = "https://api.github.com"
-
+class StatsService:
     def __init__(self, access_token: str):
         self.access_token = access_token
         self.headers = {
@@ -17,7 +17,6 @@ class GitHubService:
 
     async def get_activity(self, username: str, days: int = 30) -> dict:
         """Fetch user's GitHub contributions using GraphQL API."""
-        from datetime import datetime, timedelta
 
         since = (datetime.now(UTC) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -43,7 +42,7 @@ class GitHubService:
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "https://api.github.com/graphql",
+                GRAPHQL_URL,
                 headers=self.headers,
                 json={"query": query, "variables": {"username": username, "from": since}},
             )
@@ -86,7 +85,6 @@ class GitHubService:
         Unlike get_activity(), this keeps every day including zero-activity
         days, since a GitHub-style heatmap needs to render empty squares too.
         """
-        from datetime import datetime, timedelta
 
         since = (datetime.now(UTC) - timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -110,7 +108,7 @@ class GitHubService:
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "https://api.github.com/graphql",
+                GRAPHQL_URL,
                 headers=self.headers,
                 json={"query": query, "variables": {"username": username, "from": since}},
             )
@@ -170,7 +168,7 @@ class GitHubService:
         """Get language usage across user's repositories."""
         async with httpx.AsyncClient() as client:
             repos_response = await client.get(
-                f"{self.BASE_URL}/user/repos?per_page=50&sort=updated",
+                f"{API_URL}/user/repos?per_page=50&sort=updated",
                 headers=self.headers,
             )
             repos = repos_response.json()
@@ -179,7 +177,7 @@ class GitHubService:
         async with httpx.AsyncClient() as client:
             for repo in repos[:20]:  # Limit to top 20 repos
                 lang_response = await client.get(
-                    f"{self.BASE_URL}/repos/{repo['full_name']}/languages",
+                    f"{API_URL}/repos/{repo['full_name']}/languages",
                     headers=self.headers,
                 )
                 repo_langs = lang_response.json()
@@ -236,7 +234,7 @@ class GitHubService:
         async with httpx.AsyncClient() as client:
             while len(pull_requests) < max_results:
                 response = await client.post(
-                    "https://api.github.com/graphql",
+                    GRAPHQL_URL,
                     headers=self.headers,
                     json={
                         "query": query,
@@ -280,8 +278,6 @@ class GitHubService:
 
     async def sync_pull_requests_to_db(self, user, db) -> int:
         """Fetch the user's PRs and upsert them into the pull_requests table."""
-        from app.models.pull_request import PullRequest
-
         prs = await self.get_pull_requests(user.username)
 
         synced = 0
@@ -325,8 +321,6 @@ class GitHubService:
 
     async def sync_to_db(self, user, db) -> int:
         """Sync GitHub activity to the database."""
-        from app.models.activity import DailyActivity
-
         activity = await self.get_activity(user.username, days=30)
 
         synced = 0

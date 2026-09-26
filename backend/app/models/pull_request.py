@@ -8,7 +8,7 @@ from app.database import Base
 class PullRequest(Base):
     """One row per GitHub pull request the user has authored.
 
-    Populated by GitHubService.sync_pull_requests_to_db(). Re-syncing upserts
+    Populated by StatsService.sync_pull_requests_to_db(). Re-syncing upserts
     existing rows (matched on user_id + repo + pr_number) rather than
     duplicating them, so this table stays cheap to keep fresh.
     """

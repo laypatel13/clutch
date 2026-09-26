@@ -5,14 +5,14 @@ from datetime import date, timedelta
 
 import pytest
 
-from app.services.github_service import GitHubService
+from app.services.stats import StatsService
 
 TODAY = date(2026, 9, 16)
 
 
 def streak(*days_ago: int) -> dict:
     """Streak for a user active on each of the given days before TODAY."""
-    service = GitHubService("token")
+    service = StatsService("token")
 
     async def fake_activity(username, days=30):
         return {

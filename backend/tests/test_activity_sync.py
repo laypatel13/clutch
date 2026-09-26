@@ -20,12 +20,11 @@ from app.main import app as fastapi_app
 from app.models.activity_event import ActivityEvent
 from app.models.pull_request import PullRequest
 from app.services.activity_sync import (
-    GitHubUnavailable,
     build_title_query,
     normalize_event,
-    parse_github_time,
     sync_activity_events,
 )
+from app.services.github import GitHubUnavailable, parse_github_time
 
 ZERO_SHA = "0" * 40
 

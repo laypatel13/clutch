@@ -2,10 +2,9 @@ import typer
 
 from clutch_cli.authentication import login, logout, whoami
 from clutch_cli.activity import streak, stats, patterns, heatmap
-from clutch_cli.repositories import list as repositories_list
-from clutch_cli.insights import weekly
+from clutch_cli.repositories import languages, repos
+from clutch_cli.insights import insight
 from clutch_cli.system import status
-from clutch_cli.repositories.languages import languages as languages_command
 from clutch_cli.theme import banner
 
 __version__ = "0.4.0"
@@ -57,18 +56,16 @@ app.command(name="patterns")(patterns.patterns)
 app.command(name="heatmap")(heatmap.heatmap)
 
 # Repositories
-app.command(name="repos")(repositories_list.repos)
+app.command(name="repos")(repos.repos)
 
 # Insights
-app.command(name="insight")(weekly.insight)
+app.command(name="insight")(insight.insight)
 
 # System
 app.command(name="status")(status.status)
 
-@app.command(name="lang")
-def lang():
-    """Show programming language breakdown."""
-    languages_command()
+# Languages is listed last in `clutch --help`, where it has always been.
+app.command(name="lang", help="Show programming language breakdown.")(languages.languages)
 
 if __name__ == "__main__":
     app()

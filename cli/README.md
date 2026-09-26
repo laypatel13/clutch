@@ -97,7 +97,7 @@ clutch login
 |:--|:--|:--|
 | `CLUTCH_API_URL` | `https://clutch-api-7lw4.onrender.com` | The Clutch API the CLI talks to |
 
-Setting up that local backend is covered in [docs/development.md](https://github.com/laypatel13/clutch/blob/main/docs/development.md).
+Setting up that local backend is covered in [docs/DEVELOPMENT.md](https://github.com/laypatel13/clutch/blob/main/docs/DEVELOPMENT.md).
 
 ## Links
 

@@ -82,8 +82,8 @@ React and TypeScript on Vite, FastAPI and SQLAlchemy on SQLite, Llama 3.1 on Gro
 | Document | What's in it |
 |:--|:--|
 | [cli/README.md](./cli/README.md) | The `myclutch` command line: install, every command, the login flow and configuration. |
-| [docs/api.md](./docs/api.md) | The REST API: authentication and every endpoint. |
-| [docs/development.md](./docs/development.md) | Running Clutch locally: backend, frontend, tests and project structure. |
+| [docs/API.md](./docs/API.md) | The REST API: authentication and every endpoint. |
+| [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) | Running Clutch locally: backend, frontend, tests and project structure. |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | How changes are proposed, reviewed and merged. |
 
 ## Contributing

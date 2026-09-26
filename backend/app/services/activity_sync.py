@@ -24,10 +24,7 @@ from sqlalchemy.orm import Session
 
 from app.models.activity_event import ActivityEvent
 from app.models.pull_request import PullRequest
-
-API_URL = "https://api.github.com"
-GRAPHQL_URL = "https://api.github.com/graphql"
-WEB_URL = "https://github.com"
+from app.services.github import API_URL, GRAPHQL_URL, WEB_URL, GitHubUnavailable, parse_github_time
 
 # GitHub serves at most 300 events (3 pages of 100) from the last 90 days.
 EVENTS_PER_PAGE = 100
@@ -45,10 +42,6 @@ PULL_REQUEST_EVENTS = {
 }
 
 
-class GitHubUnavailable(Exception):
-    """GitHub couldn't be reached or refused the request; the sync can't proceed."""
-
-
 class _RetryLater(Exception):
     """A lookup failed for a reason that may clear up (rate limit, timeout, 5xx)."""
 
@@ -56,10 +49,6 @@ class _RetryLater(Exception):
 # ---------------------------------------------------------------------------
 # Normalizing — pure functions, no I/O
 # ---------------------------------------------------------------------------
-
-
-def parse_github_time(value: str) -> datetime:
-    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
 
 
 def is_null_sha(sha: str | None) -> bool:
