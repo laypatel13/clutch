@@ -8,7 +8,7 @@
 
 Clutch connects to your GitHub account and answers three questions: what did I do, what's waiting on me, and am I consistent?
 
-[Live app](https://clutch-woad.vercel.app) · [CLI on PyPI](https://pypi.org/project/myclutch/) · [API docs](https://clutch-api-7lw4.onrender.com/docs) · [Discussions](https://github.com/laypatel13/clutch/discussions)
+[Live app](https://www.myclutch.xyz) · [CLI on PyPI](https://pypi.org/project/myclutch/) · [API docs](https://clutch-api-7lw4.onrender.com/docs) · [Discussions](https://github.com/laypatel13/clutch/discussions)
 
 ## What it does
 
@@ -20,7 +20,7 @@ Clutch also has an AI weekly insight (Llama 3.1 on Groq), a shareable profile pa
 
 ## Try it
 
-Open the [live app](https://clutch-woad.vercel.app) and sign in with GitHub.
+Open the [live app](https://www.myclutch.xyz) and sign in with GitHub.
 
 Or use the command line. Install it:
 

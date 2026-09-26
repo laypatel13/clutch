@@ -6,7 +6,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/myclutch)](https://pypi.org/project/myclutch/)
 [![License](https://img.shields.io/github/license/laypatel13/clutch)](https://github.com/laypatel13/clutch/blob/main/LICENSE)
 
-`myclutch` is the command line for [Clutch](https://clutch-woad.vercel.app). It shows your GitHub streaks, stats, heatmap, coding patterns and AI weekly insight in your terminal.
+`myclutch` is the command line for [Clutch](https://www.myclutch.xyz). It shows your GitHub streaks, stats, heatmap, coding patterns and AI weekly insight in your terminal.
 
 ## Install
 
@@ -65,7 +65,7 @@ Setting up a local backend is covered in [docs/DEVELOPMENT.md](https://github.co
 
 ## Links
 
-- [Clutch web app](https://clutch-woad.vercel.app)
+- [Clutch web app](https://www.myclutch.xyz)
 - [Source code](https://github.com/laypatel13/clutch)
 - [Questions, bugs and ideas](https://github.com/laypatel13/clutch/discussions)
 
