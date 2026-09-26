@@ -1,0 +1,24 @@
+# Labels each pull request by the parts of Clutch it changes (.github/labeler.yml).
+name: Labeler
+
+on:
+  # pull_request_target runs this workflow as it is on main, with permission to
+  # label pull requests from forks. It must never check out or run the pull
+  # request's own code, and the labeler only reads the list of changed files.
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: Label by changed files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label
+        uses: actions/labeler@v7
+        with:
+          # Remove an area label if later pushes stop touching that area.
+          sync-labels: true
