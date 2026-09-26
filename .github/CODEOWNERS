@@ -1,0 +1,17 @@
+# Who reviews what. GitHub requests a review from the owners of every path a pull
+# request changes. When several lines match a file, the last one wins, so the
+# catch-all comes first and more specific paths follow.
+
+# Everything not listed below.
+*                         @laypatel13
+
+# Each part of Clutch. Hand an area to a co-maintainer by changing its line.
+/backend/                 @laypatel13
+/frontend/                @laypatel13
+/cli/                     @laypatel13
+/docs/                    @laypatel13
+
+# Workflows run with repository permissions, so changes to them always need the
+# maintainer's eyes.
+/.github/                 @laypatel13
+/.pre-commit-config.yaml  @laypatel13
