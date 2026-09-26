@@ -1,0 +1,45 @@
+# Pull requests are squash-merged, so each title becomes a commit on main. This
+# check holds titles to the same convention as commits: `type(scope): subject`.
+name: PR title
+
+on:
+  # A title check only reads the pull request, so the read-only pull_request
+  # event is enough, even for pull requests from forks.
+  pull_request:
+    # `edited` re-runs the check when someone fixes the title.
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  check:
+    name: Conventional title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the title
+        uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Clutch's own types: `feature`, not the standard `feat`.
+          types: |
+            feature
+            fix
+            docs
+            refactor
+            chore
+            test
+            release
+            revert
+          scopes: |
+            backend
+            frontend
+            cli
+            root
+          requireScope: true
+          # Subjects start lowercase, like the rest of the history.
+          subjectPattern: ^[^A-Z].+$
+          subjectPatternError: |
+            The subject "{subject}" in "{title}" should start with a lowercase
+            letter, like: fix(cli): handle an expired token
