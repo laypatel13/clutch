@@ -1,21 +1,21 @@
 # Running Clutch locally
 
-The full setup for working on Clutch: the backend, the frontend, the CLI and the tests. For how changes get proposed and reviewed, see [CONTRIBUTING.md](../CONTRIBUTING.md).
+How to run the backend, the web app and the CLI on your own machine, and how to run the checks. For how changes get proposed and reviewed, see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-**You'll need** Python 3.11+, Node.js 20.19+, a [GitHub OAuth app](https://github.com/settings/developers), and optionally a [Groq API key](https://console.groq.com) for AI insights.
+**You'll need** Python 3.11+, Node.js 20.19+ or 22.12+, and a GitHub account. A [Groq API key](https://console.groq.com) is optional and only needed for the AI weekly insight.
 
-Clutch runs on fixed local ports so they don't collide with other projects: the API on **8020** and the web app on **5180**. Both are pinned, so keep them consistent across the OAuth app, `backend/.env` and Vite.
+Locally, the API runs on port **8020** and the web app on port **5180**.
 
 ## 1. Create a GitHub OAuth app
 
-Register a new OAuth app at [github.com/settings/developers](https://github.com/settings/developers) with these values:
+Sign-in goes through GitHub, so Clutch needs its own OAuth app. Create one at [github.com/settings/developers](https://github.com/settings/developers) with these values:
 
 | Field | Value |
 |:--|:--|
 | Homepage URL | `http://localhost:5180` |
 | Authorization callback URL | `http://localhost:8020/auth/github/callback` |
 
-Keep the **Client ID** and generate a **Client Secret**.
+Copy the **Client ID**, then generate and copy a **Client Secret**.
 
 ## 2. Start the backend
 
@@ -43,42 +43,38 @@ Or on Windows:
 venv\Scripts\activate
 ```
 
-Install the dependencies:
+Install the dependencies, including the test and lint tools:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
-Create your environment file:
+Create your settings file:
 
 ```bash
 cp .env.example .env
 ```
 
-Then fill in these values in `backend/.env`:
+Open `backend/.env` and fill in these values. The rest are already set for local use.
 
-| Variable | Example | Notes |
-|:--|:--|:--|
-| `DATABASE_URL` | `sqlite:///./clutch.db` | |
-| `SECRET_KEY` | any long random string | Signs the JWT |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | `10080` | Seven days |
-| `GITHUB_CLIENT_ID` | from your OAuth app | |
-| `GITHUB_CLIENT_SECRET` | from your OAuth app | |
-| `GITHUB_REDIRECT_URI` | `http://localhost:8020/auth/github/callback` | Must match the OAuth app exactly |
-| `FRONTEND_URL` | `http://localhost:5180` | Used for CORS and the post-login redirect |
-| `GROQ_API_KEY` | optional | Add it to enable AI insights |
+| Variable | Value |
+|:--|:--|
+| `GITHUB_CLIENT_ID` | The Client ID from step 1 |
+| `GITHUB_CLIENT_SECRET` | The Client Secret from step 1 |
+| `SECRET_KEY` | Any long random string. It signs login tokens. |
+| `GROQ_API_KEY` | Optional. Add this line to enable the AI weekly insight. |
 
-Start the API on port 8020:
+Start the API:
 
 ```bash
 uvicorn app.main:app --reload --port 8020
 ```
 
-The API is now at `http://localhost:8020`, with interactive docs at [`/docs`](http://localhost:8020/docs). The endpoint reference is in [docs/API.md](./API.md).
+The API is now running at `http://localhost:8020`, with interactive docs at [`/docs`](http://localhost:8020/docs). The endpoints are listed in [API.md](./API.md).
 
-## 3. Start the frontend
+## 3. Start the web app
 
-In a new terminal, from the repository root, go to the frontend:
+In a second terminal, from the repository root, go to the frontend:
 
 ```bash
 cd frontend
@@ -90,85 +86,69 @@ Install the dependencies:
 npm install
 ```
 
-Point the app at your local API:
-
-```bash
-echo "VITE_API_URL=http://localhost:8020" > .env
-```
-
 Start the dev server:
 
 ```bash
 npm run dev
 ```
 
-Vite is pinned to port 5180 in `vite.config.ts`, so this always serves on `http://localhost:5180`. Open it and sign in with GitHub.
+Open `http://localhost:5180` and sign in with GitHub. The web app talks to the API at `http://localhost:8020` by default.
 
-## 4. Run the checks and tests
+## 4. Use the CLI (optional)
 
-Install the development tools (pytest, ruff and pre-commit), from `backend/` with the virtual environment active:
-
-```bash
-pip install -r requirements-dev.txt
-```
-
-Install the Git hooks once per clone, so lint and formatting run on every commit:
-
-```bash
-pre-commit install
-```
-
-Run all the hooks across the repository without committing:
-
-```bash
-pre-commit run --all-files
-```
-
-Lint the backend, from `backend/`:
-
-```bash
-ruff check .
-```
-
-Backend tests, from `backend/`:
-
-```bash
-pytest
-```
-
-Frontend build, from `frontend/`:
-
-```bash
-npm run build
-```
-
-Frontend lint, from `frontend/`:
-
-```bash
-npm run lint
-```
-
-## 5. Point the CLI at your local backend
-
-From `cli/`, install the package in editable mode:
+From `cli/`, install the CLI from your local copy:
 
 ```bash
 pip install -e .
 ```
 
-Tell the CLI where the local API is:
+Point it at your local API:
 
 ```bash
 export CLUTCH_API_URL=http://localhost:8020
 ```
 
-Then sign in against it:
+Then sign in:
 
 ```bash
 clutch login
 ```
 
-Login opens a temporary local server on port `9876` to catch the OAuth redirect. The full command reference is in [cli/README.md](../cli/README.md).
+Every command is listed in [cli/README.md](../cli/README.md).
+
+## 5. Run the checks
+
+These are the same checks CI runs on every pull request.
+
+Set up the Git hooks once, from the repository root, so lint and formatting run on every commit:
+
+```bash
+pre-commit install
+```
+
+Run every hook across the whole repository:
+
+```bash
+pre-commit run --all-files
+```
+
+Run the backend tests, from `backend/`:
+
+```bash
+pytest
+```
+
+Lint the web app, from `frontend/`:
+
+```bash
+npm run lint
+```
+
+Type-check and build the web app, from `frontend/`:
+
+```bash
+npm run build
+```
 
 ## Project structure
 
@@ -176,21 +156,21 @@ Login opens a temporary local server on port `9876` to catch the OAuth redirect.
 clutch/
 ├── backend/                  FastAPI service
 │   ├── app/
-│   │   ├── main.py           app, CORS, routers, health checks
+│   │   ├── main.py           app setup, routers and health checks
 │   │   ├── configuration.py  settings from .env
-│   │   ├── dependencies.py   JWT auth and the GitHub client
-│   │   ├── models/           users, activity, events, pull requests, insights
+│   │   ├── dependencies.py   sign-in checks and the GitHub client
+│   │   ├── models/           database tables
 │   │   ├── routers/          auth, stats, timeline, waiting, users, insights
-│   │   └── services/         activity sync, timeline, waiting, stats, AI insights, shared GitHub helpers
+│   │   └── services/         the logic behind each router, plus shared GitHub helpers
 │   └── tests/
 ├── frontend/                 React + TypeScript web app
 │   ├── public/               favicon, home-screen icon, paper textures
 │   └── src/
 │       ├── pages/            Landing, Today, Waiting, public profile
 │       ├── components/       dashboard, timeline, waiting, layout, shared UI
-│       ├── hooks/ contexts/  data fetching and auth state
+│       ├── hooks/ contexts/  data loading and sign-in state
 │       └── styles/index.css  the design system
 ├── cli/                      the myclutch package (Typer + Rich)
-│   └── clutch_cli/           auth, activity, repositories, insights, system
+│   └── clutch_cli/           one folder per command group
 └── docs/                     this guide and the API reference
 ```
