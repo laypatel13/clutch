@@ -2,11 +2,11 @@
 
 **GitHub tracks your work. Clutch tracks you.**
 
-[![PyPI](https://img.shields.io/pypi/v/myclutch?style=flat-square)](https://pypi.org/project/myclutch/)
-[![Python](https://img.shields.io/badge/python-3.11+-blue?style=flat-square)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](https://github.com/laypatel13/clutch/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/myclutch)](https://pypi.org/project/myclutch/)
+[![Python](https://img.shields.io/pypi/pyversions/myclutch)](https://pypi.org/project/myclutch/)
+[![License](https://img.shields.io/github/license/laypatel13/clutch)](https://github.com/laypatel13/clutch/blob/main/LICENSE)
 
-`myclutch` is the terminal companion for [Clutch](https://clutch-woad.vercel.app), an open-source GitHub activity dashboard. It gives you your streaks, stats, contribution heatmap, coding patterns and AI weekly insight without leaving your shell.
+`myclutch` is the command line for [Clutch](https://clutch-woad.vercel.app). It shows your GitHub streaks, stats, heatmap, coding patterns and AI weekly insight in your terminal.
 
 ## Install
 
@@ -20,68 +20,36 @@ pip install myclutch
 clutch login
 ```
 
-This opens GitHub in your browser and hands the token back to the terminal automatically. See [how login works](#how-login-works) for the details.
+This opens GitHub in your browser. Once you approve, the CLI signs you in by itself, so there's nothing to copy and paste.
 
 ## Commands
 
-### Authentication
-
 | Command | What it does |
 |:--|:--|
-| `clutch login` | Sign in with GitHub OAuth |
-| `clutch logout` | Sign out and clear saved credentials |
-| `clutch whoami` | Show who's currently signed in |
-
-### Activity
-
-| Command | What it does |
-|:--|:--|
-| `clutch streak` | Current and longest streak, with progress toward your best |
-| `clutch stats` | Commits, pull requests, issues and active days |
-| `clutch stats --days 7` | The same totals over a custom window, default 30 |
-| `clutch heatmap` | Contribution heatmap for the last 12 weeks |
-| `clutch heatmap --weeks 26` | Heatmap over a custom number of weeks |
-| `clutch patterns` | Best day, consistency score and weekday distribution |
-
-### Repositories and insights
-
-| Command | What it does |
-|:--|:--|
+| `clutch login` | Sign in with GitHub |
+| `clutch logout` | Sign out |
+| `clutch whoami` | Show who's signed in |
+| `clutch streak` | Your current and longest streak |
+| `clutch stats` | Commits, pull requests, issues and active days over the last 30 days. Change the window with `--days 7`. |
+| `clutch heatmap` | Your contribution heatmap for the last 12 weeks. Change it with `--weeks 26`. |
+| `clutch patterns` | Your best day, consistency score and weekday breakdown |
 | `clutch repos` | Your most recently active repositories |
-| `clutch lang` | Language breakdown across your repositories |
-| `clutch insight` | AI-generated weekly insight, powered by Llama 3.1 on Groq |
+| `clutch lang` | The languages across your repositories |
+| `clutch insight` | An AI summary of your week |
+| `clutch status` | Whether you're signed in and the API is up. Add `--json` for machine-readable output. |
+| `clutch --version` | The installed version |
 
-### System
+Run `clutch` on its own to see the help.
 
-| Command | What it does |
-|:--|:--|
-| `clutch status` | Sign-in status and API health check |
-| `clutch --version` | Show the installed version, also `-v` |
+## How sign-in works
 
-Running `clutch` with no command prints the banner and the full help.
+`clutch login` starts a small local server on port `9876` and opens GitHub in your browser. When GitHub sends you back, the server catches your login token and saves it to `~/.clutch/config.json`. Every other command then uses that token.
 
-## How login works
+## Using your own backend
 
-`clutch login` starts a temporary local server on port `9876`, opens GitHub OAuth in your browser, and captures the token when GitHub redirects back. There is nothing to copy and paste.
+The CLI talks to the hosted Clutch API at `https://clutch-api-7lw4.onrender.com`.
 
-```
-$ clutch login
-
-Clutch Login
-Opening GitHub in your browser...
-Waiting for GitHub authorization...
-
-Logged in as @laypatel13
-Welcome to Clutch, Lay Patel!
-```
-
-Your token is then saved to `~/.clutch/config.json`, and every other command works without prompting.
-
-## Configuration
-
-By default the CLI talks to the hosted Clutch API at `https://clutch-api-7lw4.onrender.com`.
-
-To point it at a backend you're running locally, set `CLUTCH_API_URL` before signing in:
+To use a backend running on your own machine, set `CLUTCH_API_URL` first:
 
 ```bash
 export CLUTCH_API_URL=http://localhost:8020
@@ -93,18 +61,14 @@ Then sign in against it:
 clutch login
 ```
 
-| Variable | Default | What it's for |
-|:--|:--|:--|
-| `CLUTCH_API_URL` | `https://clutch-api-7lw4.onrender.com` | The Clutch API the CLI talks to |
-
-Setting up that local backend is covered in [docs/DEVELOPMENT.md](https://github.com/laypatel13/clutch/blob/main/docs/DEVELOPMENT.md).
+Setting up a local backend is covered in [docs/DEVELOPMENT.md](https://github.com/laypatel13/clutch/blob/main/docs/DEVELOPMENT.md).
 
 ## Links
 
-- [Live dashboard](https://clutch-woad.vercel.app)
-- [Source and full documentation](https://github.com/laypatel13/clutch)
+- [Clutch web app](https://clutch-woad.vercel.app)
+- [Source code](https://github.com/laypatel13/clutch)
 - [Questions, bugs and ideas](https://github.com/laypatel13/clutch/discussions)
 
 ## License
 
-MIT, © [Lay Patel](https://github.com/laypatel13).
+MIT, made by [Lay Patel](https://github.com/laypatel13).
