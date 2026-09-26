@@ -74,7 +74,7 @@ Start the API on port 8020:
 uvicorn app.main:app --reload --port 8020
 ```
 
-The API is now at `http://localhost:8020`, with interactive docs at [`/docs`](http://localhost:8020/docs). The endpoint reference is in [docs/api.md](./api.md).
+The API is now at `http://localhost:8020`, with interactive docs at [`/docs`](http://localhost:8020/docs). The endpoint reference is in [docs/API.md](./API.md).
 
 ## 3. Start the frontend
 
@@ -180,14 +180,14 @@ clutch/
 │   │   ├── configuration.py  settings from .env
 │   │   ├── dependencies.py   JWT auth and the GitHub client
 │   │   ├── models/           users, activity, events, pull requests, insights
-│   │   ├── routers/          auth, github, users, insights
-│   │   └── services/         activity sync, timeline, waiting, GitHub, AI insights
+│   │   ├── routers/          auth, stats, timeline, waiting, users, insights
+│   │   └── services/         activity sync, timeline, waiting, stats, AI insights, shared GitHub helpers
 │   └── tests/
 ├── frontend/                 React + TypeScript web app
-│   ├── public/               favicon, icons, paper textures
+│   ├── public/               favicon, home-screen icon, paper textures
 │   └── src/
 │       ├── pages/            Landing, Today, Waiting, public profile
-│       ├── components/       timeline, waiting, layout, shared UI
+│       ├── components/       dashboard, timeline, waiting, layout, shared UI
 │       ├── hooks/ contexts/  data fetching and auth state
 │       └── styles/index.css  the design system
 ├── cli/                      the myclutch package (Typer + Rich)

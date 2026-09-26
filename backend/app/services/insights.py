@@ -4,8 +4,9 @@ import httpx
 from sqlalchemy.orm import Session
 
 from app.configuration import settings
-from app.models.activity import DailyActivity
+from app.models.daily_activity import DailyActivity
 from app.models.user import User
+from app.services.stats import StatsService
 
 
 class InsightsService:
@@ -82,15 +83,12 @@ Keep it casual and human, not corporate.
 
     async def detect_patterns(self, user, db) -> dict:
         """Detect coding patterns from GitHub activity."""
-        from app.models.activity import DailyActivity
-        from app.services.github_service import GitHubService
-
         # Try DB first
         activities = db.query(DailyActivity).filter(DailyActivity.user_id == user.id).all()
 
         # If not enough DB data, fetch live from GitHub
         if len(activities) < 5:
-            service = GitHubService(user.github_access_token)
+            service = StatsService(user.github_access_token)
             live = await service.get_activity(user.username, days=90)
             daily_data = live["daily_activity"]
         else:

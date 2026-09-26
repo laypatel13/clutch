@@ -27,7 +27,7 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 
-from app.services.activity_sync import GRAPHQL_URL, GitHubUnavailable
+from app.services.github import GRAPHQL_URL, GitHubUnavailable
 
 QUIET_AFTER = timedelta(days=7)
 ABANDONED_AFTER = timedelta(days=60)

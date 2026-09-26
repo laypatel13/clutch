@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from app.dependencies import get_current_user, get_github_client
 from app.main import app as fastapi_app
-from app.services.activity_sync import GitHubUnavailable
+from app.services.github import GitHubUnavailable
 from app.services.waiting import classify, fetch_waiting
 
 NOW = datetime(2026, 9, 15, 12, 0, tzinfo=UTC)

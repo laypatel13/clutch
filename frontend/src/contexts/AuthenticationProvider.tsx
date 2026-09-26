@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import httpClient from '../api/httpClient'
 import { AUTH_TOKEN_STORAGE_KEY } from '../constants/config.constants'
 import type { AuthenticatedUser } from '../types/user.types'
-import { AuthenticationContext } from './authentication.context'
+import { AuthenticationContext } from './AuthenticationContext'
 
 export function AuthenticationProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthenticatedUser | null>(null)
